@@ -2,8 +2,16 @@
 
 from pathlib import Path
 
+from spec_kitty_events.mission_next import (
+    DecisionInputAnsweredPayload,
+    DecisionInputRequestedPayload,
+    MissionRunCompletedPayload,
+    MissionRunStartedPayload,
+    NextStepAutoCompletedPayload,
+    NextStepIssuedPayload,
+    RuntimeActorIdentity,
+)
 from spec_kitty_runtime.events import JsonlEventLog, NullEmitter
-from spec_kitty_runtime.schema import ActorIdentity, DecisionRequest
 
 
 def test_null_emitter_is_noop() -> None:
@@ -11,11 +19,25 @@ def test_null_emitter_is_noop() -> None:
     emitter = NullEmitter(correlation_id="test-corr")
     assert emitter.correlation_id == "test-corr"
 
-    actor = ActorIdentity(actor_id="a1", actor_type="llm")
-    emitter.emit_mission_started("r1", "key", actor)
-    emitter.emit_next_step_issued("r1", "S1", "agent-1")
-    emitter.emit_next_step_auto_completed("r1", "S1", "success", "agent-1")
-    emitter.emit_mission_completed("r1", "key")
+    actor = RuntimeActorIdentity(actor_id="a1", actor_type="llm")
+    emitter.emit_mission_run_started(
+        MissionRunStartedPayload(run_id="r1", mission_key="key", actor=actor)
+    )
+    emitter.emit_next_step_issued(
+        NextStepIssuedPayload(run_id="r1", step_id="S1", agent_id="agent-1", actor=actor)
+    )
+    emitter.emit_next_step_auto_completed(
+        NextStepAutoCompletedPayload(run_id="r1", step_id="S1", agent_id="agent-1", result="success", actor=actor)
+    )
+    emitter.emit_decision_input_requested(
+        DecisionInputRequestedPayload(run_id="r1", decision_id="d1", step_id="S1", question="Q?", actor=actor)
+    )
+    emitter.emit_decision_input_answered(
+        DecisionInputAnsweredPayload(run_id="r1", decision_id="d1", answer="A", actor=actor)
+    )
+    emitter.emit_mission_run_completed(
+        MissionRunCompletedPayload(run_id="r1", mission_key="key", actor=actor)
+    )
 
 
 def test_jsonl_log_append_and_read_roundtrip(tmp_path: Path) -> None:

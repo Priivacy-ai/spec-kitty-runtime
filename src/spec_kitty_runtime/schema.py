@@ -18,15 +18,9 @@ class MissionRuntimeError(RuntimeError):
 # Domain value objects
 # ---------------------------------------------------------------------------
 
-class ActorIdentity(BaseModel):
-    model_config = ConfigDict(frozen=True)
+from spec_kitty_events.mission_next import RuntimeActorIdentity
 
-    actor_id: str = Field(..., min_length=1)
-    actor_type: Literal["human", "llm", "service"]
-    display_name: str = ""
-    provider: str | None = None      # "anthropic", "openai"
-    model: str | None = None         # "claude-opus-4-6"
-    tool: str | None = None          # "spec-kitty-cli"
+ActorIdentity = RuntimeActorIdentity
 
 
 class CommitContext(BaseModel):

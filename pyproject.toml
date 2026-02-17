@@ -1,6 +1,6 @@
 [project]
 name = "spec-kitty-runtime"
-version = "0.1.0a0"
+version = "0.2.0a0"
 description = "Canonical mission runtime for deterministic next-step planning"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -11,7 +11,7 @@ dependencies = [
   "pydantic>=2.0,<3.0",
   "pyyaml>=6.0",
   "jsonschema>=4.0",
-  "spec-kitty-events==2.2.0"
+  "spec-kitty-events==2.3.1"
 ]
 
 [project.optional-dependencies]

@@ -1,7 +1,6 @@
 """Mission runtime event emission interface and persistence.
 
-Concrete event emission is blocked until spec-kitty-events ships
-mission-next payload contracts. Until then, engine uses NullEmitter.
+Uses canonical event constants and payload models from spec-kitty-events v2.3.1.
 """
 
 from __future__ import annotations
@@ -10,21 +9,20 @@ import json
 from pathlib import Path
 from typing import Any, Protocol
 
-from spec_kitty_runtime.schema import ActorIdentity, DecisionAnswer, DecisionRequest
-
-# ---------------------------------------------------------------------------
-# Required event types (pending spec-kitty-events contracts)
-# ---------------------------------------------------------------------------
-
-MISSION_RUN_STARTED = "MissionRunStarted"
-NEXT_STEP_PLANNED = "NextStepPlanned"
-NEXT_STEP_ISSUED = "NextStepIssued"
-NEXT_STEP_AUTO_COMPLETED = "NextStepAutoCompleted"
-DECISION_INPUT_REQUESTED = "DecisionInputRequested"
-DECISION_INPUT_ANSWERED = "DecisionInputAnswered"
-DECISION_RESOLVED = "DecisionResolved"
-MISSION_COMPLETED = "MissionCompleted"
-TEMPLATE_MIGRATION_REQUIRED = "TemplateMigrationRequired"
+from spec_kitty_events.mission_next import (
+    DECISION_INPUT_ANSWERED,
+    DECISION_INPUT_REQUESTED,
+    MISSION_RUN_COMPLETED,
+    MISSION_RUN_STARTED,
+    NEXT_STEP_AUTO_COMPLETED,
+    NEXT_STEP_ISSUED,
+    DecisionInputAnsweredPayload,
+    DecisionInputRequestedPayload,
+    MissionRunCompletedPayload,
+    MissionRunStartedPayload,
+    NextStepAutoCompletedPayload,
+    NextStepIssuedPayload,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -34,52 +32,49 @@ TEMPLATE_MIGRATION_REQUIRED = "TemplateMigrationRequired"
 class RuntimeEventEmitter(Protocol):
     """Interface for mission runtime event emission.
 
-    Concrete implementation is blocked until spec-kitty-events ships
-    mission-next payload contracts. Until then, engine uses NullEmitter.
-
-    Implementations MUST accept correlation_id in __init__(), set before
-    any emit_* call. No lazy initialization.
+    All emit methods accept a single canonical payload model from
+    spec-kitty-events.mission_next.
     """
 
-    def emit_mission_started(self, run_id: str, mission_key: str, actor: ActorIdentity) -> None: ...
+    def emit_mission_run_started(self, payload: MissionRunStartedPayload) -> None: ...
 
-    def emit_next_step_issued(self, run_id: str, step_id: str, agent_id: str) -> None: ...
+    def emit_next_step_issued(self, payload: NextStepIssuedPayload) -> None: ...
 
-    def emit_next_step_auto_completed(self, run_id: str, step_id: str, result: str, agent_id: str) -> None: ...
+    def emit_next_step_auto_completed(self, payload: NextStepAutoCompletedPayload) -> None: ...
 
-    def emit_decision_requested(self, run_id: str, request: DecisionRequest) -> None: ...
+    def emit_decision_input_requested(self, payload: DecisionInputRequestedPayload) -> None: ...
 
-    def emit_decision_answered(self, run_id: str, answer: DecisionAnswer) -> None: ...
+    def emit_decision_input_answered(self, payload: DecisionInputAnsweredPayload) -> None: ...
 
-    def emit_mission_completed(self, run_id: str, mission_key: str) -> None: ...
+    def emit_mission_run_completed(self, payload: MissionRunCompletedPayload) -> None: ...
 
 
 # ---------------------------------------------------------------------------
-# NullEmitter (no-op, used until contracts land)
+# NullEmitter (no-op default)
 # ---------------------------------------------------------------------------
 
 class NullEmitter:
-    """No-op emitter used while event contracts are pending."""
+    """No-op emitter — default when no concrete emitter is provided."""
 
     def __init__(self, correlation_id: str = "") -> None:
         self.correlation_id = correlation_id
 
-    def emit_mission_started(self, run_id: str, mission_key: str, actor: ActorIdentity) -> None:
+    def emit_mission_run_started(self, payload: MissionRunStartedPayload) -> None:
         pass
 
-    def emit_next_step_issued(self, run_id: str, step_id: str, agent_id: str) -> None:
+    def emit_next_step_issued(self, payload: NextStepIssuedPayload) -> None:
         pass
 
-    def emit_next_step_auto_completed(self, run_id: str, step_id: str, result: str, agent_id: str) -> None:
+    def emit_next_step_auto_completed(self, payload: NextStepAutoCompletedPayload) -> None:
         pass
 
-    def emit_decision_requested(self, run_id: str, request: DecisionRequest) -> None:
+    def emit_decision_input_requested(self, payload: DecisionInputRequestedPayload) -> None:
         pass
 
-    def emit_decision_answered(self, run_id: str, answer: DecisionAnswer) -> None:
+    def emit_decision_input_answered(self, payload: DecisionInputAnsweredPayload) -> None:
         pass
 
-    def emit_mission_completed(self, run_id: str, mission_key: str) -> None:
+    def emit_mission_run_completed(self, payload: MissionRunCompletedPayload) -> None:
         pass
 
 
@@ -90,9 +85,9 @@ class NullEmitter:
 class JsonlEventLog:
     """Append-only JSONL log. Writes dicts with sort_keys for determinism.
 
-    Engine uses JsonlEventLog for raw persistence (pre-event-contract).
-    When contracts land, JsonlEventLog.append() will accept
-    Event.model_dump() output directly.
+    Runtime-local debug/audit log. Payload dicts match canonical payload
+    model shapes but do not use the full Event envelope (event_id,
+    lamport_clock, etc.) — that is a cross-repo concern for a later version.
     """
 
     def __init__(self, path: Path) -> None:

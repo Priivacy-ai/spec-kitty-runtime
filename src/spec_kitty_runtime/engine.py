@@ -13,10 +13,19 @@ import yaml
 from pydantic import BaseModel, ConfigDict
 
 from spec_kitty_runtime.discovery import DiscoveryContext, discover_missions, load_mission_template
+from spec_kitty_events.mission_next import (
+    DecisionInputAnsweredPayload,
+    DecisionInputRequestedPayload,
+    MissionRunCompletedPayload,
+    MissionRunStartedPayload,
+    NextStepAutoCompletedPayload,
+    NextStepIssuedPayload,
+    RuntimeActorIdentity,
+)
 from spec_kitty_runtime.events import (
     DECISION_INPUT_ANSWERED,
     DECISION_INPUT_REQUESTED,
-    MISSION_COMPLETED,
+    MISSION_RUN_COMPLETED,
     MISSION_RUN_STARTED,
     NEXT_STEP_AUTO_COMPLETED,
     NEXT_STEP_ISSUED,
@@ -165,8 +174,10 @@ def start_mission_run(
         blocked_reason=None,
     )
     _write_snapshot(run_dir, snapshot)
-    _append_event(run_dir, MISSION_RUN_STARTED, {"mission_key": template.mission.key})
-    emitter.emit_mission_started(run_id, template.mission.key, ActorIdentity(actor_id="system", actor_type="service"))
+    actor = RuntimeActorIdentity(actor_id="system", actor_type="service")
+    payload = MissionRunStartedPayload(run_id=run_id, mission_key=template.mission.key, actor=actor)
+    _append_event(run_dir, MISSION_RUN_STARTED, payload.model_dump(mode="json"))
+    emitter.emit_mission_run_started(payload)
 
     return MissionRunRef(run_id=run_id, run_dir=str(run_dir), mission_key=template.mission.key)
 
@@ -206,7 +217,7 @@ def next_step(
             live_template_path = candidate
 
     # Track whether this call actually transitions state (completes a step).
-    # Used to gate one-shot events like MissionCompleted.
+    # Used to gate one-shot events like MissionRunCompleted.
     did_complete_step = snapshot.issued_step_id is not None
 
     if snapshot.issued_step_id:
@@ -235,18 +246,13 @@ def next_step(
             pending_decisions=snapshot.pending_decisions,
             blocked_reason=blocked_reason,
         )
-        _append_event(
-            run_dir,
-            NEXT_STEP_AUTO_COMPLETED,
-            {
-                "agent_id": agent_id,
-                "step_id": completed_step_id,
-                "result": result,
-            },
+        ac_actor = RuntimeActorIdentity(actor_id=agent_id, actor_type="llm")
+        ac_payload = NextStepAutoCompletedPayload(
+            run_id=snapshot.run_id, step_id=completed_step_id,
+            agent_id=agent_id, result=result, actor=ac_actor,
         )
-        emitter.emit_next_step_auto_completed(
-            snapshot.run_id, completed_step_id, result, agent_id
-        )
+        _append_event(run_dir, NEXT_STEP_AUTO_COMPLETED, ac_payload.model_dump(mode="json"))
+        emitter.emit_next_step_auto_completed(ac_payload)
 
     decision = plan_next(
         snapshot,
@@ -262,54 +268,48 @@ def next_step(
 
     if decision.kind == "step" and decision.step_id:
         issued_step_id = decision.step_id
-        _append_event(
-            run_dir,
-            NEXT_STEP_ISSUED,
-            {
-                "agent_id": agent_id,
-                "step_id": decision.step_id,
-            },
+        si_actor = RuntimeActorIdentity(actor_id=agent_id, actor_type="llm")
+        si_payload = NextStepIssuedPayload(
+            run_id=snapshot.run_id, step_id=decision.step_id,
+            agent_id=agent_id, actor=si_actor,
         )
-        emitter.emit_next_step_issued(
-            snapshot.run_id, decision.step_id, agent_id
-        )
+        _append_event(run_dir, NEXT_STEP_ISSUED, si_payload.model_dump(mode="json"))
+        emitter.emit_next_step_issued(si_payload)
     elif decision.kind == "decision_required" and decision.decision_id:
         # Persist input-keyed decisions in pending_decisions so they're answerable.
         # Only emit event + persist on first occurrence to avoid duplicates on re-poll.
         if decision.decision_id not in pending_decisions:
-            actor = ActorIdentity(
-                actor_id=agent_id,
-                actor_type="llm",
-            )
+            dr_actor = RuntimeActorIdentity(actor_id=agent_id, actor_type="llm")
             req = DecisionRequest(
                 decision_id=decision.decision_id,
                 step_id=decision.step_id or "",
                 question=decision.question or "",
                 options=decision.options or [],
-                requested_by=actor,
+                requested_by=dr_actor,
                 requested_at=datetime.now(timezone.utc),
             )
             pending_decisions[decision.decision_id] = req.model_dump(mode="json")
 
-            _append_event(
-                run_dir,
-                DECISION_INPUT_REQUESTED,
-                {
-                    "agent_id": agent_id,
-                    "decision_id": decision.decision_id,
-                    "question": decision.question,
-                },
+            dr_payload = DecisionInputRequestedPayload(
+                run_id=snapshot.run_id,
+                decision_id=decision.decision_id,
+                step_id=decision.step_id or "",
+                question=decision.question or "",
+                options=tuple(decision.options or []),
+                input_key=decision.input_key,
+                actor=dr_actor,
             )
-            emitter.emit_decision_requested(snapshot.run_id, req)
+            _append_event(run_dir, DECISION_INPUT_REQUESTED, dr_payload.model_dump(mode="json"))
+            emitter.emit_decision_input_requested(dr_payload)
     elif decision.kind == "terminal" and did_complete_step:
         # Only emit on the transition into terminal (last step just completed),
         # not on re-polls of an already-terminal run.
-        _append_event(
-            run_dir,
-            MISSION_COMPLETED,
-            {"mission_key": snapshot.mission_key},
+        mc_actor = RuntimeActorIdentity(actor_id=agent_id, actor_type="llm")
+        mc_payload = MissionRunCompletedPayload(
+            run_id=snapshot.run_id, mission_key=snapshot.mission_key, actor=mc_actor,
         )
-        emitter.emit_mission_completed(snapshot.run_id, snapshot.mission_key)
+        _append_event(run_dir, MISSION_RUN_COMPLETED, mc_payload.model_dump(mode="json"))
+        emitter.emit_mission_run_completed(mc_payload)
 
     snapshot = MissionRunSnapshot(
         run_id=snapshot.run_id,
@@ -378,9 +378,8 @@ def provide_decision_answer(
         blocked_reason=snapshot.blocked_reason,
     )
     _write_snapshot(run_dir, snapshot)
-    _append_event(
-        run_dir,
-        DECISION_INPUT_ANSWERED,
-        {"decision_id": decision_id, "answer": answer},
+    da_payload = DecisionInputAnsweredPayload(
+        run_id=snapshot.run_id, decision_id=decision_id, answer=answer, actor=actor,
     )
-    emitter.emit_decision_answered(snapshot.run_id, answer_data)
+    _append_event(run_dir, DECISION_INPUT_ANSWERED, da_payload.model_dump(mode="json"))
+    emitter.emit_decision_input_answered(da_payload)

@@ -16,6 +16,7 @@ from spec_kitty_runtime.engine import MissionRunRef, next_step, provide_decision
 from spec_kitty_runtime.events import JsonlEventLog, NullEmitter, RuntimeEventEmitter
 from spec_kitty_runtime.planner import serialize_decision
 from spec_kitty_runtime.prompting import render_prompt
+from spec_kitty_events.mission_next import RuntimeActorIdentity
 from spec_kitty_runtime.schema import (
     ActorIdentity,
     CommitContext,
@@ -36,6 +37,7 @@ from spec_kitty_runtime.schema import (
 __all__ = [
     # Domain value objects
     "ActorIdentity",
+    "RuntimeActorIdentity",
     "CommitContext",
     "DecisionAnswer",
     "DecisionRequest",

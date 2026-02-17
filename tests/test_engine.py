@@ -361,23 +361,23 @@ def test_emitter_receives_calls(tmp_path: Path) -> None:
         def __init__(self, correlation_id: str = "") -> None:
             self.correlation_id = correlation_id
 
-        def emit_mission_started(self, run_id, mission_key, actor):
-            calls.append(("mission_started", (run_id, mission_key)))
+        def emit_mission_run_started(self, payload):
+            calls.append(("mission_run_started", (payload.run_id, payload.mission_key)))
 
-        def emit_next_step_issued(self, run_id, step_id, agent_id):
-            calls.append(("next_step_issued", (run_id, step_id, agent_id)))
+        def emit_next_step_issued(self, payload):
+            calls.append(("next_step_issued", (payload.run_id, payload.step_id, payload.agent_id)))
 
-        def emit_next_step_auto_completed(self, run_id, step_id, result, agent_id):
-            calls.append(("next_step_auto_completed", (run_id, step_id, result, agent_id)))
+        def emit_next_step_auto_completed(self, payload):
+            calls.append(("next_step_auto_completed", (payload.run_id, payload.step_id, payload.result, payload.agent_id)))
 
-        def emit_decision_requested(self, run_id, request):
-            calls.append(("decision_requested", (run_id,)))
+        def emit_decision_input_requested(self, payload):
+            calls.append(("decision_input_requested", (payload.run_id,)))
 
-        def emit_decision_answered(self, run_id, answer):
-            calls.append(("decision_answered", (run_id,)))
+        def emit_decision_input_answered(self, payload):
+            calls.append(("decision_input_answered", (payload.run_id,)))
 
-        def emit_mission_completed(self, run_id, mission_key):
-            calls.append(("mission_completed", (run_id, mission_key)))
+        def emit_mission_run_completed(self, payload):
+            calls.append(("mission_run_completed", (payload.run_id, payload.mission_key)))
 
     emitter = RecordingEmitter()
 
@@ -484,7 +484,7 @@ steps:
 # ---------------------------------------------------------------------------
 
 def test_emitter_full_lifecycle(tmp_path: Path) -> None:
-    """Emitter receives mission_started, step_issued, auto_completed, decision_requested, mission_completed."""
+    """Emitter receives mission_run_started, step_issued, auto_completed, decision_input_requested, mission_run_completed."""
     yaml_with_inputs = """\
 mission:
   key: lifecycle-test
@@ -504,12 +504,12 @@ steps:
 
     class LifecycleEmitter:
         def __init__(self, correlation_id=""): self.correlation_id = correlation_id
-        def emit_mission_started(self, *a): calls.append("mission_started")
+        def emit_mission_run_started(self, *a): calls.append("mission_run_started")
         def emit_next_step_issued(self, *a): calls.append("next_step_issued")
         def emit_next_step_auto_completed(self, *a): calls.append("next_step_auto_completed")
-        def emit_decision_requested(self, *a): calls.append("decision_requested")
-        def emit_decision_answered(self, *a): calls.append("decision_answered")
-        def emit_mission_completed(self, *a): calls.append("mission_completed")
+        def emit_decision_input_requested(self, *a): calls.append("decision_input_requested")
+        def emit_decision_input_answered(self, *a): calls.append("decision_input_answered")
+        def emit_mission_run_completed(self, *a): calls.append("mission_run_completed")
 
     emitter = LifecycleEmitter()
 
@@ -521,17 +521,17 @@ steps:
         run_store=tmp_path / "runs",
         emitter=emitter,
     )
-    assert "mission_started" in calls
+    assert "mission_run_started" in calls
 
     # Missing input -> decision_requested.
     d = next_step(run, agent_id="a", context=context, emitter=emitter)
     assert d.kind == "decision_required"
-    assert "decision_requested" in calls
+    assert "decision_input_requested" in calls
 
     # Answer the input.
     actor = ActorIdentity(actor_id="h1", actor_type="human")
     provide_decision_answer(run, "input:x", "val", actor, emitter=emitter)
-    assert "decision_answered" in calls
+    assert "decision_input_answered" in calls
 
     # Now S1 is issued.
     d = next_step(run, agent_id="a", context=context, emitter=emitter)
@@ -546,7 +546,7 @@ steps:
     # Complete S2, terminal.
     d = next_step(run, agent_id="a", result="success", context=context, emitter=emitter)
     assert d.kind == "terminal"
-    assert "mission_completed" in calls
+    assert "mission_run_completed" in calls
 
 
 # ---------------------------------------------------------------------------
@@ -594,12 +594,12 @@ steps:
 
 
 # ---------------------------------------------------------------------------
-# MissionCompleted event emitted on terminal
+# MissionRunCompleted event emitted on terminal
 # ---------------------------------------------------------------------------
 
 def test_mission_completed_event_on_terminal(tmp_path: Path) -> None:
-    """MissionCompleted event is emitted in JSONL when run reaches terminal."""
-    from spec_kitty_runtime.events import MISSION_COMPLETED
+    """MissionRunCompleted event is emitted in JSONL when run reaches terminal."""
+    from spec_kitty_runtime.events import MISSION_RUN_COMPLETED
 
     context, _ = _setup(tmp_path)
     run = start_mission_run(
@@ -621,33 +621,33 @@ def test_mission_completed_event_on_terminal(tmp_path: Path) -> None:
         for line in f:
             events.append(json.loads(line.strip()))
 
-    completed_events = [e for e in events if e["event_type"] == MISSION_COMPLETED]
+    completed_events = [e for e in events if e["event_type"] == MISSION_RUN_COMPLETED]
     assert len(completed_events) == 1
 
 
 # ---------------------------------------------------------------------------
-# Regression: MissionCompleted must be emitted exactly once across re-polls
+# Regression: MissionRunCompleted must be emitted exactly once across re-polls
 # ---------------------------------------------------------------------------
 
 def test_mission_completed_emitted_exactly_once_on_repeated_polls(tmp_path: Path) -> None:
-    """Calling next_step() after terminal must NOT emit additional MissionCompleted events.
+    """Calling next_step() after terminal must NOT emit additional MissionRunCompleted events.
 
     Regression test for idempotency: the terminal transition emits exactly one
-    MissionCompleted event (JSONL + emitter), and subsequent polls produce no more.
+    MissionRunCompleted event (JSONL + emitter), and subsequent polls produce no more.
     """
-    from spec_kitty_runtime.events import MISSION_COMPLETED
+    from spec_kitty_runtime.events import MISSION_RUN_COMPLETED
 
     context, _ = _setup(tmp_path)
     emitter_calls: list[str] = []
 
     class CountingEmitter:
         def __init__(self, correlation_id=""): self.correlation_id = correlation_id
-        def emit_mission_started(self, *a): emitter_calls.append("mission_started")
+        def emit_mission_run_started(self, *a): emitter_calls.append("mission_run_started")
         def emit_next_step_issued(self, *a): emitter_calls.append("next_step_issued")
         def emit_next_step_auto_completed(self, *a): emitter_calls.append("next_step_auto_completed")
-        def emit_decision_requested(self, *a): emitter_calls.append("decision_requested")
-        def emit_decision_answered(self, *a): emitter_calls.append("decision_answered")
-        def emit_mission_completed(self, *a): emitter_calls.append("mission_completed")
+        def emit_decision_input_requested(self, *a): emitter_calls.append("decision_input_requested")
+        def emit_decision_input_answered(self, *a): emitter_calls.append("decision_input_answered")
+        def emit_mission_run_completed(self, *a): emitter_calls.append("mission_run_completed")
 
     emitter = CountingEmitter()
 
@@ -667,15 +667,15 @@ def test_mission_completed_emitted_exactly_once_on_repeated_polls(tmp_path: Path
     assert d.kind == "terminal"
 
     # At this point exactly one MissionCompleted should exist.
-    assert emitter_calls.count("mission_completed") == 1
+    assert emitter_calls.count("mission_run_completed") == 1
 
     # Poll 3 more times after terminal — must remain at exactly 1.
     for _ in range(3):
         d = next_step(run, agent_id="a", context=context, emitter=emitter)
         assert d.kind == "terminal"
 
-    assert emitter_calls.count("mission_completed") == 1, (
-        f"Expected exactly 1 mission_completed call, got {emitter_calls.count('mission_completed')}"
+    assert emitter_calls.count("mission_run_completed") == 1, (
+        f"Expected exactly 1 mission_run_completed call, got {emitter_calls.count('mission_run_completed')}"
     )
 
     # Verify JSONL log also has exactly one MissionCompleted event.
@@ -685,7 +685,7 @@ def test_mission_completed_emitted_exactly_once_on_repeated_polls(tmp_path: Path
         for line in f:
             events.append(json.loads(line.strip()))
 
-    completed_events = [e for e in events if e["event_type"] == MISSION_COMPLETED]
+    completed_events = [e for e in events if e["event_type"] == MISSION_RUN_COMPLETED]
     assert len(completed_events) == 1, (
-        f"Expected exactly 1 MissionCompleted in JSONL, got {len(completed_events)}"
+        f"Expected exactly 1 MissionRunCompleted in JSONL, got {len(completed_events)}"
     )
