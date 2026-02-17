@@ -1,0 +1,23 @@
+mission:
+  key: software-dev
+  name: Software Development
+  version: 1.0.0
+  description: Built-in software development mission scaffold.
+steps:
+  - id: S1
+    title: Clarify intent
+    description: Clarify user goal and constraints.
+    prompt_template: templates/step-01-clarify.md
+    expected_output: spec.md
+  - id: S2
+    title: Plan implementation
+    description: Produce implementation plan and risks.
+    prompt: Write a concrete implementation plan with acceptance criteria.
+    expected_output: plan.md
+    depends_on: ["S1"]
+  - id: S3
+    title: Task breakdown
+    description: Generate executable task set.
+    prompt: Break the plan into work packages with review gates.
+    expected_output: tasks.md
+    depends_on: ["S2"]
