@@ -13,7 +13,7 @@ def render_prompt(decision: NextDecision, format: str = "markdown") -> str:
         raise ValueError(f"Unsupported prompt format: {format}")
 
     if format == "json":
-        return json.dumps(decision.model_dump(), indent=2, sort_keys=True)
+        return json.dumps(decision.model_dump(mode="json"), indent=2, sort_keys=True, default=str)
 
     if decision.kind == "step":
         context = decision.context.model_dump() if decision.context else {}
@@ -33,15 +33,20 @@ def render_prompt(decision: NextDecision, format: str = "markdown") -> str:
         )
 
     if decision.kind == "decision_required":
-        return "\n".join(
-            [
-                "# Decision Required",
-                "",
-                decision.question or "A mission decision is required before proceeding.",
-                "",
-                "Provide an answer, persist it, then run `next()` again.",
-            ]
-        )
+        lines = [
+            "# Decision Required",
+            "",
+            decision.question or "A mission decision is required before proceeding.",
+        ]
+        if decision.options:
+            lines.append("")
+            lines.append("## Options")
+            lines.append("")
+            for i, option in enumerate(decision.options, 1):
+                lines.append(f"{i}. {option}")
+        lines.append("")
+        lines.append("Provide an answer, persist it, then run `next()` again.")
+        return "\n".join(lines)
 
     if decision.kind == "blocked":
         return "\n".join(

@@ -2,7 +2,27 @@
 
 from __future__ import annotations
 
+from typing import Any, Protocol, runtime_checkable
+
 from pydantic import BaseModel, ConfigDict, Field
+
+
+@runtime_checkable
+class CapabilityAdapter(Protocol):
+    """Protocol for resolving host capabilities at runtime."""
+
+    @property
+    def adapter_id(self) -> str: ...
+
+    def list_skills(self) -> list[str]: ...
+
+    def list_agents(self) -> list[str]: ...
+
+    def list_connections(self) -> list[str]: ...
+
+    def resolve_skill(self, name: str) -> dict[str, Any]: ...
+
+    def resolve_agent(self, name: str) -> dict[str, Any]: ...
 
 
 class CapabilityBindings(BaseModel):

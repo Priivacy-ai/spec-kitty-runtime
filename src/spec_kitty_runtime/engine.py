@@ -2,20 +2,38 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Literal
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field
+import yaml
+from pydantic import BaseModel, ConfigDict
 
-from spec_kitty_runtime.discovery import DiscoveryContext, load_mission_template
+from spec_kitty_runtime.discovery import DiscoveryContext, discover_missions, load_mission_template
+from spec_kitty_runtime.events import (
+    DECISION_INPUT_ANSWERED,
+    DECISION_INPUT_REQUESTED,
+    MISSION_COMPLETED,
+    MISSION_RUN_STARTED,
+    NEXT_STEP_AUTO_COMPLETED,
+    NEXT_STEP_ISSUED,
+    NullEmitter,
+    RuntimeEventEmitter,
+)
 from spec_kitty_runtime.planner import plan_next
 from spec_kitty_runtime.schema import (
+    ActorIdentity,
+    DecisionAnswer,
+    DecisionRequest,
     MissionPolicySnapshot,
     MissionRunSnapshot,
+    MissionRuntimeError,
+    MissionTemplate,
     NextDecision,
+    load_mission_template_file,
 )
 
 
@@ -55,7 +73,59 @@ def _read_snapshot(run_dir: Path) -> MissionRunSnapshot:
 
 def _write_snapshot(run_dir: Path, snapshot: MissionRunSnapshot) -> None:
     with open(run_dir / "state.json", "w", encoding="utf-8") as handle:
-        json.dump(snapshot.model_dump(), handle, indent=2, sort_keys=True)
+        json.dump(snapshot.model_dump(mode="json"), handle, indent=2, sort_keys=True, default=str)
+
+
+def _freeze_template(run_dir: Path, template: MissionTemplate, template_path: str) -> str:
+    """Freeze the template into the run directory and return its SHA-256 hash.
+
+    The frozen copy is the verbatim YAML bytes from disk if the path exists,
+    otherwise a canonical YAML dump of the loaded template.
+    """
+    source_path = Path(template_path)
+    if source_path.exists() and source_path.is_file():
+        yaml_bytes = source_path.read_bytes()
+    else:
+        yaml_bytes = yaml.dump(
+            template.model_dump(), default_flow_style=False, sort_keys=True
+        ).encode("utf-8")
+
+    frozen_path = run_dir / "mission_template_frozen.yaml"
+    frozen_path.write_bytes(yaml_bytes)
+
+    return hashlib.sha256(yaml_bytes).hexdigest()
+
+
+def _load_frozen_template(run_dir: Path) -> MissionTemplate:
+    """Load the frozen template from the run directory."""
+    frozen_path = run_dir / "mission_template_frozen.yaml"
+    if not frozen_path.exists():
+        raise MissionRuntimeError(f"Frozen template not found: {frozen_path}")
+    return load_mission_template_file(frozen_path)
+
+
+def _resolve_template_path(template_key: str, context: DiscoveryContext | None) -> str:
+    """Resolve the actual filesystem path for a template key.
+
+    For explicit file paths, resolve directly.
+    For discovery-based keys, find the selected mission's resolved path.
+    This ensures template_path always points to a real file for drift detection.
+    """
+    candidate = Path(template_key)
+    if candidate.exists():
+        if candidate.is_dir():
+            candidate = candidate / "mission.yaml"
+        return str(candidate.resolve())
+
+    # Key-based: look up via discovery (use default context if None,
+    # matching load_mission_template behavior).
+    effective_context = context if context is not None else DiscoveryContext()
+    discovered = discover_missions(effective_context)
+    for item in discovered:
+        if item.key == template_key and item.selected:
+            return item.path  # already resolved by discovery
+
+    return template_key  # last resort (shouldn't happen if template loaded OK)
 
 
 def start_mission_run(
@@ -64,8 +134,10 @@ def start_mission_run(
     policy_snapshot: MissionPolicySnapshot,
     context: DiscoveryContext | None = None,
     run_store: Path | None = None,
+    emitter: RuntimeEventEmitter | None = None,
 ) -> MissionRunRef:
-    """Start and persist a new mission run."""
+    """Start and persist a new mission run with template freezing."""
+    emitter = emitter or NullEmitter()
     template = load_mission_template(template_key, context=context)
 
     runs_dir = _runtime_runs_dir(run_store)
@@ -73,23 +145,28 @@ def start_mission_run(
     run_dir = runs_dir / run_id
     run_dir.mkdir(parents=True, exist_ok=False)
 
-    template_path = template_key
-    if Path(template_key).exists():
-        template_path = str(Path(template_key).resolve())
+    # Always resolve to a real filesystem path for drift detection.
+    template_path = _resolve_template_path(template_key, context)
+
+    # Freeze template and compute hash.
+    template_hash = _freeze_template(run_dir, template, template_path)
 
     snapshot = MissionRunSnapshot(
         run_id=run_id,
         mission_key=template.mission.key,
         template_path=template_path,
-        step_index=0,
+        template_hash=template_hash,
+        policy_snapshot=policy_snapshot,
         issued_step_id=None,
         completed_steps=[],
         inputs=inputs or {},
         decisions={},
+        pending_decisions={},
         blocked_reason=None,
     )
     _write_snapshot(run_dir, snapshot)
-    _append_event(run_dir, "MissionRunStarted", {"mission_key": template.mission.key})
+    _append_event(run_dir, MISSION_RUN_STARTED, {"mission_key": template.mission.key})
+    emitter.emit_mission_started(run_id, template.mission.key, ActorIdentity(actor_id="system", actor_type="service"))
 
     return MissionRunRef(run_id=run_id, run_dir=str(run_dir), mission_key=template.mission.key)
 
@@ -101,24 +178,45 @@ def next_step(
     policy_snapshot: MissionPolicySnapshot | None = None,
     actor_context: dict[str, Any] | None = None,
     context: DiscoveryContext | None = None,
+    emitter: RuntimeEventEmitter | None = None,
 ) -> NextDecision:
-    """Advance current issued step and compute the next deterministic decision."""
-    policy_snapshot = policy_snapshot or MissionPolicySnapshot()
+    """Advance current issued step and compute the next deterministic decision.
+
+    Plans from the frozen template, not the live file.
+    Passes live template path for drift detection.
+    Uses persisted policy_snapshot from run state; caller override takes precedence.
+    """
+    emitter = emitter or NullEmitter()
     actor_context = actor_context or {}
 
     run_dir = Path(run_ref.run_dir)
     snapshot = _read_snapshot(run_dir)
-    template = load_mission_template(snapshot.template_path or snapshot.mission_key, context=context)
+
+    # Use caller-provided policy, else fall back to persisted policy from run start.
+    effective_policy = policy_snapshot or snapshot.policy_snapshot
+
+    # Load from frozen template for determinism.
+    template = _load_frozen_template(run_dir)
+
+    # Resolve live template path for drift detection.
+    live_template_path: Path | None = None
+    if snapshot.template_path:
+        candidate = Path(snapshot.template_path)
+        if candidate.exists():
+            live_template_path = candidate
+
+    # Track whether this call actually transitions state (completes a step).
+    # Used to gate one-shot events like MissionCompleted.
+    did_complete_step = snapshot.issued_step_id is not None
 
     if snapshot.issued_step_id:
         completed_steps = list(snapshot.completed_steps)
         blocked_reason = snapshot.blocked_reason
-        step_index = snapshot.step_index
+        completed_step_id = snapshot.issued_step_id
 
         if result == "success":
             if snapshot.issued_step_id not in completed_steps:
                 completed_steps.append(snapshot.issued_step_id)
-            step_index += 1
         elif result == "failed":
             blocked_reason = f"Previous step '{snapshot.issued_step_id}' failed; manual intervention required."
         elif result == "blocked":
@@ -128,56 +226,161 @@ def next_step(
             run_id=snapshot.run_id,
             mission_key=snapshot.mission_key,
             template_path=snapshot.template_path,
-            step_index=step_index,
+            template_hash=snapshot.template_hash,
+            policy_snapshot=snapshot.policy_snapshot,
             issued_step_id=None,
             completed_steps=completed_steps,
             inputs=snapshot.inputs,
             decisions=snapshot.decisions,
+            pending_decisions=snapshot.pending_decisions,
             blocked_reason=blocked_reason,
         )
         _append_event(
             run_dir,
-            "NextStepAutoCompleted",
+            NEXT_STEP_AUTO_COMPLETED,
             {
                 "agent_id": agent_id,
+                "step_id": completed_step_id,
                 "result": result,
             },
         )
+        emitter.emit_next_step_auto_completed(
+            snapshot.run_id, completed_step_id, result, agent_id
+        )
 
-    decision = plan_next(snapshot, template, policy_snapshot, actor_context={**actor_context, "agent_id": agent_id})
+    decision = plan_next(
+        snapshot,
+        template,
+        effective_policy,
+        actor_context={**actor_context, "agent_id": agent_id},
+        live_template_path=live_template_path,
+    )
 
     issued_step_id = snapshot.issued_step_id
+    pending_decisions = dict(snapshot.pending_decisions)
+    inputs = dict(snapshot.inputs)
+
     if decision.kind == "step" and decision.step_id:
         issued_step_id = decision.step_id
         _append_event(
             run_dir,
-            "NextStepIssued",
+            NEXT_STEP_ISSUED,
             {
                 "agent_id": agent_id,
                 "step_id": decision.step_id,
             },
         )
-    elif decision.kind == "decision_required":
+        emitter.emit_next_step_issued(
+            snapshot.run_id, decision.step_id, agent_id
+        )
+    elif decision.kind == "decision_required" and decision.decision_id:
+        # Persist input-keyed decisions in pending_decisions so they're answerable.
+        # Only emit event + persist on first occurrence to avoid duplicates on re-poll.
+        if decision.decision_id not in pending_decisions:
+            actor = ActorIdentity(
+                actor_id=agent_id,
+                actor_type="llm",
+            )
+            req = DecisionRequest(
+                decision_id=decision.decision_id,
+                step_id=decision.step_id or "",
+                question=decision.question or "",
+                options=decision.options or [],
+                requested_by=actor,
+                requested_at=datetime.now(timezone.utc),
+            )
+            pending_decisions[decision.decision_id] = req.model_dump(mode="json")
+
+            _append_event(
+                run_dir,
+                DECISION_INPUT_REQUESTED,
+                {
+                    "agent_id": agent_id,
+                    "decision_id": decision.decision_id,
+                    "question": decision.question,
+                },
+            )
+            emitter.emit_decision_requested(snapshot.run_id, req)
+    elif decision.kind == "terminal" and did_complete_step:
+        # Only emit on the transition into terminal (last step just completed),
+        # not on re-polls of an already-terminal run.
         _append_event(
             run_dir,
-            "DecisionInputRequested",
-            {
-                "agent_id": agent_id,
-                "question": decision.question,
-            },
+            MISSION_COMPLETED,
+            {"mission_key": snapshot.mission_key},
         )
+        emitter.emit_mission_completed(snapshot.run_id, snapshot.mission_key)
 
     snapshot = MissionRunSnapshot(
         run_id=snapshot.run_id,
         mission_key=snapshot.mission_key,
         template_path=snapshot.template_path,
-        step_index=snapshot.step_index,
+        template_hash=snapshot.template_hash,
+        policy_snapshot=snapshot.policy_snapshot,
         issued_step_id=issued_step_id,
         completed_steps=snapshot.completed_steps,
-        inputs=snapshot.inputs,
+        inputs=inputs,
         decisions=snapshot.decisions,
+        pending_decisions=pending_decisions,
         blocked_reason=snapshot.blocked_reason,
     )
     _write_snapshot(run_dir, snapshot)
 
     return decision
+
+
+def provide_decision_answer(
+    run_ref: MissionRunRef,
+    decision_id: str,
+    answer: str,
+    actor: ActorIdentity,
+    emitter: RuntimeEventEmitter | None = None,
+) -> None:
+    """Answer a pending decision. For input-keyed decisions (input:X), writes into inputs."""
+    emitter = emitter or NullEmitter()
+    run_dir = Path(run_ref.run_dir)
+    snapshot = _read_snapshot(run_dir)
+
+    pending = dict(snapshot.pending_decisions)
+    if decision_id not in pending:
+        raise MissionRuntimeError(
+            f"Decision '{decision_id}' not found in pending_decisions for run '{snapshot.run_id}'"
+        )
+
+    decisions = dict(snapshot.decisions)
+    inputs = dict(snapshot.inputs)
+
+    answer_data = DecisionAnswer(
+        decision_id=decision_id,
+        answer=answer,
+        answered_by=actor,
+        answered_at=datetime.now(timezone.utc),
+    )
+    decisions[decision_id] = answer_data.model_dump(mode="json")
+    del pending[decision_id]
+
+    # For input-keyed decisions, write the answer into inputs so requires_inputs is satisfied.
+    if decision_id.startswith("input:"):
+        input_key = decision_id[len("input:"):]
+        inputs[input_key] = answer
+
+    snapshot = MissionRunSnapshot(
+        run_id=snapshot.run_id,
+        mission_key=snapshot.mission_key,
+        template_path=snapshot.template_path,
+        template_hash=snapshot.template_hash,
+        policy_snapshot=snapshot.policy_snapshot,
+        issued_step_id=snapshot.issued_step_id,
+        completed_steps=snapshot.completed_steps,
+        inputs=inputs,
+        decisions=decisions,
+        pending_decisions=pending,
+        blocked_reason=snapshot.blocked_reason,
+    )
+    _write_snapshot(run_dir, snapshot)
+    _append_event(
+        run_dir,
+        DECISION_INPUT_ANSWERED,
+        {"decision_id": decision_id, "answer": answer},
+    )
+    emitter.emit_decision_answered(snapshot.run_id, answer_data)
