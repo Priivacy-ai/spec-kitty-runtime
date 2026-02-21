@@ -52,6 +52,163 @@ class DecisionAnswer(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Context contract types (V1)
+# ---------------------------------------------------------------------------
+
+class ContextType(BaseModel):
+    """Describes a single context type required, optional, or emitted by a step."""
+    model_config = ConfigDict(frozen=True)
+
+    name: str = Field(..., min_length=1, description="Context type name (e.g., 'feature_binding')")
+    deterministic: bool = Field(
+        default=True,
+        description="True if this context resolves deterministically (offline, local-first)"
+    )
+    cardinality: Literal["one", "many"] = Field(
+        default="one",
+        description="Expected binding count: 'one' for single binding, 'many' for multiple"
+    )
+    validation: dict[str, Any] | None = Field(
+        default=None,
+        description="Validation rules like artifact_exists, path_exists, slug_format"
+    )
+    resolver_ref: str | None = Field(
+        default=None,
+        description="Reference to custom resolver for unknown types"
+    )
+
+
+class StepContextContract(BaseModel):
+    """Contract describing context bindings for a mission step."""
+    model_config = ConfigDict(frozen=True)
+
+    requires: list[ContextType] = Field(
+        default_factory=list,
+        description="Contexts that MUST resolve before step execution"
+    )
+    optional: list[ContextType] = Field(
+        default_factory=list,
+        description="Contexts that may enrich step but are not blocking"
+    )
+    emits: list[ContextType] = Field(
+        default_factory=list,
+        description="Contexts produced/updated on step completion"
+    )
+
+    def validate_contract(self, context_type_registry: ContextTypeRegistry | None = None) -> tuple[bool, list[str]]:
+        """Validate the contract structure and context type definitions.
+
+        Returns:
+            (is_valid, error_messages) tuple
+        """
+        errors: list[str] = []
+        registry = context_type_registry or ContextTypeRegistry()
+
+        # Validate all context types
+        for ctx_type in self.requires + self.optional + self.emits:
+            # Check if type is known (built-in or has resolver_ref)
+            if not registry.is_registered(ctx_type.name) and not ctx_type.resolver_ref:
+                errors.append(f"Unknown context type '{ctx_type.name}' without resolver_ref")
+
+        # Check for circular dependencies (simplified: A requires output from B, B requires A)
+        requires_names = {c.name for c in self.requires}
+        emits_names = {c.name for c in self.emits}
+
+        # A step cannot require what it emits (circular in same step)
+        overlap = requires_names & emits_names
+        if overlap:
+            errors.append(f"Step requires and emits same context(s): {overlap}")
+
+        return len(errors) == 0, errors
+
+
+# ---------------------------------------------------------------------------
+# Context Type Registry (V1 baseline)
+# ---------------------------------------------------------------------------
+
+class ContextTypeRegistry:
+    """Registry of built-in and custom context types."""
+
+    # V1 baseline context types
+    _BUILTIN_TYPES = {
+        "feature_binding": ContextType(
+            name="feature_binding",
+            deterministic=True,
+            cardinality="one"
+        ),
+        "spec_artifact": ContextType(
+            name="spec_artifact",
+            deterministic=True,
+            cardinality="one",
+            validation={"artifact_exists": True}
+        ),
+        "plan_artifact": ContextType(
+            name="plan_artifact",
+            deterministic=True,
+            cardinality="one",
+            validation={"artifact_exists": True}
+        ),
+        "tasks_artifact": ContextType(
+            name="tasks_artifact",
+            deterministic=True,
+            cardinality="one",
+            validation={"artifact_exists": True}
+        ),
+        "wp_binding": ContextType(
+            name="wp_binding",
+            deterministic=True,
+            cardinality="many"
+        ),
+        "target_branch": ContextType(
+            name="target_branch",
+            deterministic=True,
+            cardinality="one",
+            validation={"slug_format": "[a-z0-9-]+"}
+        ),
+        "contracts_dir": ContextType(
+            name="contracts_dir",
+            deterministic=True,
+            cardinality="one",
+            validation={"path_exists": True}
+        ),
+        "research_artifact": ContextType(
+            name="research_artifact",
+            deterministic=True,
+            cardinality="one",
+            validation={"artifact_exists": True}
+        ),
+    }
+
+    def __init__(self, custom_types: dict[str, ContextType] | None = None):
+        """Initialize registry with optional custom types."""
+        self._types = dict(self._BUILTIN_TYPES)
+        if custom_types:
+            self._types.update(custom_types)
+
+    def get_builtin_type(self, name: str) -> ContextType:
+        """Get a built-in context type by name.
+
+        Raises:
+            ValueError if type is unknown and has no custom resolver
+        """
+        if name not in self._types:
+            raise ValueError(f"Unknown context type: {name}")
+        return self._types[name]
+
+    def is_registered(self, name: str) -> bool:
+        """Check if a context type is registered."""
+        return name in self._types
+
+    def register_custom_type(self, context_type: ContextType) -> None:
+        """Register a custom context type."""
+        self._types[context_type.name] = context_type
+
+    def get_all_types(self) -> dict[str, ContextType]:
+        """Get all registered types (builtin + custom)."""
+        return dict(self._types)
+
+
+# ---------------------------------------------------------------------------
 # Mission template types
 # ---------------------------------------------------------------------------
 

@@ -1,0 +1,125 @@
+# Example StepContextContract patterns for spec-kitty runtime V1
+#
+# This file demonstrates all major contract patterns:
+# - Minimal contract (only requires)
+# - Full contract (requires + optional + emits)
+# - Type constraints and validation rules
+# - Cardinality (one vs many)
+
+# Pattern 1: Minimal contract - only required contexts
+minimal_step:
+  id: "minimal"
+  context:
+    requires:
+      - type: feature_binding
+        deterministic: true
+
+# Pattern 2: Simple contract with requires and emits
+planning_step:
+  id: "plan"
+  context:
+    requires:
+      - type: feature_binding
+        deterministic: true
+        cardinality: one
+      - type: spec_artifact
+        deterministic: true
+        cardinality: one
+        validation:
+          artifact_exists: true
+    emits:
+      - type: plan_artifact
+        cardinality: one
+
+# Pattern 3: Full contract with requires, optional, and emits
+implementation_step:
+  id: "implement"
+  context:
+    requires:
+      - type: feature_binding
+        deterministic: true
+        cardinality: one
+      - type: plan_artifact
+        deterministic: true
+        cardinality: one
+        validation:
+          artifact_exists: true
+    optional:
+      - type: research_artifact
+        deterministic: true
+        cardinality: one
+    emits:
+      - type: spec_artifact
+        cardinality: one
+
+# Pattern 4: Contract with multiple required artifacts
+task_generation_step:
+  id: "tasks"
+  context:
+    requires:
+      - type: feature_binding
+        deterministic: true
+        cardinality: one
+      - type: plan_artifact
+        deterministic: true
+        cardinality: one
+        validation:
+          artifact_exists: true
+    emits:
+      - type: tasks_artifact
+        cardinality: one
+      - type: wp_binding
+        cardinality: many  # Multiple work packages
+
+# Pattern 5: Contract with custom resolver reference
+custom_context_step:
+  id: "custom"
+  context:
+    requires:
+      - type: feature_binding
+        deterministic: true
+      - type: custom_analysis
+        deterministic: false
+        resolver_ref: "resolvers.custom_analysis:resolve_custom_analysis"
+    emits:
+      - type: analysis_result
+        cardinality: one
+
+# Pattern 6: Research mission with investigation contexts
+research_step:
+  id: "research"
+  context:
+    requires:
+      - type: feature_binding
+        deterministic: true
+        cardinality: one
+    optional:
+      - type: contracts_dir
+        deterministic: true
+        cardinality: one
+        validation:
+          path_exists: true
+    emits:
+      - type: research_artifact
+        cardinality: one
+
+# Pattern 7: Target branch validation (e.g., for deployment contexts)
+branch_validation_step:
+  id: "validate_branch"
+  context:
+    requires:
+      - type: target_branch
+        deterministic: true
+        cardinality: one
+        validation:
+          slug_format: "[a-z0-9-]+"
+    emits:
+      - type: feature_binding
+        cardinality: one
+
+# Comments explaining each pattern:
+# - Deterministic contexts resolve offline/locally (no network)
+# - Cardinality "one" means single binding; "many" means multiple (e.g., WPs)
+# - Validation rules are type-specific (artifact_exists, path_exists, slug_format)
+# - Resolver references point to custom resolution logic for unknown types
+# - Emitted contexts from one step often feed into requires of next step

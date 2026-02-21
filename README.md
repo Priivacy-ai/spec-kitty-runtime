@@ -31,6 +31,16 @@ Canonical mission runtime for Spec Kitty.
 
 `NullEmitter` is the default no-op implementation for local-first/offline flows.
 
+## Step Context Contracts (V1)
+
+Mission steps declare their context requirements using step context contracts:
+
+- **requires**: Contexts that MUST resolve before execution
+- **optional**: Contexts that may enrich but aren't blocking
+- **emits**: Contexts produced/updated on completion
+
+See `docs/contracts.md` for the complete reference, V1 baseline context types, and integration guide for spec-kitty 2.x.
+
 ## Mission Pack Layout (YAML-only)
 
 ```text

@@ -1,0 +1,263 @@
+# Example missions with StepContextContract blocks
+# Demonstrates realistic mission patterns with context binding
+
+---
+# Mission 1: Software development mission (research → design → implement → test → review)
+mission:
+  key: software-dev
+  name: Software Development Mission
+  version: "1.0.0"
+  description: "Complete software feature development from research to review"
+
+steps:
+  # Step 1: Research phase - gathers context and explores solution space
+  - id: research
+    title: "Research & Analysis"
+    description: "Research the feature requirements and document findings"
+    context:
+      requires:
+        - type: feature_binding
+          deterministic: true
+          cardinality: one
+      optional:
+        - type: contracts_dir
+          deterministic: true
+          cardinality: one
+          validation:
+            path_exists: true
+      emits:
+        - type: research_artifact
+          cardinality: one
+
+  # Step 2: Design phase - uses research outputs to plan implementation
+  - id: design
+    title: "Design & Planning"
+    description: "Design the solution and create implementation plan"
+    context:
+      requires:
+        - type: feature_binding
+          deterministic: true
+          cardinality: one
+        - type: research_artifact
+          deterministic: true
+          cardinality: one
+          validation:
+            artifact_exists: true
+      emits:
+        - type: plan_artifact
+          cardinality: one
+        - type: spec_artifact
+          cardinality: one
+
+  # Step 3: Implementation - uses design to implement feature
+  - id: implement
+    title: "Implement Feature"
+    description: "Write code to implement the feature"
+    context:
+      requires:
+        - type: feature_binding
+          deterministic: true
+          cardinality: one
+        - type: plan_artifact
+          deterministic: true
+          cardinality: one
+          validation:
+            artifact_exists: true
+        - type: spec_artifact
+          deterministic: true
+          cardinality: one
+          validation:
+            artifact_exists: true
+      emits:
+        - type: tasks_artifact
+          cardinality: one
+
+  # Step 4: Task decomposition - breaks down implementation into work packages
+  - id: task_generation
+    title: "Generate Work Packages"
+    description: "Break down implementation into assignable work packages"
+    context:
+      requires:
+        - type: feature_binding
+          deterministic: true
+          cardinality: one
+        - type: plan_artifact
+          deterministic: true
+          cardinality: one
+          validation:
+            artifact_exists: true
+      emits:
+        - type: wp_binding
+          cardinality: many
+
+  # Step 5: Testing phase - uses implementation outputs
+  - id: test
+    title: "Test & Verification"
+    description: "Test the implementation and verify correctness"
+    context:
+      requires:
+        - type: feature_binding
+          deterministic: true
+          cardinality: one
+        - type: tasks_artifact
+          deterministic: true
+          cardinality: one
+          validation:
+            artifact_exists: true
+      emits:
+        - type: research_artifact
+          cardinality: one
+
+  # Step 6: Review phase - final review before merge
+  - id: review
+    title: "Code Review & Merge"
+    description: "Review code and prepare for merge to main"
+    context:
+      requires:
+        - type: feature_binding
+          deterministic: true
+          cardinality: one
+        - type: target_branch
+          deterministic: true
+          cardinality: one
+          validation:
+            slug_format: "[a-z0-9-]+"
+      optional:
+        - type: wp_binding
+          cardinality: many
+
+---
+# Mission 2: Research & Investigation mission (smaller scope)
+mission:
+  key: research-investigation
+  name: Research Investigation
+  version: "1.0.0"
+  description: "Question answering and research investigation"
+
+steps:
+  # Step 1: Question clarification
+  - id: clarify
+    title: "Clarify Research Question"
+    description: "Define and clarify the research question"
+    context:
+      requires:
+        - type: feature_binding
+          deterministic: true
+          cardinality: one
+      emits:
+        - type: research_artifact
+          cardinality: one
+
+  # Step 2: Information gathering
+  - id: gather
+    title: "Gather Information"
+    description: "Collect relevant information and sources"
+    context:
+      requires:
+        - type: feature_binding
+          deterministic: true
+          cardinality: one
+        - type: research_artifact
+          deterministic: true
+          cardinality: one
+          validation:
+            artifact_exists: true
+      emits:
+        - type: research_artifact
+          cardinality: one
+
+  # Step 3: Analysis and synthesis
+  - id: analyze
+    title: "Analyze & Synthesize"
+    description: "Analyze findings and synthesize conclusions"
+    context:
+      requires:
+        - type: feature_binding
+          deterministic: true
+          cardinality: one
+        - type: research_artifact
+          deterministic: true
+          cardinality: one
+          validation:
+            artifact_exists: true
+      emits:
+        - type: spec_artifact
+          cardinality: one
+
+---
+# Mission 3: Scenario with missing context (demonstrates error handling)
+mission:
+  key: failure-scenario-missing
+  name: Failure Scenario - Missing Context
+  version: "1.0.0"
+  description: "Demonstrates a step with missing required context"
+
+steps:
+  # This step requires a context that may not be available
+  - id: dependent_step
+    title: "Dependent Step"
+    description: "This step depends on external context that might be missing"
+    context:
+      requires:
+        - type: feature_binding
+          deterministic: true
+          cardinality: one
+        - type: plan_artifact
+          deterministic: true
+          cardinality: one
+          validation:
+            artifact_exists: true
+      # If plan_artifact is missing, this step cannot execute
+      # Runtime should emit CONTEXT_MISSING remediation payload
+
+---
+# Mission 4: Scenario with ambiguous context (demonstrates ambiguity handling)
+mission:
+  key: failure-scenario-ambiguous
+  name: Failure Scenario - Ambiguous Context
+  version: "1.0.0"
+  description: "Demonstrates a step where context resolution is ambiguous"
+
+steps:
+  # This step uses a context type that might resolve to multiple valid sources
+  - id: ambiguous_step
+    title: "Ambiguous Context Step"
+    description: "This step shows how runtime handles ambiguous context resolution"
+    context:
+      requires:
+        - type: feature_binding
+          deterministic: true
+          cardinality: one
+      # If feature_binding resolves to multiple sources (e.g., from config AND env),
+      # runtime should emit CONTEXT_AMBIGUOUS remediation payload
+
+---
+# Mission 5: Scenario with invalid context (demonstrates validation failure)
+mission:
+  key: failure-scenario-invalid
+  name: Failure Scenario - Invalid Context
+  version: "1.0.0"
+  description: "Demonstrates a step where context fails validation"
+
+steps:
+  # This step validates context structure
+  - id: validation_step
+    title: "Validation Step"
+    description: "This step shows how runtime handles validation failures"
+    context:
+      requires:
+        - type: spec_artifact
+          deterministic: true
+          cardinality: one
+          validation:
+            artifact_exists: true
+      # If artifact path doesn't exist or validation fails,
+      # runtime should emit CONTEXT_INVALID remediation payload
+
+# Key patterns demonstrated:
+# 1. Linear flow: research → design → implement → test → review
+# 2. Context propagation: emits from one step → requires of next step
+# 3. Deterministic resolution: all contexts use local, offline resolution
+# 4. Validation: artifact_exists, path_exists, slug_format constraints
+# 5. Cardinality: feature_binding (one), wp_binding (many)
+# 6. Error scenarios: missing, ambiguous, invalid contexts
