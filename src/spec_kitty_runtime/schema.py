@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class MissionRuntimeError(RuntimeError):
@@ -59,7 +59,7 @@ class ContextType(BaseModel):
     """Describes a single context type required, optional, or emitted by a step."""
     model_config = ConfigDict(frozen=True)
 
-    name: str = Field(..., min_length=1, description="Context type name (e.g., 'feature_binding')")
+    type: str = Field(..., min_length=1, description="Context type name (e.g., 'feature_binding')")
     deterministic: bool = Field(
         default=True,
         description="True if this context resolves deterministically (offline, local-first)"
@@ -76,6 +76,52 @@ class ContextType(BaseModel):
         default=None,
         description="Reference to custom resolver for unknown types"
     )
+
+    def validate_binding(self, value: Any) -> tuple[bool, str | None]:
+        """Validate a bound value against this context type's rules.
+
+        Args:
+            value: The value to validate against validation rules
+
+        Returns:
+            (is_valid, error_message) - tuple where is_valid is True if validation passes,
+            error_message is None on success or contains the error message on failure
+        """
+        if not self.validation:
+            # No validation rules defined, so any value is valid
+            return True, None
+
+        # Check artifact_exists validation rule
+        if "artifact_exists" in self.validation:
+            if self.validation["artifact_exists"]:
+                if isinstance(value, str):
+                    from pathlib import Path
+                    if not Path(value).exists():
+                        return False, f"Artifact does not exist at {value}"
+                else:
+                    return False, f"artifact_exists validation requires string path, got {type(value).__name__}"
+
+        # Check path_exists validation rule
+        if "path_exists" in self.validation:
+            if self.validation["path_exists"]:
+                if isinstance(value, str):
+                    from pathlib import Path
+                    if not Path(value).exists():
+                        return False, f"Path does not exist at {value}"
+                else:
+                    return False, f"path_exists validation requires string path, got {type(value).__name__}"
+
+        # Check slug_format validation rule
+        if "slug_format" in self.validation:
+            import re
+            pattern = self.validation["slug_format"]
+            if isinstance(value, str):
+                if not re.match(f"^{pattern}$", value):
+                    return False, f"Value '{value}' does not match slug_format pattern '{pattern}'"
+            else:
+                return False, f"slug_format validation requires string value, got {type(value).__name__}"
+
+        return True, None
 
 
 class StepContextContract(BaseModel):
@@ -95,6 +141,23 @@ class StepContextContract(BaseModel):
         description="Contexts produced/updated on step completion"
     )
 
+    @field_validator("requires", "optional", "emits")
+    @classmethod
+    def validate_context_types(cls, v: list[ContextType]) -> list[ContextType]:
+        """Schema-level validation of context types at parse-time.
+
+        Enforces that unknown context types have a resolver_ref (or are registered builtins).
+        """
+        registry = ContextTypeRegistry()
+        for ctx_type in v:
+            # Check if the type is known (registered or has explicit resolver)
+            if not registry.is_registered(ctx_type.type) and not ctx_type.resolver_ref:
+                raise ValueError(
+                    f"Unknown context type '{ctx_type.type}' - must be registered in ContextTypeRegistry "
+                    f"or have resolver_ref provided"
+                )
+        return v
+
     def validate_contract(self, context_type_registry: ContextTypeRegistry | None = None) -> tuple[bool, list[str]]:
         """Validate the contract structure and context type definitions.
 
@@ -107,12 +170,12 @@ class StepContextContract(BaseModel):
         # Validate all context types
         for ctx_type in self.requires + self.optional + self.emits:
             # Check if type is known (built-in or has resolver_ref)
-            if not registry.is_registered(ctx_type.name) and not ctx_type.resolver_ref:
-                errors.append(f"Unknown context type '{ctx_type.name}' without resolver_ref")
+            if not registry.is_registered(ctx_type.type) and not ctx_type.resolver_ref:
+                errors.append(f"Unknown context type '{ctx_type.type}' without resolver_ref")
 
         # Check for circular dependencies (simplified: A requires output from B, B requires A)
-        requires_names = {c.name for c in self.requires}
-        emits_names = {c.name for c in self.emits}
+        requires_names = {c.type for c in self.requires}
+        emits_names = {c.type for c in self.emits}
 
         # A step cannot require what it emits (circular in same step)
         overlap = requires_names & emits_names
@@ -132,47 +195,47 @@ class ContextTypeRegistry:
     # V1 baseline context types
     _BUILTIN_TYPES = {
         "feature_binding": ContextType(
-            name="feature_binding",
+            type="feature_binding",
             deterministic=True,
             cardinality="one"
         ),
         "spec_artifact": ContextType(
-            name="spec_artifact",
+            type="spec_artifact",
             deterministic=True,
             cardinality="one",
             validation={"artifact_exists": True}
         ),
         "plan_artifact": ContextType(
-            name="plan_artifact",
+            type="plan_artifact",
             deterministic=True,
             cardinality="one",
             validation={"artifact_exists": True}
         ),
         "tasks_artifact": ContextType(
-            name="tasks_artifact",
+            type="tasks_artifact",
             deterministic=True,
             cardinality="one",
             validation={"artifact_exists": True}
         ),
         "wp_binding": ContextType(
-            name="wp_binding",
+            type="wp_binding",
             deterministic=True,
             cardinality="many"
         ),
         "target_branch": ContextType(
-            name="target_branch",
+            type="target_branch",
             deterministic=True,
             cardinality="one",
             validation={"slug_format": "[a-z0-9-]+"}
         ),
         "contracts_dir": ContextType(
-            name="contracts_dir",
+            type="contracts_dir",
             deterministic=True,
             cardinality="one",
             validation={"path_exists": True}
         ),
         "research_artifact": ContextType(
-            name="research_artifact",
+            type="research_artifact",
             deterministic=True,
             cardinality="one",
             validation={"artifact_exists": True}
@@ -201,7 +264,7 @@ class ContextTypeRegistry:
 
     def register_custom_type(self, context_type: ContextType) -> None:
         """Register a custom context type."""
-        self._types[context_type.name] = context_type
+        self._types[context_type.type] = context_type
 
     def get_all_types(self) -> dict[str, ContextType]:
         """Get all registered types (builtin + custom)."""

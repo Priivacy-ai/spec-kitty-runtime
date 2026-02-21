@@ -74,7 +74,7 @@ Describes a single context requirement:
 
 ```python
 class ContextType(BaseModel):
-    name: str                           # Required: context type name
+    type: str                           # Required: context type name
     deterministic: bool = True          # Is resolution deterministic (local)?
     cardinality: Literal["one", "many"] = "one"  # Expected binding count
     validation: dict[str, Any] | None   # Validation rules (type-specific)
@@ -83,7 +83,7 @@ class ContextType(BaseModel):
 
 **Fields**:
 
-- **name**: Identifier for the context type. Must be registered in `ContextTypeRegistry` or have `resolver_ref`.
+- **type**: Identifier for the context type. Must be registered in `ContextTypeRegistry` or have `resolver_ref`.
 - **deterministic**: Whether this context can be resolved deterministically (local filesystem, environment, etc.). Non-deterministic contexts require custom resolvers.
 - **cardinality**:
   - `"one"`: Exactly one binding expected
@@ -304,8 +304,8 @@ def can_transition_to_step(step_id: str, available_contexts: dict) -> tuple[bool
     contract = get_contract_for_step(step_id)
 
     for required_ctx in contract.requires:
-        if required_ctx.name not in available_contexts:
-            return False, RemediationPayload.missing(required_ctx.name)
+        if required_ctx.type not in available_contexts:
+            return False, RemediationPayload.missing(required_ctx.type)
 
     return True, None
 ```

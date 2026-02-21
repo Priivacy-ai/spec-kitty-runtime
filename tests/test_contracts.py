@@ -13,8 +13,8 @@ class TestContextType:
 
     def test_context_type_minimal(self) -> None:
         """Create minimal ContextType with only name."""
-        ctx = ContextType(name="feature_binding")
-        assert ctx.name == "feature_binding"
+        ctx = ContextType(type="feature_binding")
+        assert ctx.type == "feature_binding"
         assert ctx.deterministic is True
         assert ctx.cardinality == "one"
         assert ctx.validation is None
@@ -23,13 +23,13 @@ class TestContextType:
     def test_context_type_full(self) -> None:
         """Create ContextType with all fields."""
         ctx = ContextType(
-            name="spec_artifact",
+            type="spec_artifact",
             deterministic=True,
             cardinality="one",
             validation={"artifact_exists": True},
             resolver_ref="custom.resolvers:resolve_spec"
         )
-        assert ctx.name == "spec_artifact"
+        assert ctx.type == "spec_artifact"
         assert ctx.deterministic is True
         assert ctx.cardinality == "one"
         assert ctx.validation == {"artifact_exists": True}
@@ -37,14 +37,14 @@ class TestContextType:
 
     def test_context_type_with_many_cardinality(self) -> None:
         """ContextType with cardinality 'many'."""
-        ctx = ContextType(name="wp_binding", cardinality="many")
+        ctx = ContextType(type="wp_binding", cardinality="many")
         assert ctx.cardinality == "many"
 
     def test_context_type_frozen(self) -> None:
         """ContextType is immutable (frozen)."""
-        ctx = ContextType(name="test")
+        ctx = ContextType(type="test")
         with pytest.raises(Exception):  # Pydantic FrozenModel raises
-            ctx.name = "modified"  # type: ignore
+            ctx.type = "modified"  # type: ignore
 
 
 class TestContextTypeRegistry:
@@ -68,7 +68,7 @@ class TestContextTypeRegistry:
         """Retrieve a built-in type by name."""
         registry = ContextTypeRegistry()
         ctx = registry.get_builtin_type("feature_binding")
-        assert ctx.name == "feature_binding"
+        assert ctx.type == "feature_binding"
         assert ctx.deterministic is True
 
     def test_get_builtin_type_unknown(self) -> None:
@@ -87,7 +87,7 @@ class TestContextTypeRegistry:
     def test_register_custom_type(self) -> None:
         """Register and retrieve custom type."""
         registry = ContextTypeRegistry()
-        custom = ContextType(name="custom_analysis", deterministic=False)
+        custom = ContextType(type="custom_analysis", deterministic=False)
         registry.register_custom_type(custom)
         assert registry.is_registered("custom_analysis")
         assert registry.get_builtin_type("custom_analysis") == custom
@@ -123,7 +123,7 @@ class TestStepContextContract:
     def test_contract_minimal(self) -> None:
         """Create minimal contract with only requires."""
         contract = StepContextContract(
-            requires=[ContextType(name="feature_binding")]
+            requires=[ContextType(type="feature_binding")]
         )
         assert len(contract.requires) == 1
         assert len(contract.optional) == 0
@@ -132,9 +132,9 @@ class TestStepContextContract:
     def test_contract_full(self) -> None:
         """Create full contract with requires, optional, and emits."""
         contract = StepContextContract(
-            requires=[ContextType(name="feature_binding")],
-            optional=[ContextType(name="research_artifact")],
-            emits=[ContextType(name="plan_artifact")]
+            requires=[ContextType(type="feature_binding")],
+            optional=[ContextType(type="research_artifact")],
+            emits=[ContextType(type="plan_artifact")]
         )
         assert len(contract.requires) == 1
         assert len(contract.optional) == 1
@@ -142,19 +142,19 @@ class TestStepContextContract:
 
     def test_contract_validate_unknown_type(self) -> None:
         """Contract validation rejects unknown types without resolver_ref."""
-        contract = StepContextContract(
-            requires=[ContextType(name="unknown_type")]
-        )
-        is_valid, errors = contract.validate_contract()
-        assert not is_valid
-        assert any("Unknown context type" in err for err in errors)
+        from pydantic import ValidationError
+        with pytest.raises(ValidationError) as exc_info:
+            contract = StepContextContract(
+                requires=[ContextType(type="unknown_type")]
+            )
+        assert "Unknown context type" in str(exc_info.value)
 
     def test_contract_validate_unknown_type_with_resolver(self) -> None:
         """Contract accepts unknown type with resolver_ref."""
         contract = StepContextContract(
             requires=[
                 ContextType(
-                    name="custom_type",
+                    type="custom_type",
                     resolver_ref="resolvers:custom_resolver"
                 )
             ]
@@ -166,8 +166,8 @@ class TestStepContextContract:
     def test_contract_validate_circular_dependency(self) -> None:
         """Contract validation detects circular dependencies (requires + emits same)."""
         contract = StepContextContract(
-            requires=[ContextType(name="my_artifact")],
-            emits=[ContextType(name="my_artifact")]
+            requires=[ContextType(type="my_artifact", resolver_ref="test:resolver")],
+            emits=[ContextType(type="my_artifact", resolver_ref="test:resolver")]
         )
         is_valid, errors = contract.validate_contract()
         assert not is_valid
@@ -177,7 +177,7 @@ class TestStepContextContract:
         """Contract validation uses provided registry."""
         registry = ContextTypeRegistry()
         contract = StepContextContract(
-            requires=[ContextType(name="feature_binding")]
+            requires=[ContextType(type="feature_binding")]
         )
         is_valid, errors = contract.validate_contract(registry)
         assert is_valid
@@ -187,7 +187,7 @@ class TestStepContextContract:
         """StepContextContract is immutable."""
         contract = StepContextContract()
         with pytest.raises(Exception):
-            contract.requires = [ContextType(name="test")]  # type: ignore
+            contract.requires = [ContextType(type="test")]  # type: ignore
 
 
 class TestRemediationPayload:
@@ -271,8 +271,8 @@ class TestContractIntegration:
 
         # Research step
         research_contract = StepContextContract(
-            requires=[ContextType(name="feature_binding")],
-            emits=[ContextType(name="research_artifact")]
+            requires=[ContextType(type="feature_binding")],
+            emits=[ContextType(type="research_artifact")]
         )
         is_valid, errors = research_contract.validate_contract(registry)
         assert is_valid, f"Research contract validation failed: {errors}"
@@ -280,15 +280,15 @@ class TestContractIntegration:
         # Design step (uses research output)
         design_contract = StepContextContract(
             requires=[
-                ContextType(name="feature_binding"),
+                ContextType(type="feature_binding"),
                 ContextType(
-                    name="research_artifact",
+                    type="research_artifact",
                     validation={"artifact_exists": True}
                 )
             ],
             emits=[
-                ContextType(name="plan_artifact"),
-                ContextType(name="spec_artifact")
+                ContextType(type="plan_artifact"),
+                ContextType(type="spec_artifact")
             ]
         )
         is_valid, errors = design_contract.validate_contract(registry)
