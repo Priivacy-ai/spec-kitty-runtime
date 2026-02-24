@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Literal
@@ -244,7 +245,8 @@ class ContextTypeRegistry:
 
     def __init__(self, custom_types: dict[str, ContextType] | None = None):
         """Initialize registry with optional custom types."""
-        self._types = dict(self._BUILTIN_TYPES)
+        # Deep copy avoids sharing mutable ContextType instances between registries.
+        self._types = deepcopy(self._BUILTIN_TYPES)
         if custom_types:
             self._types.update(custom_types)
 

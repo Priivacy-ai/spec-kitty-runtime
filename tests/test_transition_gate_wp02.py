@@ -402,6 +402,49 @@ class TestValidationRules:
 
         assert is_valid is True
 
+    def test_artifact_exists_boolean_true_uses_bound_value(self, tmp_path: Path) -> None:
+        """artifact_exists=True must validate the bound value path, not the literal True."""
+        artifact_file = tmp_path / "spec.md"
+        artifact_file.write_text("# Spec")
+
+        context_type = ContextType(
+            type="spec_artifact",
+            validation={"artifact_exists": True},
+        )
+
+        is_valid, error = validate_binding(str(artifact_file), context_type)
+
+        assert is_valid is True
+        assert error is None
+
+    def test_path_exists_boolean_true_uses_bound_value(self, tmp_path: Path) -> None:
+        """path_exists=True must validate the bound value path, not the literal True."""
+        context_type = ContextType(
+            type="contracts_dir",
+            validation={"path_exists": True},
+        )
+
+        is_valid, error = validate_binding(str(tmp_path), context_type)
+
+        assert is_valid is True
+        assert error is None
+
+    def test_unknown_validation_rule_fails_fast(self) -> None:
+        """Unknown validation rules must fail with a clear supported-rule message."""
+        context_type = ContextType(
+            type="spec_artifact",
+            validation={"not_a_real_rule": True},
+        )
+
+        is_valid, error = validate_binding("/tmp/example.md", context_type)
+
+        assert is_valid is False
+        assert error is not None
+        assert "Unsupported validation rule" in error
+        assert "artifact_exists" in error
+        assert "path_exists" in error
+        assert "slug_format" in error
+
 
 # ============================================================================
 # Independent Resolver Unit Tests (T010 Implementation)
@@ -719,3 +762,35 @@ class TestLocalDiscoveryResolver:
         assert len(candidates) >= 2
         values = [c["value"] for c in candidates]
         assert "/explicit/hint" in values
+
+
+class TestRegressionFixes:
+    """Regression tests for recent hardening fixes."""
+
+    def test_resolve_context_handles_non_dict_mission_metadata(self) -> None:
+        """Non-dict mission_metadata must not crash fallback policy lookup."""
+        context_type = ContextType(type="custom_context", resolver_ref="custom:resolver")
+        available_bindings = {
+            "mission_metadata": "not-a-dict",
+        }
+
+        result = resolve_context(
+            "custom_context",
+            context_type,
+            available_bindings,
+            ContextTypeRegistry(),
+        )
+
+        assert isinstance(result, RemediationPayload)
+        assert result.error_code == "CONTEXT_MISSING"
+
+    def test_context_registry_instances_do_not_share_mutable_types(self) -> None:
+        """Mutating one registry's context type must not affect another registry instance."""
+        registry_a = ContextTypeRegistry()
+        registry_b = ContextTypeRegistry()
+
+        type_a = registry_a.get_builtin_type("spec_artifact")
+        type_b = registry_b.get_builtin_type("spec_artifact")
+
+        # Distinct ContextType instances prove deep-copy isolation.
+        assert type_a is not type_b

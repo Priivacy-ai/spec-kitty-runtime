@@ -11,7 +11,7 @@ dependencies = [
   "pydantic>=2.0,<3.0",
   "pyyaml>=6.0",
   "jsonschema>=4.0",
-  "spec-kitty-events==2.3.1"
+  "spec-kitty-events==2.4.0"
 ]
 
 [project.optional-dependencies]
@@ -29,3 +29,6 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
+
+[tool.uv.sources]
+spec-kitty-events = { git = "https://github.com/Priivacy-ai/spec-kitty-events.git", rev = "2.x" }
