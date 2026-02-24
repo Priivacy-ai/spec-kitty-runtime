@@ -31,4 +31,4 @@ testpaths = ["tests"]
 python_files = "test_*.py"
 
 [tool.uv.sources]
-spec-kitty-events = { git = "https://github.com/Priivacy-ai/spec-kitty-events.git", rev = "2.x" }
+spec-kitty-events = { git = "https://github.com/Priivacy-ai/spec-kitty-events.git", rev = "codex/saas-hardening-local-events" }

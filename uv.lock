@@ -407,8 +407,8 @@ wheels = [
 
 [[package]]
 name = "spec-kitty-events"
-version = "2.3.1"
-source = { git = "https://github.com/Priivacy-ai/spec-kitty-events.git?rev=2.x#640709fc90d83ff8192b3e053727e149b069deec" }
+version = "2.4.0"
+source = { git = "https://github.com/Priivacy-ai/spec-kitty-events.git?rev=codex%2Fsaas-hardening-local-events#efc20fed83e4f682d2b15dc1dd584eb2d228968e" }
 dependencies = [
     { name = "pydantic" },
     { name = "python-ulid" },
@@ -436,7 +436,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.0,<3.0" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8.0" },
     { name = "pyyaml", specifier = ">=6.0" },
-    { name = "spec-kitty-events", git = "https://github.com/Priivacy-ai/spec-kitty-events.git?rev=2.x" },
+    { name = "spec-kitty-events", git = "https://github.com/Priivacy-ai/spec-kitty-events.git?rev=codex%2Fsaas-hardening-local-events" },
 ]
 
 [[package]]
