@@ -31,6 +31,17 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## Constitution Context Bootstrap (required)
+
+Before planning interrogation, load constitution context for this action:
+
+```bash
+spec-kitty constitution context --action plan --json
+```
+
+- If JSON `mode` is `bootstrap`, apply JSON `text` as first-run governance context and follow referenced docs as needed.
+- If JSON `mode` is `compact`, continue with condensed governance context.
+
 ## Location Check (0.11.0+)
 
 This command runs in the **planning repository**, not in a worktree.
@@ -105,6 +116,7 @@ Planning requirements (scale to complexity):
    - `feature_dir`: Absolute path to the feature directory
 
    **Example**:
+
    ```bash
    # If detected feature is 020-my-feature:
    spec-kitty agent feature setup-plan --feature 020-my-feature --json
@@ -112,7 +124,7 @@ Planning requirements (scale to complexity):
 
    **Error handling**: If the command fails with "Cannot detect feature" or "Multiple features found", verify your feature detection logic in step 2 and ensure you're passing the correct feature slug.
 
-4. **Load context**: Read FEATURE_SPEC and `.kittify/memory/constitution.md` if it exists. If the constitution file is missing, skip Constitution Check and note that it is absent. Load IMPL_PLAN template (already copied).
+4. **Load context**: Read FEATURE_SPEC and `.kittify/constitution/constitution.md` if it exists. If the constitution file is missing, skip Constitution Check and note that it is absent. Load IMPL_PLAN template (already copied).
 
 5. **Execute plan workflow**: Follow the structure in IMPL_PLAN template, using the validated planning answers as ground truth:
    - Update Technical Context with explicit statements from the user or discovery research; mark `[NEEDS CLARIFICATION: …]` only when the user deliberately postpones a decision
@@ -137,6 +149,7 @@ Planning requirements (scale to complexity):
    - For each integration → patterns task
 
 2. **Generate and dispatch research agents**:
+
    ```
    For each unknown in Technical Context:
      Task: "Research {unknown} for {feature context}"
@@ -186,6 +199,7 @@ Planning requirements (scale to complexity):
 **This command is COMPLETE after generating planning artifacts.**
 
 After reporting:
+
 - `plan.md` path
 - `research.md` path (if generated)
 - `data-model.md` path (if generated)
@@ -195,6 +209,7 @@ After reporting:
 **YOU MUST STOP HERE.**
 
 Do NOT:
+
 - ❌ Generate `tasks.md`
 - ❌ Create work package (WP) files
 - ❌ Create `tasks/` subdirectories
@@ -203,3 +218,17 @@ Do NOT:
 The user will run `/spec-kitty.tasks` when they are ready to generate work packages.
 
 **Next suggested command**: `/spec-kitty.tasks` (user must invoke this explicitly)
+
+## Telemetry (before stopping)
+
+Before stopping, emit a telemetry event to record this planning phase:
+
+```bash
+spec-kitty agent telemetry emit \
+  --feature <feature-slug> \
+  --role planner \
+  --agent <your-agent-name> \
+  --model <your-model-id>
+```
+
+Include `--input-tokens`, `--output-tokens`, `--cost-usd`, `--duration-ms` if your agent runtime provides usage metrics. This is fire-and-forget — failures never block the workflow.

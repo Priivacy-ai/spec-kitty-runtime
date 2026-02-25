@@ -58,14 +58,6 @@ spec-kitty agent workflow implement $ARGUMENTS --agent <your-name>
 cd {{workspace_path}}
 ```
 
-<details><summary>PowerShell equivalent</summary>
-
-```powershell
-Set-Location {{workspace_path}}
-```
-
-</details>
-
 Your worktree is an isolated workspace for this WP. The deliverables path is accessible here.
 
 ### Step 2: Create Research Deliverables (In Worktree)
@@ -93,16 +85,6 @@ cd {{workspace_path}}
 git add {{deliverables_path}}/
 git commit -m "research({{wp_id}}): <describe your research findings>"
 ```
-
-<details><summary>PowerShell equivalent</summary>
-
-```powershell
-Set-Location {{workspace_path}}
-git add {{deliverables_path}}/
-git commit -m "research({{wp_id}}): <describe your research findings>"
-```
-
-</details>
 
 Example commit messages:
 - `research(WP01): Document core entities and relationships`

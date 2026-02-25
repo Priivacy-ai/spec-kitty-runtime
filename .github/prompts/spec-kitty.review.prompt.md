@@ -3,6 +3,16 @@ description: Perform structured code review and kanban transitions for completed
 ---
 
 
+## Constitution Context Bootstrap (required)
+
+Before running workflow review, load constitution context for this action:
+
+```bash
+spec-kitty constitution context --action review --json
+```
+
+Use JSON `text` as governance context. On first load (`mode=bootstrap`), follow referenced docs as needed.
+
 **IMPORTANT**: After running the command below, you'll see a LONG work package prompt (~1000+ lines).
 
 **You MUST scroll to the BOTTOM** to see the completion commands!
@@ -25,9 +35,27 @@ If no WP ID is provided, it will automatically find the first work package with 
 - verify_instruction: Confirm dependency declarations match actual code coupling (imports, shared modules, API contracts).
 
 **After reviewing, scroll to the bottom and run ONE of these commands**:
+
 - ✅ Approve: `spec-kitty agent tasks move-task WP## --to done --note "Review passed: <summary>"`
 - ❌ Reject: Write feedback to the temp file path shown in the prompt, then run `spec-kitty agent tasks move-task WP## --to planned --review-feedback-file <temp-file-path>`
 
 **The prompt will provide a unique temp file path for feedback - use that exact path to avoid conflicts with other agents!**
 
 **The Python script handles all file updates automatically - no manual editing required!**
+
+## Telemetry (final step)
+
+After completing the review and running the move-task command, emit a telemetry event to record this review phase:
+
+```bash
+spec-kitty agent telemetry emit \
+  --feature <feature-slug> \
+  --role reviewer \
+  --wp-id <WP-ID> \
+  --agent <your-agent-name> \
+  --model <your-model-id>
+```
+
+Note: Include `--wp-id` to associate this review event with the specific work package. The `move-task` command also emits a telemetry event — this is intentional (captures both the task transition and the review phase completion).
+
+Include `--input-tokens`, `--output-tokens`, `--cost-usd`, `--duration-ms` if available. This is fire-and-forget — failures never block the workflow.

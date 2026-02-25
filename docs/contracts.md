@@ -460,7 +460,7 @@ from spec_kitty_runtime.schema import StepContextContract, ContextTypeRegistry
 def test_valid_contract():
     contract_data = {
         "requires": [
-            {"type": "feature_binding", "deterministic": true}
+            {"type": "feature_binding", "deterministic": True}
         ],
         "emits": [
             {"type": "research_artifact", "cardinality": "one"}

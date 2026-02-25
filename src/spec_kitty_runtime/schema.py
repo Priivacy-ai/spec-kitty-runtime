@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Literal
@@ -80,6 +81,10 @@ class ContextType(BaseModel):
     def validate_binding(self, value: Any) -> tuple[bool, str | None]:
         """Validate a bound value against this context type's rules.
 
+        Delegates to the canonical ``engine.validate_binding`` implementation so
+        that ``ContextType.validate_binding()`` and the engine-level
+        ``validate_binding()`` always agree on outcomes.
+
         Args:
             value: The value to validate against validation rules
 
@@ -87,41 +92,9 @@ class ContextType(BaseModel):
             (is_valid, error_message) - tuple where is_valid is True if validation passes,
             error_message is None on success or contains the error message on failure
         """
-        if not self.validation:
-            # No validation rules defined, so any value is valid
-            return True, None
-
-        # Check artifact_exists validation rule
-        if "artifact_exists" in self.validation:
-            if self.validation["artifact_exists"]:
-                if isinstance(value, str):
-                    from pathlib import Path
-                    if not Path(value).exists():
-                        return False, f"Artifact does not exist at {value}"
-                else:
-                    return False, f"artifact_exists validation requires string path, got {type(value).__name__}"
-
-        # Check path_exists validation rule
-        if "path_exists" in self.validation:
-            if self.validation["path_exists"]:
-                if isinstance(value, str):
-                    from pathlib import Path
-                    if not Path(value).exists():
-                        return False, f"Path does not exist at {value}"
-                else:
-                    return False, f"path_exists validation requires string path, got {type(value).__name__}"
-
-        # Check slug_format validation rule
-        if "slug_format" in self.validation:
-            import re
-            pattern = self.validation["slug_format"]
-            if isinstance(value, str):
-                if not re.match(f"^{pattern}$", value):
-                    return False, f"Value '{value}' does not match slug_format pattern '{pattern}'"
-            else:
-                return False, f"slug_format validation requires string value, got {type(value).__name__}"
-
-        return True, None
+        # Avoid circular import at module level — engine imports schema.
+        from spec_kitty_runtime.engine import validate_binding as _engine_validate
+        return _engine_validate(value, self)
 
 
 class StepContextContract(BaseModel):
@@ -244,7 +217,7 @@ class ContextTypeRegistry:
 
     def __init__(self, custom_types: dict[str, ContextType] | None = None):
         """Initialize registry with optional custom types."""
-        self._types = dict(self._BUILTIN_TYPES)
+        self._types = deepcopy(self._BUILTIN_TYPES)
         if custom_types:
             self._types.update(custom_types)
 

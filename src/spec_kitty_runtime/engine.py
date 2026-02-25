@@ -608,6 +608,8 @@ def resolve_context(
 
     # Check if mission policy explicitly allows fallback resolvers
     mission_metadata = available_bindings.get("mission_metadata", {})
+    if not isinstance(mission_metadata, dict):
+        mission_metadata = {}
     allow_fallback_resolvers = mission_metadata.get("allow_fallback_resolvers", False)
 
     if allow_fallback_resolvers:
@@ -958,12 +960,18 @@ def _validate_rule(
     """
     if rule_name == "artifact_exists":
         # Check if file exists at the path
-        # If rule_value is provided, it specifies the expected path
-        # Otherwise use the bound value as the path
-        check_path = str(rule_value) if rule_value else str(value)
+        # Boolean True → validate bound value; False → skip; string → explicit path override
+        if isinstance(rule_value, bool):
+            if not rule_value:
+                return (True, None)  # rule disabled
+            check_path = str(value)
+        elif rule_value:
+            check_path = str(rule_value)  # explicit path override
+        else:
+            check_path = str(value)  # None/falsy → use bound value
         path = Path(check_path)
         if not path.exists() or not path.is_file():
-            if rule_value:
+            if rule_value and not isinstance(rule_value, bool):
                 return (False, f"artifact_exists rule failed: expected artifact at {rule_value}, got {value}")
             else:
                 return (False, f"artifact_exists: Artifact does not exist at {value}")
@@ -971,12 +979,18 @@ def _validate_rule(
 
     elif rule_name == "path_exists":
         # Check if directory exists
-        # If rule_value is provided, it specifies the expected path
-        # Otherwise use the bound value as the path
-        check_path = str(rule_value) if rule_value else str(value)
+        # Boolean True → validate bound value; False → skip; string → explicit path override
+        if isinstance(rule_value, bool):
+            if not rule_value:
+                return (True, None)  # rule disabled
+            check_path = str(value)
+        elif rule_value:
+            check_path = str(rule_value)  # explicit path override
+        else:
+            check_path = str(value)  # None/falsy → use bound value
         path = Path(check_path)
         if not path.exists() or not path.is_dir():
-            if rule_value:
+            if rule_value and not isinstance(rule_value, bool):
                 return (False, f"path_exists rule failed: expected directory at {rule_value}, got {value}")
             else:
                 return (False, f"path_exists: Directory does not exist at {value}")
@@ -991,5 +1005,5 @@ def _validate_rule(
         return (True, None)
 
     else:
-        # Unknown rule; treat as valid (extensible for custom rules)
-        return (True, None)
+        return (False, f"Unknown validation rule '{rule_name}': "
+                f"supported rules are artifact_exists, path_exists, slug_format")

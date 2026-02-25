@@ -719,3 +719,122 @@ class TestLocalDiscoveryResolver:
         assert len(candidates) >= 2
         values = [c["value"] for c in candidates]
         assert "/explicit/hint" in values
+
+
+# ============================================================================
+# Regression Tests for Validation Bugs
+# ============================================================================
+
+
+class TestValidationBugRegressions:
+    """Regression tests for validation and resolver bugs."""
+
+    def test_artifact_exists_rule_with_boolean_true(self, tmp_path: Path) -> None:
+        """Bug 1: Boolean True in artifact_exists must validate the bound value, not Path('True')."""
+        artifact_file = tmp_path / "spec.md"
+        artifact_file.write_text("# Spec")
+
+        context_type = ContextType(
+            type="spec_artifact",
+            validation={"artifact_exists": True}
+        )
+
+        is_valid, error = validate_binding(str(artifact_file), context_type)
+
+        assert is_valid is True, f"Expected valid but got error: {error}"
+        assert error is None
+
+    def test_path_exists_rule_with_boolean_true(self, tmp_path: Path) -> None:
+        """Bug 1: Boolean True in path_exists must validate the bound value, not Path('True')."""
+        contracts_dir = tmp_path / "contracts"
+        contracts_dir.mkdir()
+
+        context_type = ContextType(
+            type="contracts_dir",
+            validation={"path_exists": True}
+        )
+
+        is_valid, error = validate_binding(str(contracts_dir), context_type)
+
+        assert is_valid is True, f"Expected valid but got error: {error}"
+        assert error is None
+
+    def test_artifact_exists_rule_with_boolean_false(self) -> None:
+        """Bug 1: Boolean False in artifact_exists must skip validation entirely."""
+        context_type = ContextType(
+            type="spec_artifact",
+            validation={"artifact_exists": False}
+        )
+
+        # Should pass regardless — the rule is disabled
+        is_valid, error = validate_binding("/nonexistent/path.md", context_type)
+
+        assert is_valid is True
+        assert error is None
+
+    def test_resolve_context_with_malformed_metadata(self) -> None:
+        """Bug 2: Non-dict mission_metadata must not crash with AttributeError."""
+        contract_type = ContextType(type="custom_ctx", resolver_ref="test:resolver")
+        available_bindings = {
+            "mission_metadata": "not_a_dict",
+            "fallback_resolvers": {"custom_ctx": "fallback-value"}
+        }
+
+        # Should not raise AttributeError; returns CONTEXT_MISSING because
+        # fallback resolvers are disabled when metadata is malformed
+        result = resolve_context(
+            "custom_ctx",
+            contract_type,
+            available_bindings,
+            ContextTypeRegistry()
+        )
+
+        assert isinstance(result, RemediationPayload)
+        assert result.error_code == "CONTEXT_MISSING"
+
+    def test_registry_isolation(self) -> None:
+        """Bug 3: Separate registries must not share ContextType instances."""
+        registry1 = ContextTypeRegistry()
+        registry2 = ContextTypeRegistry()
+
+        type1 = registry1.get_builtin_type("spec_artifact")
+        type2 = registry2.get_builtin_type("spec_artifact")
+
+        assert type1 is not type2, "Registries share the same ContextType object"
+
+    def test_unknown_validation_rule_fails(self) -> None:
+        """Bug 4: Unknown validation rules must fail with descriptive error."""
+        context_type = ContextType(
+            type="test_context",
+            validation={"typo_rule": True}
+        )
+
+        is_valid, error = validate_binding("some-value", context_type)
+
+        assert is_valid is False
+        assert "Unknown validation rule" in error
+        assert "typo_rule" in error
+        assert "artifact_exists" in error
+        assert "path_exists" in error
+        assert "slug_format" in error
+
+    def test_schema_and_engine_validate_binding_agree(self, tmp_path: Path) -> None:
+        """ContextType.validate_binding() must produce identical results to engine validate_binding()."""
+        artifact_file = tmp_path / "spec.md"
+        artifact_file.write_text("# Spec")
+
+        cases = [
+            # (value, context_type) — tests boolean artifact_exists, path_exists, unknown rule
+            (str(artifact_file), ContextType(type="spec_artifact", validation={"artifact_exists": True})),
+            (str(tmp_path), ContextType(type="contracts_dir", validation={"path_exists": True})),
+            ("/nonexistent", ContextType(type="x", validation={"artifact_exists": True})),
+            ("some-val", ContextType(type="x", validation={"bogus_rule": True})),
+        ]
+
+        for value, ctx_type in cases:
+            engine_result = validate_binding(value, ctx_type)
+            schema_result = ctx_type.validate_binding(value)
+            assert engine_result == schema_result, (
+                f"Mismatch for value={value!r}, validation={ctx_type.validation}: "
+                f"engine={engine_result}, schema={schema_result}"
+            )
