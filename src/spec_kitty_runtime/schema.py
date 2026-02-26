@@ -245,6 +245,29 @@ class ContextTypeRegistry:
 
 
 # ---------------------------------------------------------------------------
+# Audit types
+# ---------------------------------------------------------------------------
+
+class AuditConfig(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    trigger_mode: Literal["manual", "post_merge", "both"]
+    enforcement: Literal["advisory", "blocking"]
+    label: str | None = None
+    metadata: dict[str, Any] | None = None
+
+
+class AuditStep(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    id: str = Field(..., min_length=1)
+    title: str = Field(..., min_length=1)
+    description: str = ""
+    audit: AuditConfig
+    depends_on: list[str] = Field(default_factory=list)
+
+
+# ---------------------------------------------------------------------------
 # Mission template types
 # ---------------------------------------------------------------------------
 
@@ -283,6 +306,7 @@ class MissionTemplate(BaseModel):
 
     mission: MissionMeta
     steps: list[PromptStep] = Field(default_factory=list)
+    audit_steps: list[AuditStep] = Field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
@@ -399,9 +423,13 @@ def load_mission_template_file(path: Path) -> MissionTemplate:
             "version": str(raw.get("version", "1.0.0")),
             "description": raw.get("description", ""),
         }
-        raw = {"mission": mission_meta, "steps": raw.get("steps", [])}
+        raw = {
+            "mission": mission_meta,
+            "steps": raw.get("steps", []),
+            "audit_steps": raw.get("audit_steps", []),
+        }
 
     template = MissionTemplate.model_validate(raw)
-    if not template.steps:
+    if not template.steps and not template.audit_steps:
         raise MissionRuntimeError(f"Mission template has no steps: {path}")
     return template
