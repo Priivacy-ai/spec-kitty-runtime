@@ -12,13 +12,13 @@ total_wps: 4
 
 ### Subtasks
 
-- [ ] T001 Add `AuditConfig` Pydantic model with `trigger_mode` and `enforcement` literal fields (both required, no defaults)
-- [ ] T002 Add optional `label: str | None` and `metadata: dict[str, Any] | None` to `AuditConfig`
-- [ ] T003 Add `AuditStep` Pydantic model with `id`, `title`, `description`, `audit: AuditConfig`, `depends_on: list[str]`
-- [ ] T004 Extend `MissionTemplate` with `audit_steps: list[AuditStep]` field (default empty list)
-- [ ] T005 Extend `load_mission_template_file` to parse `audit_steps` from YAML
-- [ ] T006 Add validation in `load_mission_template_file`: raise `MissionRuntimeError` if neither `steps` nor `audit_steps` is non-empty
-- [ ] T007 Write `tests/test_audit_schema.py` covering AC-1 and AC-2 (schema validation + YAML loading)
+- [x] T001 Add `AuditConfig` Pydantic model with `trigger_mode` and `enforcement` literal fields (both required, no defaults)
+- [x] T002 Add optional `label: str | None` and `metadata: dict[str, Any] | None` to `AuditConfig`
+- [x] T003 Add `AuditStep` Pydantic model with `id`, `title`, `description`, `audit: AuditConfig`, `depends_on: list[str]`
+- [x] T004 Extend `MissionTemplate` with `audit_steps: list[AuditStep]` field (default empty list)
+- [x] T005 Extend `load_mission_template_file` to parse `audit_steps` from YAML
+- [x] T006 Add validation in `load_mission_template_file`: raise `MissionRuntimeError` if neither `steps` nor `audit_steps` is non-empty
+- [x] T007 Write `tests/test_audit_schema.py` covering AC-1 and AC-2 (schema validation + YAML loading)
 
 ### Acceptance Criteria
 
