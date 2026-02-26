@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from spec_kitty_runtime.schema import (
+    AuditStep,
     DecisionRequest,
     MissionPolicySnapshot,
     MissionRunSnapshot,
@@ -18,27 +19,58 @@ from spec_kitty_runtime.schema import (
 )
 
 
-def _resolve_next_step(
+def _resolve_next_unified_step(
     template: MissionTemplate,
     snapshot: MissionRunSnapshot,
-) -> PromptStep | None:
+) -> PromptStep | AuditStep | None:
     """Find the next runnable step via deterministic DAG traversal.
+
+    Combined sequence: regular steps first (template order), then audit steps
+    (template order, with depends_on resolved).
 
     1. Skip completed steps (in snapshot.completed_steps)
     2. Skip the currently issued step (snapshot.issued_step_id)
     3. For each remaining step, verify all depends_on are in completed_steps
-    4. Among eligible steps, return the first by template definition order
+    4. Among eligible steps, return the first by combined sequence order
     5. Return None if no step is eligible (all done or all blocked)
     """
+    completed = set(snapshot.completed_steps)
+
     for step in template.steps:
-        if step.id in snapshot.completed_steps:
+        if step.id in completed:
             continue
         if step.id == snapshot.issued_step_id:
             continue
-        unmet = [dep for dep in step.depends_on if dep not in snapshot.completed_steps]
+        unmet = [dep for dep in step.depends_on if dep not in completed]
         if unmet:
             continue
         return step
+
+    for audit_step in template.audit_steps:
+        if audit_step.id in completed:
+            continue
+        if audit_step.id == snapshot.issued_step_id:
+            continue
+        unmet = [dep for dep in audit_step.depends_on if dep not in completed]
+        if unmet:
+            continue
+        return audit_step
+
+    return None
+
+
+# Keep the old name as an alias so existing tests/code that call _resolve_next_step still work.
+def _resolve_next_step(
+    template: MissionTemplate,
+    snapshot: MissionRunSnapshot,
+) -> PromptStep | None:
+    """Legacy wrapper — returns only PromptStep or None.
+
+    New callers should use _resolve_next_unified_step.
+    """
+    result = _resolve_next_unified_step(template, snapshot)
+    if isinstance(result, PromptStep):
+        return result
     return None
 
 
@@ -46,11 +78,17 @@ def _has_remaining_steps(
     template: MissionTemplate,
     snapshot: MissionRunSnapshot,
 ) -> bool:
-    """Return True if there are uncompleted steps (excluding issued)."""
+    """Return True if there are uncompleted steps (excluding issued), in both regular and audit lists."""
     for step in template.steps:
         if step.id in snapshot.completed_steps:
             continue
         if step.id == snapshot.issued_step_id:
+            continue
+        return True
+    for audit_step in template.audit_steps:
+        if audit_step.id in snapshot.completed_steps:
+            continue
+        if audit_step.id == snapshot.issued_step_id:
             continue
         return True
     return False
@@ -136,8 +174,8 @@ def plan_next(
             reason="pending_decision",
         )
 
-    # DAG-based step resolution.
-    step = _resolve_next_step(mission_template, snapshot)
+    # DAG-based step resolution (unified: PromptStep + AuditStep).
+    step = _resolve_next_unified_step(mission_template, snapshot)
 
     if step is None:
         # Distinguish true completion from unschedulable DAG.
@@ -155,6 +193,44 @@ def plan_next(
             reason="All mission steps completed",
         )
 
+    # --- AuditStep handling ---
+    if isinstance(step, AuditStep):
+        if step.audit.enforcement == "blocking":
+            # Blocking audit → decision_required; input_key is None for audit decisions.
+            return NextDecision(
+                kind="decision_required",
+                run_id=snapshot.run_id,
+                mission_key=snapshot.mission_key,
+                step_id=step.id,
+                step_title=step.title,
+                decision_id=f"audit:{step.id}",
+                input_key=None,
+                question=f"Audit checkpoint: {step.title}. Approve to continue?",
+                options=["approve", "reject"],
+            )
+        else:
+            # Advisory audit → emit as a regular step; no requires_inputs check.
+            context = StepContextBundle(
+                run_id=snapshot.run_id,
+                mission_key=snapshot.mission_key,
+                step_id=step.id,
+                step_title=step.title,
+                step_description=step.description,
+                expected_output=None,
+                policy_snapshot=policy_snapshot,
+                actor_context=actor_context,
+            )
+            return NextDecision(
+                kind="step",
+                run_id=snapshot.run_id,
+                mission_key=snapshot.mission_key,
+                step_id=step.id,
+                step_title=step.title,
+                prompt=f"Execute audit step '{step.id}': {step.title}",
+                context=context,
+            )
+
+    # --- PromptStep handling ---
     # Check for missing required inputs -> emit input-keyed decision.
     missing_inputs = [
         required
