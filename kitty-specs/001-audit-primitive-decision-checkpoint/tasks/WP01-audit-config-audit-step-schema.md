@@ -1,29 +1,32 @@
 ---
-work_package_id: "WP01"
-title: "AuditConfig + AuditStep Schema"
-lane: "planned"
-feature: "001-audit-primitive-decision-checkpoint"
+work_package_id: WP01
+title: AuditConfig + AuditStep Schema
+lane: "doing"
+dependencies: '[]'
+base_branch: main
+base_commit: 108dc29debea928dc5346817df5879019bcc6b00
+created_at: '2026-02-26T14:12:36.539991+00:00'
 subtasks:
-  - "T001"
-  - "T002"
-  - "T003"
-  - "T004"
-  - "T005"
-  - "T006"
-  - "T007"
-depends_on: []
-phase: "Phase 1 - Schema Foundation"
-assignee: ""
-agent: ""
-shell_pid: ""
-review_status: ""
-reviewed_by: ""
-dependencies: "[]"
+- T001
+- T002
+- T003
+- T004
+- T005
+- T006
+- T007
+phase: Phase 1 - Schema Foundation
+assignee: ''
+agent: ''
+shell_pid: "90317"
+review_status: ''
+reviewed_by: ''
 history:
-  - timestamp: "2026-02-26T00:00:00Z"
-    lane: "planned"
-    agent: "system"
-    action: "Prompt generated via /spec-kitty.specify"
+- timestamp: '2026-02-26T00:00:00Z'
+  lane: planned
+  agent: system
+  action: Prompt generated via /spec-kitty.specify
+depends_on: []
+feature: 001-audit-primitive-decision-checkpoint
 ---
 
 # Work Package Prompt: WP01 – AuditConfig + AuditStep Schema

@@ -5,5 +5,7 @@
   "friendly_name": "audit primitive decision checkpoint",
   "mission": "software-dev",
   "target_branch": "main",
-  "created_at": "2026-02-26T14:06:35.496842+00:00"
+  "created_at": "2026-02-26T14:06:35.496842+00:00",
+  "vcs": "git",
+  "vcs_locked_at": "2026-02-26T14:12:36.341090+00:00"
 }

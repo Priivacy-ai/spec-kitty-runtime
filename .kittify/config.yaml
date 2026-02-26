@@ -2,10 +2,12 @@ vcs:
   type: git
 agents:
   available:
-  - copilot
   - claude
-  - opencode
   - codex
   selection:
-    preferred_implementer: claude
-    preferred_reviewer: codex
+    preferred_implementer:
+    preferred_reviewer:
+project:
+  uuid: 14d6fb00-f203-43f3-a9ef-0266732fe605
+  slug: spec-kitty-runtime
+  node_id: d036a097a835
