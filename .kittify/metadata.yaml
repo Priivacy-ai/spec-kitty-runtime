@@ -4,11 +4,11 @@
 
 spec_kitty:
   version: 2.0.1
-  initialized_at: '2026-02-23T19:12:26.131162'
-  last_upgraded_at: '2026-02-26T14:57:24.235388'
+  initialized_at: '2026-02-26T15:06:32.527186'
+  last_upgraded_at: null
 environment:
-  python_version: 3.14.0
+  python_version: 3.11.14
   platform: darwin
-  platform_version: macOS-15.7.3-arm64-arm-64bit-Mach-O
+  platform_version: macOS-15.7.3-arm64-arm-64bit
 migrations:
   applied: []

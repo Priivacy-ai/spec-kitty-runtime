@@ -1,0 +1,12 @@
+{
+  "wp_id": "WP03",
+  "feature_slug": "001-audit-primitive-decision-checkpoint",
+  "worktree_path": ".worktrees/001-audit-primitive-decision-checkpoint-WP03",
+  "branch_name": "001-audit-primitive-decision-checkpoint-WP03",
+  "base_branch": "main",
+  "base_commit": "31af87b219286d03319240adfab9154b312fc19d",
+  "dependencies": [],
+  "created_at": "2026-02-26T14:39:28.494768+00:00",
+  "created_by": "implement-command",
+  "vcs_backend": "git"
+}
