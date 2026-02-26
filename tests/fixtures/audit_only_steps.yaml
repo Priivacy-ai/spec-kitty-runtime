@@ -1,0 +1,10 @@
+mission:
+  key: audit-only
+  name: Audit Only Mission
+  version: "1.0.0"
+audit_steps:
+  - id: audit-01
+    title: Standalone audit check
+    audit:
+      trigger_mode: manual
+      enforcement: blocking

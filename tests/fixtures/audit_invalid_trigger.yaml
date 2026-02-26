@@ -1,0 +1,13 @@
+mission:
+  key: invalid-trigger
+  name: Invalid Trigger Mission
+  version: "1.0.0"
+steps:
+  - id: step-01
+    title: Regular step
+audit_steps:
+  - id: audit-01
+    title: Broken audit
+    audit:
+      trigger_mode: on_deploy
+      enforcement: blocking

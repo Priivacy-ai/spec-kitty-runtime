@@ -1,0 +1,14 @@
+mission:
+  key: bad-dependency
+  name: Bad Dependency Mission
+  version: "1.0.0"
+steps:
+  - id: step-01
+    title: Regular step
+audit_steps:
+  - id: audit-01
+    title: Audit with broken dep
+    depends_on: ["step-99"]
+    audit:
+      trigger_mode: manual
+      enforcement: blocking

@@ -1,0 +1,13 @@
+mission:
+  key: valid-advisory
+  name: Valid Advisory Mission
+  version: "1.0.0"
+steps:
+  - id: step-01
+    title: Initial step
+audit_steps:
+  - id: audit-01
+    title: Advisory compliance check
+    audit:
+      trigger_mode: manual
+      enforcement: advisory
