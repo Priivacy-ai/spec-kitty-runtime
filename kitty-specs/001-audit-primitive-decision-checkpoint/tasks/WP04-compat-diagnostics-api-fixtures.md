@@ -19,7 +19,7 @@ subtasks:
 - T029
 phase: Phase 2 - Diagnostics
 assignee: ''
-agent: ''
+agent: "claude-implementer"
 shell_pid: "94422"
 review_status: ''
 reviewed_by: ''
@@ -269,3 +269,7 @@ class TestReportStructure:
 5. Commit: `git add -A && git commit -m "feat(WP04): compatibility diagnostics API + fixtures"`
 6. Mark subtasks done: `spec-kitty agent tasks mark-status T020 T021 T022 T023 T024 T025 T026 T027 T028 T029 --status done --feature 001-audit-primitive-decision-checkpoint`
 7. Move to review: `spec-kitty agent tasks move-task WP04 --to for_review --feature 001-audit-primitive-decision-checkpoint --note "Diagnostics API + 7 fixtures complete, all tests passing"`
+
+## Activity Log
+
+- 2026-02-26T14:20:08Z – claude-implementer – shell_pid=94422 – lane=doing – Assigned agent via workflow command
