@@ -1,0 +1,10 @@
+mission:
+  key: missing-config
+  name: Missing Config Mission
+  version: "1.0.0"
+steps:
+  - id: step-01
+    title: Regular step
+audit_steps:
+  - id: audit-01
+    title: Audit without config block
