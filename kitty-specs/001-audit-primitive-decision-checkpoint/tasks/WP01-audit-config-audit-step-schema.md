@@ -16,7 +16,7 @@ subtasks:
 - T007
 phase: Phase 1 - Schema Foundation
 assignee: ''
-agent: ''
+agent: "coordinator"
 shell_pid: "90317"
 review_status: ''
 reviewed_by: ''
@@ -141,3 +141,7 @@ class TestMissionTemplateWithAuditSteps:
 4. Commit: `git add -A && git commit -m "feat(WP01): AuditConfig + AuditStep schema"`
 5. Mark subtasks done: `spec-kitty agent tasks mark-status T001 T002 T003 T004 T005 T006 T007 --status done --feature 001-audit-primitive-decision-checkpoint`
 6. Move to review: `spec-kitty agent tasks move-task WP01 --to for_review --feature 001-audit-primitive-decision-checkpoint --note "Schema implementation complete, all tests passing"`
+
+## Activity Log
+
+- 2026-02-26T14:12:36Z – coordinator – shell_pid=90317 – lane=doing – Assigned agent via workflow command
