@@ -1,7 +1,7 @@
 ---
 work_package_id: WP03
 title: Engine Resume Path for Audit Decisions
-lane: "doing"
+lane: "for_review"
 dependencies: '[]'
 base_branch: main
 base_commit: 31af87b219286d03319240adfab9154b312fc19d
@@ -15,8 +15,8 @@ subtasks:
 - T019
 phase: Phase 3 - Engine Integration
 assignee: ''
-agent: "claude-implementer"
-shell_pid: "5370"
+agent: claude-implementer
+shell_pid: '5370'
 review_status: ''
 reviewed_by: ''
 history:
@@ -154,3 +154,4 @@ Full flow to set up an audit checkpoint state:
 ## Activity Log
 
 - 2026-02-26T14:39:28Z – claude-implementer – shell_pid=5370 – lane=doing – Assigned agent via workflow command
+- 2026-02-26T14:43:59Z – claude-implementer – shell_pid=5370 – lane=for_review – Engine audit resume path complete. 20 integration tests covering AC-5 (approve: completed_steps updated, run continues/terminal), AC-6 (reject: blocked_reason set, run permanently blocked), invalid answer guard, and DECISION_INPUT_ANSWERED event emission. All 206 tests passing.
