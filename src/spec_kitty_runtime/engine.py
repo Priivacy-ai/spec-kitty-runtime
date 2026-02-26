@@ -336,7 +336,13 @@ def provide_decision_answer(
     actor: ActorIdentity,
     emitter: RuntimeEventEmitter | None = None,
 ) -> None:
-    """Answer a pending decision. For input-keyed decisions (input:X), writes into inputs."""
+    """Answer a pending decision.
+
+    For input-keyed decisions (input:X), writes into inputs.
+    For audit decisions (audit:X), approves or rejects the audit checkpoint:
+      - "approve": adds audit_step_id to completed_steps; run continues.
+      - "reject": sets blocked_reason; run is permanently blocked.
+    """
     emitter = emitter or NullEmitter()
     run_dir = Path(run_ref.run_dir)
     snapshot = _read_snapshot(run_dir)
@@ -349,6 +355,18 @@ def provide_decision_answer(
 
     decisions = dict(snapshot.decisions)
     inputs = dict(snapshot.inputs)
+    completed_steps = list(snapshot.completed_steps)
+    blocked_reason = snapshot.blocked_reason
+
+    # T014: Detect audit: prefix and validate answer before creating DecisionAnswer.
+    if decision_id.startswith("audit:"):
+        audit_step_id = decision_id[len("audit:"):]
+
+        # T015: Validate that answer is exactly "approve" or "reject".
+        if answer not in ("approve", "reject"):
+            raise MissionRuntimeError(
+                f"Invalid audit answer '{answer}': must be 'approve' or 'reject'"
+            )
 
     answer_data = DecisionAnswer(
         decision_id=decision_id,
@@ -359,8 +377,17 @@ def provide_decision_answer(
     decisions[decision_id] = answer_data.model_dump(mode="json")
     del pending[decision_id]
 
-    # For input-keyed decisions, write the answer into inputs so requires_inputs is satisfied.
-    if decision_id.startswith("input:"):
+    if decision_id.startswith("audit:"):
+        if answer == "approve":
+            # T016: Add audit_step_id to completed_steps so DAG can advance.
+            if audit_step_id not in completed_steps:
+                completed_steps.append(audit_step_id)
+        else:
+            # T017: Set blocked_reason; run is permanently blocked.
+            blocked_reason = f"Audit step '{audit_step_id}' rejected by {actor.actor_id}"
+
+    elif decision_id.startswith("input:"):
+        # For input-keyed decisions, write the answer into inputs so requires_inputs is satisfied.
         input_key = decision_id[len("input:"):]
         inputs[input_key] = answer
 
@@ -371,13 +398,15 @@ def provide_decision_answer(
         template_hash=snapshot.template_hash,
         policy_snapshot=snapshot.policy_snapshot,
         issued_step_id=snapshot.issued_step_id,
-        completed_steps=snapshot.completed_steps,
+        completed_steps=completed_steps,
         inputs=inputs,
         decisions=decisions,
         pending_decisions=pending,
-        blocked_reason=snapshot.blocked_reason,
+        blocked_reason=blocked_reason,
     )
     _write_snapshot(run_dir, snapshot)
+
+    # T018: Emit DECISION_INPUT_ANSWERED event for both approve and reject paths.
     da_payload = DecisionInputAnsweredPayload(
         run_id=snapshot.run_id, decision_id=decision_id, answer=answer, actor=actor,
     )
