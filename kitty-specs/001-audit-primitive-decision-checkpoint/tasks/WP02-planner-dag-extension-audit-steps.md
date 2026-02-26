@@ -1,7 +1,7 @@
 ---
 work_package_id: WP02
 title: Planner DAG Extension for Audit Steps
-lane: "for_review"
+lane: "doing"
 dependencies: '[]'
 base_branch: main
 base_commit: 5df98f2229229aa9ef51b58860e8118cd6d92746
@@ -15,8 +15,8 @@ subtasks:
 - T013
 phase: Phase 2 - Planner Logic
 assignee: ''
-agent: claude-implementer
-shell_pid: '94636'
+agent: "claude-reviewer"
+shell_pid: "97759"
 review_status: ''
 reviewed_by: ''
 history:
@@ -129,3 +129,4 @@ class TestPlannerDeterminism:
 
 - 2026-02-26T14:20:12Z – claude-implementer – shell_pid=94636 – lane=doing – Assigned agent via workflow command
 - 2026-02-26T14:25:32Z – claude-implementer – shell_pid=94636 – lane=for_review – Planner audit step DAG complete. 30 new tests passing, 186 total (0 regressions). Blocking=decision_required, advisory=step, full DAG ordering and determinism verified.
+- 2026-02-26T14:26:04Z – claude-reviewer – shell_pid=97759 – lane=doing – Started review via workflow command
