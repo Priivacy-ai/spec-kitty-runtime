@@ -78,16 +78,16 @@ total_wps: 4
 
 ### Subtasks
 
-- [ ] T020 Create `src/spec_kitty_runtime/diagnostics.py` with `CompatibilityIssue` and `CompatibilityReport` models
-- [ ] T021 Implement `validate_mission_template_compatibility(path)` with all 8 validation checks from spec §3.5
-- [ ] T022 Create `tests/fixtures/audit_valid_blocking.yaml` — valid blocking enforcement mission
-- [ ] T023 Create `tests/fixtures/audit_valid_advisory.yaml` — valid advisory enforcement mission
-- [ ] T024 Create `tests/fixtures/audit_mixed_steps.yaml` — combined `steps` + `audit_steps`
-- [ ] T025 Create `tests/fixtures/audit_only_steps.yaml` — `audit_steps` only (no regular steps)
-- [ ] T026 Create `tests/fixtures/audit_invalid_trigger.yaml` — bad `trigger_mode` → `UNKNOWN_TRIGGER_MODE`
-- [ ] T027 Create `tests/fixtures/audit_missing_config.yaml` — missing `audit` block → `MISSING_AUDIT_CONFIG`
-- [ ] T028 Create `tests/fixtures/audit_bad_dependency.yaml` — broken `depends_on` → `UNRESOLVED_DEPENDENCY`
-- [ ] T029 Write `tests/test_compat_diagnostics.py` covering AC-8 (all issue codes + valid fixture)
+- [x] T020 Create `src/spec_kitty_runtime/diagnostics.py` with `CompatibilityIssue` and `CompatibilityReport` models
+- [x] T021 Implement `validate_mission_template_compatibility(path)` with all 8 validation checks from spec §3.5
+- [x] T022 Create `tests/fixtures/audit_valid_blocking.yaml` — valid blocking enforcement mission
+- [x] T023 Create `tests/fixtures/audit_valid_advisory.yaml` — valid advisory enforcement mission
+- [x] T024 Create `tests/fixtures/audit_mixed_steps.yaml` — combined `steps` + `audit_steps`
+- [x] T025 Create `tests/fixtures/audit_only_steps.yaml` — `audit_steps` only (no regular steps)
+- [x] T026 Create `tests/fixtures/audit_invalid_trigger.yaml` — bad `trigger_mode` → `UNKNOWN_TRIGGER_MODE`
+- [x] T027 Create `tests/fixtures/audit_missing_config.yaml` — missing `audit` block → `MISSING_AUDIT_CONFIG`
+- [x] T028 Create `tests/fixtures/audit_bad_dependency.yaml` — broken `depends_on` → `UNRESOLVED_DEPENDENCY`
+- [x] T029 Write `tests/test_compat_diagnostics.py` covering AC-8 (all issue codes + valid fixture)
 
 ### Acceptance Criteria
 
