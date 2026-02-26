@@ -1,29 +1,32 @@
 ---
-work_package_id: "WP03"
-title: "Engine Resume Path for Audit Decisions"
-lane: "planned"
-feature: "001-audit-primitive-decision-checkpoint"
+work_package_id: WP03
+title: Engine Resume Path for Audit Decisions
+lane: "doing"
+dependencies: '[]'
+base_branch: main
+base_commit: 31af87b219286d03319240adfab9154b312fc19d
+created_at: '2026-02-26T14:39:28.494768+00:00'
 subtasks:
-  - "T014"
-  - "T015"
-  - "T016"
-  - "T017"
-  - "T018"
-  - "T019"
-depends_on:
-  - "WP02"
-phase: "Phase 3 - Engine Integration"
-assignee: ""
-agent: ""
-shell_pid: ""
-review_status: ""
-reviewed_by: ""
-dependencies: "[]"
+- T014
+- T015
+- T016
+- T017
+- T018
+- T019
+phase: Phase 3 - Engine Integration
+assignee: ''
+agent: ''
+shell_pid: "5370"
+review_status: ''
+reviewed_by: ''
 history:
-  - timestamp: "2026-02-26T00:00:00Z"
-    lane: "planned"
-    agent: "system"
-    action: "Prompt generated via /spec-kitty.specify"
+- timestamp: '2026-02-26T00:00:00Z'
+  lane: planned
+  agent: system
+  action: Prompt generated via /spec-kitty.specify
+depends_on:
+- WP02
+feature: 001-audit-primitive-decision-checkpoint
 ---
 
 # Work Package Prompt: WP03 – Engine Resume Path for Audit Decisions
