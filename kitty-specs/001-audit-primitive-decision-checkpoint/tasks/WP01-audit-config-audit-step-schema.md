@@ -1,7 +1,7 @@
 ---
 work_package_id: WP01
 title: AuditConfig + AuditStep Schema
-lane: "doing"
+lane: "for_review"
 dependencies: '[]'
 base_branch: main
 base_commit: 108dc29debea928dc5346817df5879019bcc6b00
@@ -16,8 +16,8 @@ subtasks:
 - T007
 phase: Phase 1 - Schema Foundation
 assignee: ''
-agent: "coordinator"
-shell_pid: "90317"
+agent: coordinator
+shell_pid: '90317'
 review_status: ''
 reviewed_by: ''
 history:
@@ -145,3 +145,4 @@ class TestMissionTemplateWithAuditSteps:
 ## Activity Log
 
 - 2026-02-26T14:12:36Z – coordinator – shell_pid=90317 – lane=doing – Assigned agent via workflow command
+- 2026-02-26T14:16:35Z – coordinator – shell_pid=90317 – lane=for_review – Schema implementation complete, 26 tests passing (156 total in suite, zero regressions)
