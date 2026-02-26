@@ -1,14 +1,14 @@
 {
-  "event_count": 5,
+  "event_count": 9,
   "feature_slug": "001-audit-primitive-decision-checkpoint",
-  "last_event_id": "01KJD53BG7XEF4PPMGJGNHQH5D",
-  "materialized_at": "2026-02-26T14:19:30.183261+00:00",
+  "last_event_id": "01KJD5ECWPR49KMXC1JHMVGB6P",
+  "materialized_at": "2026-02-26T14:25:32.055091+00:00",
   "summary": {
     "blocked": 0,
     "canceled": 0,
     "claimed": 0,
     "done": 1,
-    "for_review": 0,
+    "for_review": 2,
     "in_progress": 0,
     "planned": 0
   },
@@ -19,6 +19,20 @@
       "lane": "done",
       "last_event_id": "01KJD53BG7XEF4PPMGJGNHQH5D",
       "last_transition_at": "2026-02-26T14:19:30.183044+00:00"
+    },
+    "WP02": {
+      "actor": "user",
+      "force_count": 1,
+      "lane": "for_review",
+      "last_event_id": "01KJD5ECWPR49KMXC1JHMVGB6P",
+      "last_transition_at": "2026-02-26T14:25:32.054844+00:00"
+    },
+    "WP04": {
+      "actor": "user",
+      "force_count": 1,
+      "lane": "for_review",
+      "last_event_id": "01KJD5B3ZJQFZZ54MRQ109VA5E",
+      "last_transition_at": "2026-02-26T14:23:44.626620+00:00"
     }
   }
 }
