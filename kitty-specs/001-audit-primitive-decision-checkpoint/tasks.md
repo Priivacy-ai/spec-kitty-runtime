@@ -57,12 +57,12 @@ total_wps: 4
 
 ### Subtasks
 
-- [ ] T014 Extend `provide_decision_answer` to detect `audit:` prefix in `decision_id`
-- [ ] T015 Validate that answer is `"approve"` or `"reject"`; raise `MissionRuntimeError` on invalid answer
-- [ ] T016 On `"approve"`: add audit step id to `completed_steps` in snapshot; remove from `pending_decisions`
-- [ ] T017 On `"reject"`: set `blocked_reason` referencing audit step id; remove from `pending_decisions`
-- [ ] T018 Emit `DECISION_INPUT_ANSWERED` event for both approve and reject paths
-- [ ] T019 Write `tests/test_audit_engine.py` covering AC-5 and AC-6 (approve → continue, reject → blocked)
+- [x] T014 Extend `provide_decision_answer` to detect `audit:` prefix in `decision_id`
+- [x] T015 Validate that answer is `"approve"` or `"reject"`; raise `MissionRuntimeError` on invalid answer
+- [x] T016 On `"approve"`: add audit step id to `completed_steps` in snapshot; remove from `pending_decisions`
+- [x] T017 On `"reject"`: set `blocked_reason` referencing audit step id; remove from `pending_decisions`
+- [x] T018 Emit `DECISION_INPUT_ANSWERED` event for both approve and reject paths
+- [x] T019 Write `tests/test_audit_engine.py` covering AC-5 and AC-6 (approve → continue, reject → blocked)
 
 ### Acceptance Criteria
 
