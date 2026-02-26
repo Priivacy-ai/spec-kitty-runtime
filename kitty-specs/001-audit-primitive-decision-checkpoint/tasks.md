@@ -34,12 +34,12 @@ total_wps: 4
 
 ### Subtasks
 
-- [ ] T008 Build combined ordered sequence of `PromptStep | AuditStep` in `_resolve_next_step`
-- [ ] T009 Apply same `depends_on` DAG logic to `AuditStep` entries
-- [ ] T010 Emit `kind="step"` for `enforcement=advisory` audit steps
-- [ ] T011 Emit `kind="decision_required"` for `enforcement=blocking` audit steps with `decision_id="audit:<step_id>"`, `question`, and `options=["approve","reject"]`
-- [ ] T012 Ensure `input_key=None` for audit decision checkpoints
-- [ ] T013 Write `tests/test_audit_planner.py` covering AC-3, AC-4, AC-7, AC-9 (blocking/advisory decisions, DAG ordering, determinism)
+- [x] T008 Build combined ordered sequence of `PromptStep | AuditStep` in `_resolve_next_step`
+- [x] T009 Apply same `depends_on` DAG logic to `AuditStep` entries
+- [x] T010 Emit `kind="step"` for `enforcement=advisory` audit steps
+- [x] T011 Emit `kind="decision_required"` for `enforcement=blocking` audit steps with `decision_id="audit:<step_id>"`, `question`, and `options=["approve","reject"]`
+- [x] T012 Ensure `input_key=None` for audit decision checkpoints
+- [x] T013 Write `tests/test_audit_planner.py` covering AC-3, AC-4, AC-7, AC-9 (blocking/advisory decisions, DAG ordering, determinism)
 
 ### Acceptance Criteria
 
@@ -96,4 +96,5 @@ total_wps: 4
 <!-- status-model:start -->
 ## Canonical Status (Generated)
 - WP01: done
+- WP04: for_review
 <!-- status-model:end -->
