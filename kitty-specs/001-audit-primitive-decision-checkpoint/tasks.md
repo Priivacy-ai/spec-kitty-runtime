@@ -92,3 +92,8 @@ total_wps: 4
 ### Acceptance Criteria
 
 - AC-8: `validate_mission_template_compatibility` returns correct `CompatibilityReport` for all fixture files
+
+<!-- status-model:start -->
+## Canonical Status (Generated)
+- WP01: for_review
+<!-- status-model:end -->
