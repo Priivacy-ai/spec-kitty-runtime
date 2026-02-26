@@ -1,33 +1,36 @@
 ---
-work_package_id: "WP04"
-title: "Compatibility Diagnostics API + Fixtures"
-lane: "planned"
-feature: "001-audit-primitive-decision-checkpoint"
+work_package_id: WP04
+title: Compatibility Diagnostics API + Fixtures
+lane: "doing"
+dependencies: '[]'
+base_branch: main
+base_commit: 85f890303f434bb2fd345df7e5863692d1d200b4
+created_at: '2026-02-26T14:20:08.621531+00:00'
 subtasks:
-  - "T020"
-  - "T021"
-  - "T022"
-  - "T023"
-  - "T024"
-  - "T025"
-  - "T026"
-  - "T027"
-  - "T028"
-  - "T029"
-depends_on:
-  - "WP01"
-phase: "Phase 2 - Diagnostics"
-assignee: ""
-agent: ""
-shell_pid: ""
-review_status: ""
-reviewed_by: ""
-dependencies: "[]"
+- T020
+- T021
+- T022
+- T023
+- T024
+- T025
+- T026
+- T027
+- T028
+- T029
+phase: Phase 2 - Diagnostics
+assignee: ''
+agent: ''
+shell_pid: "94422"
+review_status: ''
+reviewed_by: ''
 history:
-  - timestamp: "2026-02-26T00:00:00Z"
-    lane: "planned"
-    agent: "system"
-    action: "Prompt generated via /spec-kitty.specify"
+- timestamp: '2026-02-26T00:00:00Z'
+  lane: planned
+  agent: system
+  action: Prompt generated via /spec-kitty.specify
+depends_on:
+- WP01
+feature: 001-audit-primitive-decision-checkpoint
 ---
 
 # Work Package Prompt: WP04 – Compatibility Diagnostics API + Fixtures
