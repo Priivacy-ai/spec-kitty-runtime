@@ -1,3 +1,11 @@
+---
+work_package_id: "WP05"
+title: "Runtime Decision Authority Kernel"
+lane: "planned"
+dependencies: []
+requirement_refs: ["FR-005"]
+---
+
 # WP05: Runtime Decision Authority Kernel
 
 ## Objective

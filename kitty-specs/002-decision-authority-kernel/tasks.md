@@ -1,3 +1,8 @@
+---
+feature: 002-decision-authority-kernel
+total_wps: 1
+---
+
 # Tasks: Decision Authority Kernel (WP05)
 
 ## Work Package Index
