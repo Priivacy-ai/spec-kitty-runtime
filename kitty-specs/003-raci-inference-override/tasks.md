@@ -34,5 +34,5 @@ total_wps: 1
 
 <!-- status-model:start -->
 ## Canonical Status (Generated)
-- WP06: planned
+- WP06: in_progress
 <!-- status-model:end -->
