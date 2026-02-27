@@ -1,7 +1,7 @@
 ---
 work_package_id: WP05
 title: AuditStep Extension & Engine Integration
-lane: "for_review"
+lane: "doing"
 dependencies: [WP04]
 base_branch: main
 base_commit: 9c618e3f6de48ddb8eca1dcdcadf470716b4f711
@@ -14,8 +14,8 @@ subtasks:
 - T025
 phase: Phase 2 - Integration
 assignee: ''
-agent: claude-opus
-shell_pid: '34730'
+agent: "claude-opus-reviewer"
+shell_pid: "40129"
 review_status: ''
 reviewed_by: ''
 history:
@@ -353,3 +353,4 @@ spec-kitty implement WP05 --base WP04
 - 2026-02-27T20:43:12Z – system – lane=planned – Prompt created.
 - 2026-02-27T21:56:39Z – claude-opus – shell_pid=34730 – lane=doing – Assigned agent via workflow command
 - 2026-02-27T22:07:49Z – claude-opus – shell_pid=34730 – lane=for_review – Ready for review: All 5 subtasks implemented and tested. 44 new tests, 552 total passing. SignificanceBlock schema, next_step significance evaluation (LOW auto-proceed, MEDIUM soft-gate, HIGH hard-gate), provide_decision_answer significance routing, persistence verification, and public API re-exports.
+- 2026-02-27T22:08:38Z – claude-opus-reviewer – shell_pid=40129 – lane=doing – Started review via workflow command
