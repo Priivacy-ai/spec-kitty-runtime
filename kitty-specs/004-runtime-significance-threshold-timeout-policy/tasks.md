@@ -207,12 +207,12 @@
 **Requirement Refs**: FR-001, FR-002, FR-003, FR-008, FR-015
 
 ### Included Subtasks
-- [ ] T026 [P] Create 4 YAML mission fixtures in `tests/fixtures/` (low, medium, high, hard-trigger)
-- [ ] T027 Write dimension validation tests in `tests/test_significance.py`
-- [ ] T028 Write composite & band routing tests for all three bands
-- [ ] T029 Write hard-trigger override tests (all 5 classes, multiple classes, high score + trigger)
-- [ ] T030 Write boundary score tests (0, 6, 7, 11, 12, 18 — exact boundaries)
-- [ ] T031 Write band cutoff validation tests (valid custom, overlapping, gaps, defaults)
+- [x] T026 [P] Create 4 YAML mission fixtures in `tests/fixtures/` (low, medium, high, hard-trigger)
+- [x] T027 Write dimension validation tests in `tests/test_significance.py`
+- [x] T028 Write composite & band routing tests for all three bands
+- [x] T029 Write hard-trigger override tests (all 5 classes, multiple classes, high score + trigger)
+- [x] T030 Write boundary score tests (0, 6, 7, 11, 12, 18 — exact boundaries)
+- [x] T031 Write band cutoff validation tests (valid custom, overlapping, gaps, defaults)
 
 ### Implementation Notes
 - Fixtures follow existing YAML pattern from `tests/fixtures/` (see raci_*.yaml, audit_*.yaml)
