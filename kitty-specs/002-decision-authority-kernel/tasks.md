@@ -24,3 +24,8 @@ total_wps: 1
 ## Required Assertions
 - [ ] Denial path for non-human final closure exists.
 - [ ] Audit payload includes `actor_type`, `actor_id`, `authority_role`, `rationale_linkage`.
+
+<!-- status-model:start -->
+## Canonical Status (Generated)
+- WP05: in_progress
+<!-- status-model:end -->
