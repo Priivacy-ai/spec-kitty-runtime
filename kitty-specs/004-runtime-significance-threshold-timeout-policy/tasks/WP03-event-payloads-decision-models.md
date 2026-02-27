@@ -1,34 +1,37 @@
 ---
-work_package_id: "WP03"
+work_package_id: WP03
+title: Event Payloads & Decision Models
+lane: "doing"
+dependencies: [WP02]
+base_branch: main
+base_commit: c94e977540297d57ab1133d99ae3f68046a95e52
+created_at: '2026-02-27T21:20:48.217361+00:00'
 subtasks:
-  - "T011"
-  - "T012"
-  - "T013"
-  - "T014"
-  - "T015"
-  - "T016"
-title: "Event Payloads & Decision Models"
-phase: "Phase 1 - Communication Layer"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
-review_status: ""
-reviewed_by: ""
-dependencies: ["WP02"]
-requirement_refs:
-  - "FR-005"
-  - "FR-006"
-  - "FR-009"
-  - "FR-011"
-  - "FR-018"
-  - "FR-019"
+- T011
+- T012
+- T013
+- T014
+- T015
+- T016
+phase: Phase 1 - Communication Layer
+assignee: ''
+agent: ''
+shell_pid: "18308"
+review_status: ''
+reviewed_by: ''
 history:
-  - timestamp: "2026-02-27T20:43:12Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2026-02-27T20:43:12Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+requirement_refs:
+- FR-005
+- FR-006
+- FR-009
+- FR-011
+- FR-018
+- FR-019
 ---
 
 # Work Package Prompt: WP03 – Event Payloads & Decision Models
