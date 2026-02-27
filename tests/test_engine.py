@@ -5,9 +5,16 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pytest
+
 from spec_kitty_runtime.discovery import DiscoveryContext
 from spec_kitty_runtime.engine import next_step, provide_decision_answer, start_mission_run
-from spec_kitty_runtime.schema import ActorIdentity, MissionPolicySnapshot, MissionRunSnapshot
+from spec_kitty_runtime.schema import (
+    ActorIdentity,
+    MissionPolicySnapshot,
+    MissionRunSnapshot,
+    MissionRuntimeError,
+)
 
 
 MISSION_YAML = """\
@@ -142,6 +149,95 @@ def test_provide_decision_answer_unblocks_run(tmp_path: Path) -> None:
 
     d = next_step(run, agent_id="codex", context=context)
     assert d.kind == "step"
+
+
+def test_llm_non_audit_decision_denied_without_delegation(tmp_path: Path) -> None:
+    """LLM cannot answer non-audit decisions without explicit delegation."""
+    context, _ = _setup(tmp_path)
+    run = start_mission_run(
+        template_key="software-dev",
+        inputs={},
+        policy_snapshot=MissionPolicySnapshot(),
+        context=context,
+        run_store=tmp_path / "runs",
+    )
+
+    run_dir = Path(run.run_dir)
+    with open(run_dir / "state.json", "r", encoding="utf-8") as f:
+        state = json.load(f)
+    state["pending_decisions"] = {
+        "d1": {
+            "decision_id": "d1",
+            "step_id": "S1",
+            "question": "Choose?",
+            "requested_by": {"actor_id": "agent-1", "actor_type": "llm"},
+            "requested_at": "2026-01-01T00:00:00+00:00",
+        }
+    }
+    with open(run_dir / "state.json", "w", encoding="utf-8") as f:
+        json.dump(state, f, indent=2, sort_keys=True)
+
+    with pytest.raises(MissionRuntimeError, match="not delegated"):
+        provide_decision_answer(
+            run,
+            "d1",
+            "A",
+            ActorIdentity(actor_id="agent-llm", actor_type="llm"),
+        )
+
+    with open(run_dir / "state.json", "r", encoding="utf-8") as f:
+        updated = json.load(f)
+    assert "d1" in updated["pending_decisions"]
+    assert "d1" not in updated["decisions"]
+
+
+def test_llm_non_audit_decision_uses_delegation_metadata(tmp_path: Path) -> None:
+    """LLM answers are accepted with delegation and persist authority metadata."""
+    context, _ = _setup(tmp_path)
+    run = start_mission_run(
+        template_key="software-dev",
+        inputs={
+            "llm_delegations": {
+                "d1": {
+                    "authority_role": "policy_delegate",
+                    "rationale_linkage": "doc://authority/adr-7",
+                }
+            }
+        },
+        policy_snapshot=MissionPolicySnapshot(),
+        context=context,
+        run_store=tmp_path / "runs",
+    )
+
+    run_dir = Path(run.run_dir)
+    with open(run_dir / "state.json", "r", encoding="utf-8") as f:
+        state = json.load(f)
+    state["pending_decisions"] = {
+        "d1": {
+            "decision_id": "d1",
+            "step_id": "S1",
+            "question": "Choose?",
+            "requested_by": {"actor_id": "agent-1", "actor_type": "llm"},
+            "requested_at": "2026-01-01T00:00:00+00:00",
+        }
+    }
+    with open(run_dir / "state.json", "w", encoding="utf-8") as f:
+        json.dump(state, f, indent=2, sort_keys=True)
+
+    provide_decision_answer(
+        run,
+        "d1",
+        "A",
+        ActorIdentity(actor_id="agent-llm", actor_type="llm"),
+    )
+
+    with open(run_dir / "state.json", "r", encoding="utf-8") as f:
+        updated = json.load(f)
+    record = updated["decisions"]["d1"]
+    assert record["authority_role"] == "policy_delegate"
+    assert record["rationale_linkage"] == "doc://authority/adr-7"
+    assert record["actor_type"] == "llm"
+    assert record["actor_id"] == "agent-llm"
 
 
 def test_failed_step_blocks_run(tmp_path: Path) -> None:

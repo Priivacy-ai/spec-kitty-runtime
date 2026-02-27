@@ -78,6 +78,7 @@ def _advance_to_audit_checkpoint(
     tmp_path: Path,
     yaml_content: str = BLOCKING_AUDIT_MISSION,
     key: str = "test-blocking-audit",
+    inputs: dict | None = None,
 ):
     """Set up a run that has reached an audit checkpoint.
 
@@ -92,7 +93,7 @@ def _advance_to_audit_checkpoint(
     policy = MissionPolicySnapshot()
     run_ref = start_mission_run(
         template_key=key,
-        inputs={},
+        inputs=inputs or {},
         policy_snapshot=policy,
         context=context,
         run_store=tmp_path / "runs",
@@ -355,3 +356,71 @@ class TestAuditInvalidAnswerGuard:
 
         state = _read_snapshot_raw(run_ref)
         assert "audit:audit-01" in state["pending_decisions"]
+
+
+# ---------------------------------------------------------------------------
+# Authority kernel (WP05)
+# ---------------------------------------------------------------------------
+
+class TestAuditAuthorityKernel:
+    def test_non_human_denied_and_pending_unchanged(self, tmp_path: Path) -> None:
+        run_ref, _ = _advance_to_audit_checkpoint(tmp_path)
+        actor = ActorIdentity(actor_id="agent-llm", actor_type="llm")
+
+        with pytest.raises(MissionRuntimeError, match="human actor"):
+            provide_decision_answer(run_ref, "audit:audit-01", "approve", actor)
+
+        state = _read_snapshot_raw(run_ref)
+        assert "audit:audit-01" in state["pending_decisions"]
+        assert "audit:audit-01" not in state["decisions"]
+
+    def test_denial_event_includes_required_payload_fields(self, tmp_path: Path) -> None:
+        run_ref, _ = _advance_to_audit_checkpoint(tmp_path)
+        actor = ActorIdentity(actor_id="agent-llm", actor_type="llm")
+
+        with pytest.raises(MissionRuntimeError):
+            provide_decision_answer(run_ref, "audit:audit-01", "approve", actor)
+
+        events = _read_events(run_ref)
+        denied = [e for e in events if e["event_type"] == "DecisionAuthorityDenied"]
+        assert len(denied) == 1
+        payload = denied[0]["payload"]
+        required = {
+            "run_id",
+            "decision_id",
+            "actor_type",
+            "actor_id",
+            "authority_role",
+            "rationale_linkage",
+            "reason",
+        }
+        assert required.issubset(payload.keys())
+
+    def test_mission_owner_id_enforced_for_audit(self, tmp_path: Path) -> None:
+        run_ref, _ = _advance_to_audit_checkpoint(
+            tmp_path,
+            inputs={"mission_owner_id": "owner-1"},
+        )
+        actor = _actor("other-human")
+
+        with pytest.raises(MissionRuntimeError, match="mission owner"):
+            provide_decision_answer(run_ref, "audit:audit-01", "approve", actor)
+
+        state = _read_snapshot_raw(run_ref)
+        assert "audit:audit-01" in state["pending_decisions"]
+
+    def test_accepted_audit_persists_authority_metadata(self, tmp_path: Path) -> None:
+        run_ref, _ = _advance_to_audit_checkpoint(
+            tmp_path,
+            inputs={"mission_owner_id": "owner-1"},
+        )
+        actor = _actor("owner-1")
+
+        provide_decision_answer(run_ref, "audit:audit-01", "approve", actor)
+
+        state = _read_snapshot_raw(run_ref)
+        record = state["decisions"]["audit:audit-01"]
+        assert record["actor_type"] == "human"
+        assert record["actor_id"] == "owner-1"
+        assert record["authority_role"] == "mission_owner"
+        assert "rationale_linkage" in record
