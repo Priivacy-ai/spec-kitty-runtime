@@ -90,12 +90,12 @@
 **Requirement Refs**: FR-005, FR-006, FR-009, FR-011, FR-018, FR-019
 
 ### Included Subtasks
-- [ ] T011 Implement SignificanceEvaluatedPayload frozen model in `significance.py`
-- [ ] T012 Implement TimeoutExpiredPayload frozen model in `significance.py`
-- [ ] T013 Implement SoftGateDecision model (decide_solo, open_stand_up, defer actions)
-- [ ] T014 Implement DimensionScoreOverride model for runtime score override audit trail
-- [ ] T015 [P] Extend RuntimeEventEmitter protocol in `events.py` with 2 new emit methods
-- [ ] T016 [P] Update NullEmitter in `events.py` with no-op implementations
+- [x] T011 Implement SignificanceEvaluatedPayload frozen model in `significance.py`
+- [x] T012 Implement TimeoutExpiredPayload frozen model in `significance.py`
+- [x] T013 Implement SoftGateDecision model (decide_solo, open_stand_up, defer actions)
+- [x] T014 Implement DimensionScoreOverride model for runtime score override audit trail
+- [x] T015 [P] Extend RuntimeEventEmitter protocol in `events.py` with 2 new emit methods
+- [x] T016 [P] Update NullEmitter in `events.py` with no-op implementations
 
 ### Implementation Notes
 - Event payloads are defined locally in `significance.py` (not in spec-kitty-events) per ED-2 decision
