@@ -1,33 +1,36 @@
 ---
-work_package_id: "WP05"
+work_package_id: WP05
+title: AuditStep Extension & Engine Integration
+lane: "doing"
+dependencies: [WP04]
+base_branch: main
+base_commit: 9c618e3f6de48ddb8eca1dcdcadf470716b4f711
+created_at: '2026-02-27T21:56:39.191608+00:00'
 subtasks:
-  - "T021"
-  - "T022"
-  - "T023"
-  - "T024"
-  - "T025"
-title: "AuditStep Extension & Engine Integration"
-phase: "Phase 2 - Integration"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
-review_status: ""
-reviewed_by: ""
-dependencies: ["WP04"]
-requirement_refs:
-  - "FR-004"
-  - "FR-005"
-  - "FR-007"
-  - "FR-008"
-  - "FR-017"
-  - "FR-018"
+- T021
+- T022
+- T023
+- T024
+- T025
+phase: Phase 2 - Integration
+assignee: ''
+agent: ''
+shell_pid: "34730"
+review_status: ''
+reviewed_by: ''
 history:
-  - timestamp: "2026-02-27T20:43:12Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2026-02-27T20:43:12Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+requirement_refs:
+- FR-004
+- FR-005
+- FR-007
+- FR-008
+- FR-017
+- FR-018
 ---
 
 # Work Package Prompt: WP05 – AuditStep Extension & Engine Integration
