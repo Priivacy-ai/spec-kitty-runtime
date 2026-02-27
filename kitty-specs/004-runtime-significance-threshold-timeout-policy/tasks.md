@@ -19,11 +19,11 @@
 **Requirement Refs**: FR-001, FR-002, FR-003, FR-008, FR-015
 
 ### Included Subtasks
-- [ ] T001 Create `src/spec_kitty_runtime/significance.py` with SignificanceDimension frozen Pydantic model
-- [ ] T002 Implement RoutingBand model with default band definitions and factory function
-- [ ] T003 Implement HardTriggerClass model with 5 fixed class definitions and registry
-- [ ] T004 Implement band cutoff validation logic (contiguous, non-overlapping, cover 0–18)
-- [ ] T005 Create DIMENSION_NAMES and HARD_TRIGGER_REGISTRY constant registries
+- [x] T001 Create `src/spec_kitty_runtime/significance.py` with SignificanceDimension frozen Pydantic model
+- [x] T002 Implement RoutingBand model with default band definitions and factory function
+- [x] T003 Implement HardTriggerClass model with 5 fixed class definitions and registry
+- [x] T004 Implement band cutoff validation logic (contiguous, non-overlapping, cover 0–18)
+- [x] T005 Create DIMENSION_NAMES and HARD_TRIGGER_REGISTRY constant registries
 
 ### Implementation Notes
 - All models use `ConfigDict(frozen=True, extra="forbid")` matching existing codebase conventions (see `raci.py`, `schema.py`)
