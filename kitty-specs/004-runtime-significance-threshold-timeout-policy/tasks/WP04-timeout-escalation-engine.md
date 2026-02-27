@@ -13,7 +13,7 @@ subtasks:
 - T020
 phase: Phase 1 - Escalation Layer
 assignee: ''
-agent: ''
+agent: "claude-opus"
 shell_pid: "29041"
 review_status: ''
 reviewed_by: ''
@@ -274,3 +274,4 @@ spec-kitty implement WP04 --base WP03
 > **CRITICAL**: Activity log entries MUST be in chronological order (oldest first, newest last).
 
 - 2026-02-27T20:43:12Z – system – lane=planned – Prompt created.
+- 2026-02-27T21:45:17Z – claude-opus – shell_pid=29041 – lane=doing – Assigned agent via workflow command
