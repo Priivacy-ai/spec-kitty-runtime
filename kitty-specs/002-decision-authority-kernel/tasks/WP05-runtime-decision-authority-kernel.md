@@ -1,9 +1,11 @@
 ---
-work_package_id: "WP05"
-title: "Runtime Decision Authority Kernel"
-lane: "planned"
+work_package_id: WP05
+title: Runtime Decision Authority Kernel
+lane: "in_progress"
 dependencies: []
-requirement_refs: ["FR-005"]
+requirement_refs: [FR-005]
+assignee: "claude-opus-4.6"
+agent: "codex"
 ---
 
 # WP05: Runtime Decision Authority Kernel
@@ -46,3 +48,7 @@ Establish a runtime authority kernel for P0 so final closure is strictly human-o
 - Updated runtime authority logic bound to WP03 contracts.
 - Test coverage for authority and policy audit behavior.
 - Traceable audit events for allow/deny authority decisions.
+
+## Activity Log
+
+- 2026-02-27T13:47:44Z – codex – lane=in_progress – Starting WP05 implementation orchestration
