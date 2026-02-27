@@ -245,12 +245,12 @@
 **Requirement Refs**: FR-010, FR-011, FR-012, FR-013, FR-014, FR-016, FR-017, FR-019
 
 ### Included Subtasks
-- [ ] T032 Write timeout policy & escalation target tests in `tests/test_significance_timeout.py`
-- [ ] T033 Write timeout event emission tests (JSONL log, emitter protocol)
-- [ ] T034 Write engine flow integration tests in `tests/test_significance_integration.py`
-- [ ] T035 Write audit trail capture tests (significance score, timeout events in decisions dict)
-- [ ] T036 Write determinism verification tests (5+ independent runs, bit-for-bit identical output)
-- [ ] T037 Write edge case tests + validate quickstart.md code examples
+- [x] T032 Write timeout policy & escalation target tests in `tests/test_significance_timeout.py`
+- [x] T033 Write timeout event emission tests (JSONL log, emitter protocol)
+- [x] T034 Write engine flow integration tests in `tests/test_significance_integration.py`
+- [x] T035 Write audit trail capture tests (significance score, timeout events in decisions dict)
+- [x] T036 Write determinism verification tests (5+ independent runs, bit-for-bit identical output)
+- [x] T037 Write edge case tests + validate quickstart.md code examples
 
 ### Implementation Notes
 - Timeout tests: default timeout, custom timeout, per-decision override, timeout=0 rejection
