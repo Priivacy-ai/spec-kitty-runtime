@@ -1,7 +1,7 @@
 ---
 work_package_id: WP01
 title: Core Significance Models & Registries
-lane: "for_review"
+lane: "doing"
 dependencies: []
 base_branch: main
 base_commit: 15df224ca42e67fc9c8dce338e5675b4f4dba9f7
@@ -15,7 +15,7 @@ subtasks:
 phase: Phase 0 - Foundation
 assignee: claude-opus
 agent: "claude-opus"
-shell_pid: '7578'
+shell_pid: "11868"
 review_status: has_feedback
 reviewed_by: Robert Douglass
 review_feedback: feedback://004-runtime-significance-threshold-timeout-policy/WP01/20260227T210712Z-857a32b9.md
@@ -299,3 +299,4 @@ spec-kitty implement WP01
 - 2026-02-27T21:07:13Z – codex – shell_pid=7578 – lane=planned – Rejected in review: implementation artifacts missing on main branch
 - 2026-02-27T21:08:10Z – codex – shell_pid=7578 – lane=in_progress – Reopened: previous rejection was based on main-branch view; WP01 implementation exists in worktree branch
 - 2026-02-27T21:08:12Z – claude-opus – shell_pid=7578 – lane=for_review – Ready for proper review: worktree commit 75160c9 has significance.py + test_significance.py; targeted tests passing
+- 2026-02-27T21:08:25Z – claude-opus – shell_pid=11868 – lane=doing – Started review via workflow command
