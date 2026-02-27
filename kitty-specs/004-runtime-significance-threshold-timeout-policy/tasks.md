@@ -356,5 +356,5 @@ WP01 → WP02 → WP03 → WP04 → WP05 → WP07
 - WP04: done
 - WP05: done
 - WP06: done
-- WP07: for_review
+- WP07: in_progress
 <!-- status-model:end -->
