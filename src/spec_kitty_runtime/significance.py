@@ -1,9 +1,14 @@
-"""Core significance models and registries.
+"""Core significance models, scoring engine, and policy parsing.
 
 Provides foundational frozen Pydantic models for significance scoring:
 - SignificanceDimension: atomic unit of significance scoring (one of 6 fixed dimensions)
 - RoutingBand: significance tier determining gating behavior (low/medium/high)
 - HardTriggerClass: conditions that override numeric scoring and force hard-gate
+- SignificanceScore: composite evaluation result capturing full significance assessment
+- TimeoutPolicy: configuration governing timeout window for decisions
+- evaluate_significance(): pure function for deterministic significance evaluation
+- parse_band_cutoffs_from_policy(): extract band cutoffs from MissionPolicySnapshot
+- parse_timeout_from_policy(): extract timeout from MissionPolicySnapshot
 
 All models use ConfigDict(frozen=True, extra="forbid").
 All registries are fixed in V1 (no custom dimensions or triggers).
@@ -11,9 +16,12 @@ All registries are fixed in V1 (no custom dimensions or triggers).
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+if TYPE_CHECKING:
+    from spec_kitty_runtime.schema import MissionPolicySnapshot
 
 
 # ---------------------------------------------------------------------------
@@ -277,18 +285,242 @@ def validate_dimension_scores(scores: dict[str, int]) -> None:
             raise ValueError(f"Dimension '{name}' score must be 0-3, got {score}")
 
 
+# ---------------------------------------------------------------------------
+# T006: SignificanceScore model
+# ---------------------------------------------------------------------------
+
+class SignificanceScore(BaseModel):
+    """Composite evaluation result capturing the full significance assessment.
+
+    Contains all six dimension scores, the computed composite, the numeric band,
+    any hard-trigger overrides, and the effective routing band.
+    """
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    dimensions: tuple[SignificanceDimension, ...] = Field(...)
+    composite: int = Field(..., ge=0, le=18)
+    band: RoutingBand
+    hard_trigger_classes: tuple[HardTriggerClass, ...] = Field(default_factory=tuple)
+    effective_band: RoutingBand
+
+    @model_validator(mode="after")
+    def _validate_score(self) -> SignificanceScore:
+        # Exactly 6 dimensions, one per fixed name
+        dim_names = {d.name for d in self.dimensions}
+        if dim_names != DIMENSION_NAMES:
+            missing = DIMENSION_NAMES - dim_names
+            extra = dim_names - DIMENSION_NAMES
+            parts = []
+            if missing:
+                parts.append(f"missing: {sorted(missing)}")
+            if extra:
+                parts.append(f"unexpected: {sorted(extra)}")
+            raise ValueError(
+                f"dimensions must contain exactly 6 fixed dimensions. "
+                f"{', '.join(parts)}"
+            )
+
+        # composite must equal sum of dimension scores
+        expected = sum(d.score for d in self.dimensions)
+        if self.composite != expected:
+            raise ValueError(
+                f"composite ({self.composite}) != sum of scores ({expected})"
+            )
+
+        # effective_band must be 'high' when hard triggers present
+        if self.hard_trigger_classes and self.effective_band.name != "high":
+            raise ValueError(
+                "effective_band must be 'high' when hard_trigger_classes present"
+            )
+
+        # When no hard triggers, effective_band must equal band
+        if not self.hard_trigger_classes and self.effective_band != self.band:
+            raise ValueError(
+                "effective_band must equal band when no hard triggers"
+            )
+
+        return self
+
+
+# ---------------------------------------------------------------------------
+# T007: evaluate_significance() pure function
+# ---------------------------------------------------------------------------
+
+def evaluate_significance(
+    dimension_scores: dict[str, int],
+    hard_trigger_classes: list[str] | None = None,
+    band_cutoffs: dict[str, list[int]] | None = None,
+) -> SignificanceScore:
+    """Evaluate the significance of a decision.
+
+    Pure function: same inputs always produce identical output.
+    No side effects, no randomness, no external state.
+
+    Args:
+        dimension_scores: Mapping of dimension name to score (0-3) for all 6 dimensions.
+        hard_trigger_classes: Optional list of hard-trigger class IDs.
+        band_cutoffs: Optional custom band cutoffs. If None, defaults are used.
+
+    Returns:
+        A fully computed SignificanceScore.
+
+    Raises:
+        ValueError: If inputs are invalid.
+    """
+    # Validate dimension scores
+    validate_dimension_scores(dimension_scores)
+
+    # Build SignificanceDimension instances, sorted by name for deterministic ordering
+    dims = tuple(sorted(
+        [SignificanceDimension(name=k, score=v) for k, v in dimension_scores.items()],
+        key=lambda d: d.name,
+    ))
+
+    # Compute composite
+    composite = sum(dimension_scores.values())
+
+    # Build routing bands
+    bands = make_routing_bands(band_cutoffs)
+
+    # Resolve numeric band
+    band: RoutingBand | None = None
+    for b in bands:
+        if b.min_score <= composite <= b.max_score:
+            band = b
+            break
+
+    if band is None:
+        raise ValueError(
+            f"composite score {composite} does not fall within any band"
+        )
+
+    # Resolve hard triggers
+    triggers = resolve_hard_triggers(hard_trigger_classes or [])
+
+    # Determine effective_band
+    if triggers:
+        # Hard triggers override to high band
+        effective_band = next(b for b in bands if b.name == "high")
+    else:
+        effective_band = band
+
+    return SignificanceScore(
+        dimensions=dims,
+        composite=composite,
+        band=band,
+        hard_trigger_classes=triggers,
+        effective_band=effective_band,
+    )
+
+
+# ---------------------------------------------------------------------------
+# T008: TimeoutPolicy model
+# ---------------------------------------------------------------------------
+
+class TimeoutPolicy(BaseModel):
+    """Configuration governing the timeout window for decisions.
+
+    Default timeout is 600 seconds (10 minutes). Per-decision override
+    can be set by a responsible human at decision time.
+    """
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    default_timeout_seconds: int = Field(default=600, gt=0)
+    per_decision_timeout_seconds: int | None = Field(default=None)
+
+    @property
+    def effective_timeout_seconds(self) -> int:
+        """Return the effective timeout: per-decision override if set, else default."""
+        if self.per_decision_timeout_seconds is not None:
+            return self.per_decision_timeout_seconds
+        return self.default_timeout_seconds
+
+    @model_validator(mode="after")
+    def _validate_timeouts(self) -> TimeoutPolicy:
+        if self.per_decision_timeout_seconds is not None and self.per_decision_timeout_seconds <= 0:
+            raise ValueError(
+                f"per_decision_timeout_seconds must be > 0, got {self.per_decision_timeout_seconds}"
+            )
+        return self
+
+
+# ---------------------------------------------------------------------------
+# T009: parse_band_cutoffs_from_policy()
+# ---------------------------------------------------------------------------
+
+def parse_band_cutoffs_from_policy(
+    policy: MissionPolicySnapshot,
+) -> dict[str, list[int]] | None:
+    """Extract band cutoffs from policy extras.
+
+    Returns None if not configured (use defaults).
+    Raises ValueError if configured but invalid.
+    """
+    cutoffs = policy.extras.get("significance_band_cutoffs")
+    if cutoffs is None:
+        return None
+    if not isinstance(cutoffs, dict):
+        raise ValueError(
+            f"significance_band_cutoffs must be a dict, got {type(cutoffs).__name__}"
+        )
+    for band_name, bounds in cutoffs.items():
+        if not isinstance(bounds, list) or len(bounds) != 2:
+            raise ValueError(
+                f"Band '{band_name}' cutoff must be [min, max], got {bounds}"
+            )
+        if not all(isinstance(b, int) for b in bounds):
+            raise ValueError(
+                f"Band '{band_name}' cutoff values must be integers"
+            )
+    validate_band_cutoffs(cutoffs)
+    return cutoffs
+
+
+# ---------------------------------------------------------------------------
+# T010: parse_timeout_from_policy()
+# ---------------------------------------------------------------------------
+
+def parse_timeout_from_policy(
+    policy: MissionPolicySnapshot,
+) -> int:
+    """Extract default timeout from policy extras.
+
+    Returns 600 (10 minutes) if not configured.
+    Raises ValueError if configured but invalid.
+    """
+    timeout = policy.extras.get("significance_default_timeout_seconds")
+    if timeout is None:
+        return 600
+    if not isinstance(timeout, int):
+        raise ValueError(
+            f"significance_default_timeout_seconds must be int, got {type(timeout).__name__}"
+        )
+    if timeout <= 0:
+        raise ValueError(
+            f"significance_default_timeout_seconds must be > 0, got {timeout}"
+        )
+    return timeout
+
+
 __all__ = [
     # Constants
     "DIMENSION_NAMES",
     "DEFAULT_BANDS",
     "HARD_TRIGGER_REGISTRY",
-    # Models
+    # Models (WP01)
     "SignificanceDimension",
     "RoutingBand",
     "HardTriggerClass",
-    # Functions
+    # Models (WP02)
+    "SignificanceScore",
+    "TimeoutPolicy",
+    # Functions (WP01)
     "make_routing_bands",
     "validate_band_cutoffs",
     "resolve_hard_triggers",
     "validate_dimension_scores",
+    # Functions (WP02)
+    "evaluate_significance",
+    "parse_band_cutoffs_from_policy",
+    "parse_timeout_from_policy",
 ]
