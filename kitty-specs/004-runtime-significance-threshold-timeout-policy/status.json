@@ -1,15 +1,15 @@
 {
-  "event_count": 26,
+  "event_count": 27,
   "feature_slug": "004-runtime-significance-threshold-timeout-policy",
-  "last_event_id": "01KJGJXAQWR1C2CWFRY8T5N2MZ",
-  "materialized_at": "2026-02-27T22:18:36.157443+00:00",
+  "last_event_id": "01KJGK2F9R28HXTC3KJFYH2F1R",
+  "materialized_at": "2026-02-27T22:21:24.664645+00:00",
   "summary": {
     "blocked": 0,
     "canceled": 0,
     "claimed": 0,
-    "done": 5,
+    "done": 6,
     "for_review": 0,
-    "in_progress": 1,
+    "in_progress": 0,
     "planned": 0
   },
   "work_packages": {
@@ -49,11 +49,11 @@
       "last_transition_at": "2026-02-27T22:11:39.033883+00:00"
     },
     "WP06": {
-      "actor": "claude-opus-reviewer",
-      "force_count": 2,
-      "lane": "in_progress",
-      "last_event_id": "01KJGJXAQWR1C2CWFRY8T5N2MZ",
-      "last_transition_at": "2026-02-27T22:18:36.157027+00:00"
+      "actor": "user",
+      "force_count": 3,
+      "lane": "done",
+      "last_event_id": "01KJGK2F9R28HXTC3KJFYH2F1R",
+      "last_transition_at": "2026-02-27T22:21:24.664106+00:00"
     }
   }
 }
