@@ -3,12 +3,19 @@
 # DO NOT EDIT MANUALLY
 
 spec_kitty:
-  version: 2.0.1
+  version: 2.0.2
   initialized_at: '2026-02-26T15:06:32.527186'
-  last_upgraded_at: null
+  last_upgraded_at: '2026-02-27T20:23:17.322290'
 environment:
   python_version: 3.11.14
   platform: darwin
   platform_version: macOS-15.7.3-arm64-arm-64bit
 migrations:
-  applied: []
+  applied:
+  - id: 2.0.1_fix_generated_command_templates
+    applied_at: '2026-02-27T20:23:17.322250'
+    result: success
+    notes: 'Updated: .claude/commands/spec-kitty.accept.md; Updated: .claude/commands/spec-kitty.analyze.md;
+      Updated: .claude/commands/spec-kitty.checklist.md; Updated: .claude/commands/spec-kitty.merge.md;
+      Updated: .codex/prompts/spec-kitty.accept.md; Updated: .codex/prompts/spec-kitty.analyze.md;
+      Updated: .codex/prompts/spec-kitty.checklist.md; Updated: .codex/prompts/spec-kitty.merge.md'
