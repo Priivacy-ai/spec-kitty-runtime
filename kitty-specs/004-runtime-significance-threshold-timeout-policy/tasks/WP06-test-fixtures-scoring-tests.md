@@ -1,33 +1,36 @@
 ---
-work_package_id: "WP06"
+work_package_id: WP06
+title: Test Fixtures & Scoring Test Suite
+lane: "doing"
+dependencies: [WP02]
+base_branch: main
+base_commit: d9f40bd12cd56ca647ad5ed6a73f6a554dca8af9
+created_at: '2026-02-27T22:12:36.633791+00:00'
 subtasks:
-  - "T026"
-  - "T027"
-  - "T028"
-  - "T029"
-  - "T030"
-  - "T031"
-title: "Test Fixtures & Scoring Test Suite"
-phase: "Phase 2 - Validation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
-review_status: ""
-reviewed_by: ""
-dependencies: ["WP02"]
-requirement_refs:
-  - "FR-001"
-  - "FR-002"
-  - "FR-003"
-  - "FR-008"
-  - "FR-015"
+- T026
+- T027
+- T028
+- T029
+- T030
+- T031
+phase: Phase 2 - Validation
+assignee: ''
+agent: ''
+shell_pid: "42199"
+review_status: ''
+reviewed_by: ''
 history:
-  - timestamp: "2026-02-27T20:43:12Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2026-02-27T20:43:12Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+requirement_refs:
+- FR-001
+- FR-002
+- FR-003
+- FR-008
+- FR-015
 ---
 
 # Work Package Prompt: WP06 – Test Fixtures & Scoring Test Suite
