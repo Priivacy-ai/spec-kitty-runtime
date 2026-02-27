@@ -1,0 +1,13 @@
+mission:
+  key: raci-missing-reason
+  name: RACI Missing Override Reason
+  version: "1.0.0"
+steps:
+  - id: step-01
+    title: Bad step
+    prompt: "This step has raci block but no override reason"
+    raci:
+      responsible:
+        actor_type: llm
+      accountable:
+        actor_type: human

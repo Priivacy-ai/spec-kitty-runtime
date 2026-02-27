@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class MissionRuntimeError(RuntimeError):
@@ -50,6 +50,87 @@ class DecisionAnswer(BaseModel):
     answer: str = Field(..., min_length=1)
     answered_by: ActorIdentity
     answered_at: datetime
+
+
+# ---------------------------------------------------------------------------
+# RACI role model types (WP06)
+# ---------------------------------------------------------------------------
+
+_VALID_ACTOR_TYPES = frozenset({"human", "llm", "service"})
+
+
+class RACIRoleBinding(BaseModel):
+    """Single actor-role binding in a RACI assignment."""
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    actor_type: Literal["human", "llm", "service"]
+    actor_id: str | None = None
+
+
+class RACIAssignment(BaseModel):
+    """Per-step RACI assignment (explicit or inferred).
+
+    Enforces P0 invariant: accountable must always be human.
+    """
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    responsible: RACIRoleBinding
+    accountable: RACIRoleBinding
+    consulted: list[RACIRoleBinding] = Field(default_factory=list)
+    informed: list[RACIRoleBinding] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _enforce_p0_accountable_human(self) -> RACIAssignment:
+        if self.accountable.actor_type != "human":
+            raise ValueError(
+                f"P0 invariant violation: accountable must be human, "
+                f"got '{self.accountable.actor_type}'"
+            )
+        return self
+
+
+class ResolvedRACIBinding(BaseModel):
+    """Fully resolved RACI binding with provenance metadata."""
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    step_id: str
+    responsible: RACIRoleBinding
+    accountable: RACIRoleBinding
+    consulted: list[RACIRoleBinding] = Field(default_factory=list)
+    informed: list[RACIRoleBinding] = Field(default_factory=list)
+    source: Literal["inferred", "explicit"]
+    inferred_rule: str | None = None
+    override_reason: str | None = None
+
+    @model_validator(mode="after")
+    def _validate_provenance(self) -> ResolvedRACIBinding:
+        if self.source == "explicit" and not self.override_reason:
+            raise ValueError(
+                "ResolvedRACIBinding with source='explicit' requires non-empty override_reason"
+            )
+        if self.source == "inferred" and not self.inferred_rule:
+            raise ValueError(
+                "ResolvedRACIBinding with source='inferred' requires non-empty inferred_rule"
+            )
+        if self.source == "inferred" and self.override_reason is not None:
+            raise ValueError(
+                "ResolvedRACIBinding with source='inferred' must not have override_reason"
+            )
+        return self
+
+
+class RACIEscalationPayload(BaseModel):
+    """Structured escalation payload for unresolvable RACI roles."""
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    run_id: str
+    step_id: str
+    decision_id: str | None = None
+    unresolved_role: Literal["responsible", "accountable"]
+    actor_type_expected: str
+    resolution_candidates: list[dict[str, Any]] = Field(default_factory=list)
+    reason: str
+    resolution_hint: str
 
 
 # ---------------------------------------------------------------------------
@@ -265,6 +346,20 @@ class AuditStep(BaseModel):
     description: str = ""
     audit: AuditConfig
     depends_on: list[str] = Field(default_factory=list)
+    raci: RACIAssignment | None = None
+    raci_override_reason: str | None = None
+
+    @model_validator(mode="after")
+    def _validate_raci_override_reason(self) -> AuditStep:
+        if self.raci is not None and not self.raci_override_reason:
+            raise ValueError(
+                f"Step '{self.id}': explicit raci block requires non-empty raci_override_reason"
+            )
+        if self.raci is None and self.raci_override_reason is not None:
+            raise ValueError(
+                f"Step '{self.id}': raci_override_reason provided without raci block"
+            )
+        return self
 
 
 # ---------------------------------------------------------------------------
@@ -291,6 +386,20 @@ class PromptStep(BaseModel):
     expected_output: str | None = None
     requires_inputs: list[str] = Field(default_factory=list)
     depends_on: list[str] = Field(default_factory=list)
+    raci: RACIAssignment | None = None
+    raci_override_reason: str | None = None
+
+    @model_validator(mode="after")
+    def _validate_raci_override_reason(self) -> PromptStep:
+        if self.raci is not None and not self.raci_override_reason:
+            raise ValueError(
+                f"Step '{self.id}': explicit raci block requires non-empty raci_override_reason"
+            )
+        if self.raci is None and self.raci_override_reason is not None:
+            raise ValueError(
+                f"Step '{self.id}': raci_override_reason provided without raci block"
+            )
+        return self
 
 
 class MissionPolicySnapshot(BaseModel):

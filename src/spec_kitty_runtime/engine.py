@@ -33,8 +33,10 @@ from spec_kitty_runtime.events import (
     RuntimeEventEmitter,
 )
 from spec_kitty_runtime.planner import plan_next
+from spec_kitty_runtime.raci import resolve_raci
 from spec_kitty_runtime.schema import (
     ActorIdentity,
+    AuditStep,
     DecisionAnswer,
     DecisionRequest,
     MissionPolicySnapshot,
@@ -42,11 +44,25 @@ from spec_kitty_runtime.schema import (
     MissionRuntimeError,
     MissionTemplate,
     NextDecision,
+    PromptStep,
     load_mission_template_file,
 )
 
 
 ResultType = Literal["success", "failed", "blocked"]
+
+
+def _find_step_by_id(
+    template: MissionTemplate, step_id: str
+) -> PromptStep | AuditStep | None:
+    """Look up a step by ID across both steps and audit_steps."""
+    for step in template.steps:
+        if step.id == step_id:
+            return step
+    for step in template.audit_steps:
+        if step.id == step_id:
+            return step
+    return None
 
 
 class MissionRunRef(BaseModel):
@@ -265,6 +281,7 @@ def next_step(
     issued_step_id = snapshot.issued_step_id
     pending_decisions = dict(snapshot.pending_decisions)
     inputs = dict(snapshot.inputs)
+    decisions = dict(snapshot.decisions)
 
     if decision.kind == "step" and decision.step_id:
         issued_step_id = decision.step_id
@@ -275,6 +292,23 @@ def next_step(
         )
         _append_event(run_dir, NEXT_STEP_ISSUED, si_payload.model_dump(mode="json"))
         emitter.emit_next_step_issued(si_payload)
+
+        # WP06: Resolve and persist RACI binding for the issued step.
+        # Uses best-effort resolution: if inputs are insufficient for full
+        # actor resolution, falls back to inferred binding without concrete
+        # actor IDs. Fail-closed enforcement happens in provide_decision_answer().
+        step_obj = _find_step_by_id(template, decision.step_id)
+        if step_obj is not None:
+            from spec_kitty_runtime.raci import infer_raci
+            raci_inputs = {**inputs, "agent_id": agent_id}
+            try:
+                resolved_raci = resolve_raci(step_obj, raci_inputs, effective_policy)
+                decisions[f"raci:{decision.step_id}"] = resolved_raci.model_dump(mode="json")
+            except MissionRuntimeError:
+                # Inputs insufficient for full resolution — record inferred binding.
+                inferred = infer_raci(step_obj, effective_policy)
+                decisions[f"raci:{decision.step_id}"] = inferred.model_dump(mode="json")
+
     elif decision.kind == "decision_required" and decision.decision_id:
         # Persist input-keyed decisions in pending_decisions so they're answerable.
         # Only emit event + persist on first occurrence to avoid duplicates on re-poll.
@@ -320,7 +354,7 @@ def next_step(
         issued_step_id=issued_step_id,
         completed_steps=snapshot.completed_steps,
         inputs=inputs,
-        decisions=snapshot.decisions,
+        decisions=decisions,
         pending_decisions=pending_decisions,
         blocked_reason=snapshot.blocked_reason,
     )
@@ -359,6 +393,22 @@ def provide_decision_answer(
     blocked_reason = snapshot.blocked_reason
     authority_role = actor.actor_type
     rationale_linkage: str | None = None
+    raci_source: str | None = None
+    raci_override_reason: str | None = None
+
+    # WP06: Look up persisted RACI binding for the step associated with this decision.
+    _raci_step_id: str | None = None
+    if decision_id.startswith("audit:"):
+        _raci_step_id = decision_id[len("audit:"):]
+    elif decision_id.startswith("input:"):
+        # For input decisions, check if there's an issued step with RACI
+        _raci_step_id = snapshot.issued_step_id
+
+    raci_key = f"raci:{_raci_step_id}" if _raci_step_id else None
+    raci_record = decisions.get(raci_key) if raci_key else None
+    if isinstance(raci_record, dict):
+        raci_source = raci_record.get("source")
+        raci_override_reason = raci_record.get("override_reason")
 
     # T014: Detect audit: prefix and validate answer before creating DecisionAnswer.
     if decision_id.startswith("audit:"):
@@ -386,6 +436,8 @@ def provide_decision_answer(
                     "authority_role": authority_role,
                     "rationale_linkage": rationale_linkage,
                     "reason": deny_reason,
+                    "raci_source": raci_source,
+                    "override_reason": raci_override_reason,
                 },
             )
             raise MissionRuntimeError(deny_reason)
@@ -421,7 +473,11 @@ def provide_decision_answer(
         answered_at=datetime.now(timezone.utc),
     )
     decision_record = answer_data.model_dump(mode="json")
-    decision_record.update(_authority_metadata(actor, authority_role, rationale_linkage))
+    decision_record.update(_authority_metadata(
+        actor, authority_role, rationale_linkage,
+        raci_source=raci_source,
+        override_reason=raci_override_reason,
+    ))
     decisions[decision_id] = decision_record
     del pending[decision_id]
 
@@ -483,14 +539,23 @@ def _resolve_delegation_record(inputs: dict[str, Any], decision_id: str) -> dict
 
 
 def _authority_metadata(
-    actor: ActorIdentity, authority_role: str, rationale_linkage: str | None
+    actor: ActorIdentity,
+    authority_role: str,
+    rationale_linkage: str | None,
+    raci_source: str | None = None,
+    override_reason: str | None = None,
 ) -> dict[str, Any]:
-    return {
+    metadata: dict[str, Any] = {
         "actor_type": actor.actor_type,
         "actor_id": actor.actor_id,
         "authority_role": authority_role,
         "rationale_linkage": rationale_linkage,
     }
+    if raci_source is not None:
+        metadata["raci_source"] = raci_source
+    if override_reason is not None:
+        metadata["override_reason"] = override_reason
+    return metadata
 
 
 # ============================================================================

@@ -1,0 +1,14 @@
+mission:
+  key: raci-p0-bad
+  name: RACI P0 Violation Mission
+  version: "1.0.0"
+steps:
+  - id: step-01
+    title: Bad step
+    prompt: "This step has invalid RACI"
+    raci:
+      responsible:
+        actor_type: llm
+      accountable:
+        actor_type: llm
+    raci_override_reason: "Testing P0 violation"

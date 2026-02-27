@@ -1,0 +1,26 @@
+mission:
+  key: raci-explicit
+  name: RACI Explicit Override Mission
+  version: "1.0.0"
+steps:
+  - id: step-01
+    title: Implement feature
+    prompt: "Implement the feature"
+    raci:
+      responsible:
+        actor_type: llm
+        actor_id: custom-agent
+      accountable:
+        actor_type: human
+        actor_id: owner-1
+    raci_override_reason: "Custom agent required for specialized implementation"
+  - id: step-02
+    title: Review feature
+    prompt: "Review the implementation"
+audit_steps:
+  - id: audit-01
+    title: Final review
+    depends_on: ["step-01", "step-02"]
+    audit:
+      trigger_mode: manual
+      enforcement: blocking
