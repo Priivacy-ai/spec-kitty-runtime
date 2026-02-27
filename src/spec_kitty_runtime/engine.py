@@ -364,12 +364,14 @@ def provide_decision_answer(
     if decision_id.startswith("audit:"):
         audit_step_id = decision_id[len("audit:"):]
         mission_owner_id = _resolve_mission_owner_id(inputs)
-        authority_role = "mission_owner" if mission_owner_id else "human_reviewer"
+        authority_role = "mission_owner"
 
         deny_reason: str | None = None
         if actor.actor_type != "human":
             deny_reason = "Audit decisions require a human actor"
-        elif mission_owner_id and actor.actor_id != mission_owner_id:
+        elif not mission_owner_id:
+            deny_reason = "Audit decisions require mission_owner_id to be set in inputs"
+        elif actor.actor_id != mission_owner_id:
             deny_reason = f"Audit decisions require mission owner '{mission_owner_id}'"
 
         if deny_reason is not None:
