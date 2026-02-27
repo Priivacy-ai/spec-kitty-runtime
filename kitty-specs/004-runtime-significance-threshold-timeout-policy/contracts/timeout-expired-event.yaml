@@ -1,0 +1,146 @@
+# Contract: TimeoutExpiredPayload Event Shape
+# Feature: 004-runtime-significance-threshold-timeout-policy
+# Date: 2026-02-27
+#
+# Emitted by engine.notify_decision_timeout() when a decision exceeds
+# its configured timeout window. Persisted in JSONL event log and
+# delivered via RuntimeEventEmitter protocol.
+#
+# Compatibility Note: Field names aligned with anticipated spec-kitty-events v2.4.0.
+
+timeout_expired_payload:
+  type: object
+  frozen: true
+  required:
+    - run_id
+    - decision_id
+    - step_id
+    - significance_score
+    - effective_band
+    - timeout_configured_seconds
+    - escalation_targets
+    - raci_snapshot
+    - actor
+  properties:
+    run_id:
+      type: string
+      description: "Mission run identifier"
+    decision_id:
+      type: string
+      description: "The decision that timed out"
+    step_id:
+      type: string
+      description: "Associated step identifier"
+    significance_score:
+      type: object
+      description: "Full SignificanceScore at timeout (see significance-evaluation.yaml)"
+    effective_band:
+      type: string
+      enum: [medium, high]
+      description: "Routing band at timeout (never low — low band auto-proceeds)"
+    timeout_configured_seconds:
+      type: integer
+      minimum: 1
+      description: "The timeout value that expired"
+    escalation_targets:
+      type: array
+      description: "Actors to escalate to, based on band and RACI snapshot"
+      items:
+        type: object
+        required: [actor_type]
+        properties:
+          actor_type:
+            type: string
+            enum: [human, llm, service]
+          actor_id:
+            type: string
+            nullable: true
+    raci_snapshot:
+      type: object
+      description: "Serialized ResolvedRACIBinding at escalation time"
+    actor:
+      type: object
+      description: "System actor identity (timeout is system-initiated)"
+      required: [actor_type, actor_id]
+      properties:
+        actor_type:
+          type: string
+          const: service
+        actor_id:
+          type: string
+          const: runtime
+
+# Escalation rules:
+#
+# MEDIUM band timeout:
+#   escalation_targets = [mission_owner]
+#   (if responsible_human == mission_owner, still emitted, no target change)
+#
+# HIGH band / HARD-TRIGGER timeout:
+#   escalation_targets = [mission_owner] + [accountable] + [consulted...]
+#   (empty consulted set → logged but does not block escalation)
+
+# Example: Medium-band timeout escalation
+example_medium_timeout:
+  run_id: "run-abc-123"
+  decision_id: "audit:deploy-review"
+  step_id: "deploy-review"
+  significance_score:
+    dimensions:
+      - {name: user_customer_impact, score: 2}
+      - {name: architectural_system_impact, score: 1}
+      - {name: data_security_compliance_impact, score: 2}
+      - {name: operational_reliability_impact, score: 2}
+      - {name: financial_commercial_impact, score: 1}
+      - {name: cross_team_blast_radius, score: 1}
+    composite: 9
+    band: medium
+    hard_trigger_classes: []
+    effective_band: medium
+  effective_band: medium
+  timeout_configured_seconds: 600
+  escalation_targets:
+    - {actor_type: human, actor_id: "mission-owner-001"}
+  raci_snapshot:
+    step_id: "deploy-review"
+    responsible: {actor_type: human, actor_id: "reviewer-001"}
+    accountable: {actor_type: human, actor_id: "mission-owner-001"}
+    consulted: []
+    informed: []
+    source: inferred
+    inferred_rule: "audit_blocking"
+  actor: {actor_type: service, actor_id: runtime}
+
+# Example: High-band timeout with consulted actors
+example_high_timeout:
+  run_id: "run-def-456"
+  decision_id: "audit:arch-review"
+  step_id: "arch-review"
+  significance_score:
+    dimensions:
+      - {name: user_customer_impact, score: 2}
+      - {name: architectural_system_impact, score: 3}
+      - {name: data_security_compliance_impact, score: 3}
+      - {name: operational_reliability_impact, score: 2}
+      - {name: financial_commercial_impact, score: 2}
+      - {name: cross_team_blast_radius, score: 3}
+    composite: 15
+    band: high
+    hard_trigger_classes: []
+    effective_band: high
+  effective_band: high
+  timeout_configured_seconds: 600
+  escalation_targets:
+    - {actor_type: human, actor_id: "mission-owner-001"}
+    - {actor_type: human, actor_id: "tech-lead-002"}
+    - {actor_type: human, actor_id: "security-reviewer-003"}
+  raci_snapshot:
+    step_id: "arch-review"
+    responsible: {actor_type: human, actor_id: "tech-lead-002"}
+    accountable: {actor_type: human, actor_id: "mission-owner-001"}
+    consulted:
+      - {actor_type: human, actor_id: "security-reviewer-003"}
+    informed: []
+    source: explicit
+    override_reason: "Architecture review requires security team consultation"
+  actor: {actor_type: service, actor_id: runtime}

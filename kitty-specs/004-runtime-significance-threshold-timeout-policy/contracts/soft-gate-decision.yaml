@@ -1,0 +1,149 @@
+# Contract: SoftGateDecision Payload Shape
+# Feature: 004-runtime-significance-threshold-timeout-policy
+# Date: 2026-02-27
+#
+# Captured when a medium-band decision is resolved by the responsible human.
+# Stored in MissionRunSnapshot.decisions["soft_gate:<decision_id>"]
+
+soft_gate_decision:
+  type: object
+  frozen: true
+  required:
+    - decision_id
+    - action
+    - actor
+    - timestamp
+    - significance_score
+  properties:
+    decision_id:
+      type: string
+      description: "Reference to the decision"
+    action:
+      type: string
+      enum: [decide_solo, open_stand_up, defer]
+      description: "Chosen action by responsible human"
+    actor:
+      type: object
+      description: "Actor identity (must be human per FR-018)"
+      required: [actor_type, actor_id]
+      properties:
+        actor_type:
+          type: string
+          const: human
+        actor_id:
+          type: string
+    timestamp:
+      type: string
+      format: date-time
+      description: "UTC timestamp of the decision"
+    significance_score:
+      type: object
+      description: "Full SignificanceScore at decision time (see significance-evaluation.yaml)"
+    participants:
+      type: array
+      description: "Stand-up participants (populated for open_stand_up action)"
+      default: []
+      items:
+        type: object
+        required: [actor_type]
+        properties:
+          actor_type:
+            type: string
+            enum: [human, llm, service]
+          actor_id:
+            type: string
+            nullable: true
+    outcome:
+      type: string
+      nullable: true
+      description: "Final outcome after action (approve/reject/defer). Null until resolved."
+    rationale:
+      type: string
+      nullable: true
+      description: "Optional human-provided rationale for the decision"
+
+# Action semantics:
+#
+# decide_solo:
+#   - Gate clears immediately
+#   - outcome set to the human's decision (approve/reject)
+#   - No participants required
+#
+# open_stand_up:
+#   - Runtime records recommended participants
+#   - Gate clears only after final decision is captured
+#   - outcome set after stand-up concludes
+#
+# defer:
+#   - Deferral recorded with rationale
+#   - Timeout clock continues (NOT reset by default)
+#   - outcome remains null until final action taken
+#   - If timeout expires, escalation proceeds per medium-band rules
+
+# Example: decide-solo action
+example_decide_solo:
+  decision_id: "audit:config-change"
+  action: decide_solo
+  actor: {actor_type: human, actor_id: "reviewer-001"}
+  timestamp: "2026-02-27T14:30:00Z"
+  significance_score:
+    dimensions:
+      - {name: user_customer_impact, score: 1}
+      - {name: architectural_system_impact, score: 2}
+      - {name: data_security_compliance_impact, score: 1}
+      - {name: operational_reliability_impact, score: 2}
+      - {name: financial_commercial_impact, score: 1}
+      - {name: cross_team_blast_radius, score: 1}
+    composite: 8
+    band: medium
+    hard_trigger_classes: []
+    effective_band: medium
+  participants: []
+  outcome: "approve"
+  rationale: "Config change is low-risk, reviewed documentation"
+
+# Example: open-stand-up action
+example_open_stand_up:
+  decision_id: "audit:api-redesign"
+  action: open_stand_up
+  actor: {actor_type: human, actor_id: "tech-lead-002"}
+  timestamp: "2026-02-27T15:00:00Z"
+  significance_score:
+    dimensions:
+      - {name: user_customer_impact, score: 2}
+      - {name: architectural_system_impact, score: 2}
+      - {name: data_security_compliance_impact, score: 1}
+      - {name: operational_reliability_impact, score: 2}
+      - {name: financial_commercial_impact, score: 1}
+      - {name: cross_team_blast_radius, score: 2}
+    composite: 10
+    band: medium
+    hard_trigger_classes: []
+    effective_band: medium
+  participants:
+    - {actor_type: human, actor_id: "backend-dev-003"}
+    - {actor_type: human, actor_id: "frontend-dev-004"}
+  outcome: "approve"
+  rationale: "Team consensus: API change is backward-compatible, proceed with migration guide"
+
+# Example: defer action
+example_defer:
+  decision_id: "audit:schema-migration"
+  action: defer
+  actor: {actor_type: human, actor_id: "reviewer-001"}
+  timestamp: "2026-02-27T16:00:00Z"
+  significance_score:
+    dimensions:
+      - {name: user_customer_impact, score: 1}
+      - {name: architectural_system_impact, score: 2}
+      - {name: data_security_compliance_impact, score: 2}
+      - {name: operational_reliability_impact, score: 1}
+      - {name: financial_commercial_impact, score: 1}
+      - {name: cross_team_blast_radius, score: 1}
+    composite: 8
+    band: medium
+    hard_trigger_classes: []
+    effective_band: medium
+  participants: []
+  outcome: null
+  rationale: "Need to check backward compatibility before proceeding"

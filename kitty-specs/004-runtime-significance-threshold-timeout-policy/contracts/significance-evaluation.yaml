@@ -1,0 +1,98 @@
+# Contract: SignificanceScore Evaluation Payload
+# Feature: 004-runtime-significance-threshold-timeout-policy
+# Date: 2026-02-27
+#
+# This defines the serialized shape of a significance evaluation result.
+# Stored in MissionRunSnapshot.decisions["significance:<decision_id>"]
+# and emitted as part of SignificanceEvaluatedPayload events.
+#
+# Compatibility Note: Field names are intentionally aligned with anticipated
+# spec-kitty-events v2.4.0 contracts to minimize migration effort.
+
+significance_score:
+  type: object
+  frozen: true
+  required:
+    - dimensions
+    - composite
+    - band
+    - hard_trigger_classes
+    - effective_band
+  properties:
+    dimensions:
+      type: array
+      description: "Exactly 6 dimension scores, one per fixed dimension name"
+      min_items: 6
+      max_items: 6
+      items:
+        type: object
+        required: [name, score]
+        properties:
+          name:
+            type: string
+            enum:
+              - user_customer_impact
+              - architectural_system_impact
+              - data_security_compliance_impact
+              - operational_reliability_impact
+              - financial_commercial_impact
+              - cross_team_blast_radius
+          score:
+            type: integer
+            minimum: 0
+            maximum: 3
+          description:
+            type: string
+            default: ""
+    composite:
+      type: integer
+      description: "Sum of all dimension scores"
+      minimum: 0
+      maximum: 18
+    band:
+      type: string
+      description: "Routing band from numeric score only (before hard-trigger override)"
+      enum: [low, medium, high]
+    hard_trigger_classes:
+      type: array
+      description: "Matching hard-trigger class IDs (empty if none matched)"
+      items:
+        type: string
+        enum:
+          - production_data_destructive
+          - security_privacy_access_control
+          - legal_compliance_regulatory
+          - billing_financial_commitment
+          - architecture_foundation
+    effective_band:
+      type: string
+      description: "Final routing band (high if any hard-trigger matched, else same as band)"
+      enum: [low, medium, high]
+
+# Example: Low-band decision (auto-proceed)
+example_low:
+  dimensions:
+    - {name: user_customer_impact, score: 1}
+    - {name: architectural_system_impact, score: 1}
+    - {name: data_security_compliance_impact, score: 1}
+    - {name: operational_reliability_impact, score: 1}
+    - {name: financial_commercial_impact, score: 1}
+    - {name: cross_team_blast_radius, score: 1}
+  composite: 6
+  band: low
+  hard_trigger_classes: []
+  effective_band: low
+
+# Example: Hard-trigger override (low score, forced to high)
+example_hard_trigger:
+  dimensions:
+    - {name: user_customer_impact, score: 0}
+    - {name: architectural_system_impact, score: 0}
+    - {name: data_security_compliance_impact, score: 1}
+    - {name: operational_reliability_impact, score: 0}
+    - {name: financial_commercial_impact, score: 0}
+    - {name: cross_team_blast_radius, score: 0}
+  composite: 1
+  band: low
+  hard_trigger_classes: [security_privacy_access_control]
+  effective_band: high
