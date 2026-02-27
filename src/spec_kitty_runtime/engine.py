@@ -357,15 +357,61 @@ def provide_decision_answer(
     inputs = dict(snapshot.inputs)
     completed_steps = list(snapshot.completed_steps)
     blocked_reason = snapshot.blocked_reason
+    authority_role = actor.actor_type
+    rationale_linkage: str | None = None
 
     # T014: Detect audit: prefix and validate answer before creating DecisionAnswer.
     if decision_id.startswith("audit:"):
         audit_step_id = decision_id[len("audit:"):]
+        mission_owner_id = _resolve_mission_owner_id(inputs)
+        authority_role = "mission_owner"
+
+        deny_reason: str | None = None
+        if actor.actor_type != "human":
+            deny_reason = "Audit decisions require a human actor"
+        elif not mission_owner_id:
+            deny_reason = "Audit decisions require mission_owner_id to be set in inputs"
+        elif actor.actor_id != mission_owner_id:
+            deny_reason = f"Audit decisions require mission owner '{mission_owner_id}'"
+
+        if deny_reason is not None:
+            _append_event(
+                run_dir,
+                "DecisionAuthorityDenied",
+                {
+                    "run_id": snapshot.run_id,
+                    "decision_id": decision_id,
+                    "actor_type": actor.actor_type,
+                    "actor_id": actor.actor_id,
+                    "authority_role": authority_role,
+                    "rationale_linkage": rationale_linkage,
+                    "reason": deny_reason,
+                },
+            )
+            raise MissionRuntimeError(deny_reason)
 
         # T015: Validate that answer is exactly "approve" or "reject".
         if answer not in ("approve", "reject"):
             raise MissionRuntimeError(
                 f"Invalid audit answer '{answer}': must be 'approve' or 'reject'"
+            )
+    elif actor.actor_type == "llm":
+        delegation = _resolve_delegation_record(inputs, decision_id)
+        if delegation is None:
+            raise MissionRuntimeError(
+                f"LLM actor '{actor.actor_id}' is not delegated for decision '{decision_id}'"
+            )
+
+        authority_role = delegation.get("authority_role") or "delegated_llm"
+        if not isinstance(authority_role, str):
+            authority_role = "delegated_llm"
+
+        rationale_raw = delegation.get("rationale_linkage")
+        if isinstance(rationale_raw, str):
+            rationale_linkage = rationale_raw.strip() or None
+        if rationale_linkage is None:
+            raise MissionRuntimeError(
+                f"LLM delegation for decision '{decision_id}' must include non-empty rationale_linkage"
             )
 
     answer_data = DecisionAnswer(
@@ -374,7 +420,9 @@ def provide_decision_answer(
         answered_by=actor,
         answered_at=datetime.now(timezone.utc),
     )
-    decisions[decision_id] = answer_data.model_dump(mode="json")
+    decision_record = answer_data.model_dump(mode="json")
+    decision_record.update(_authority_metadata(actor, authority_role, rationale_linkage))
+    decisions[decision_id] = decision_record
     del pending[decision_id]
 
     if decision_id.startswith("audit:"):
@@ -412,6 +460,37 @@ def provide_decision_answer(
     )
     _append_event(run_dir, DECISION_INPUT_ANSWERED, da_payload.model_dump(mode="json"))
     emitter.emit_decision_input_answered(da_payload)
+
+
+def _resolve_mission_owner_id(inputs: dict[str, Any]) -> str | None:
+    owner_id = inputs.get("mission_owner_id")
+    if isinstance(owner_id, str):
+        owner_id = owner_id.strip()
+        if owner_id:
+            return owner_id
+    return None
+
+
+def _resolve_delegation_record(inputs: dict[str, Any], decision_id: str) -> dict[str, Any] | None:
+    delegations = inputs.get("llm_delegations")
+    if not isinstance(delegations, dict):
+        return None
+    for key in (decision_id, "*"):
+        record = delegations.get(key)
+        if isinstance(record, dict):
+            return record
+    return None
+
+
+def _authority_metadata(
+    actor: ActorIdentity, authority_role: str, rationale_linkage: str | None
+) -> dict[str, Any]:
+    return {
+        "actor_type": actor.actor_type,
+        "actor_id": actor.actor_id,
+        "authority_role": authority_role,
+        "rationale_linkage": rationale_linkage,
+    }
 
 
 # ============================================================================
