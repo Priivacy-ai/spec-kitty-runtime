@@ -55,11 +55,11 @@
 **Requirement Refs**: FR-001, FR-002, FR-003, FR-010, FR-016, FR-017
 
 ### Included Subtasks
-- [ ] T006 Implement SignificanceScore model with composite, band, hard_trigger_classes, effective_band
-- [ ] T007 Implement `evaluate_significance()` pure function (dimension_scores, hard_trigger_classes, band_cutoffs → SignificanceScore)
-- [ ] T008 Implement TimeoutPolicy model with default 600s, per-decision override, validation (>0)
-- [ ] T009 Implement `parse_band_cutoffs_from_policy()` for MissionPolicySnapshot.extras
-- [ ] T010 Implement `parse_timeout_from_policy()` for MissionPolicySnapshot.extras
+- [x] T006 Implement SignificanceScore model with composite, band, hard_trigger_classes, effective_band
+- [x] T007 Implement `evaluate_significance()` pure function (dimension_scores, hard_trigger_classes, band_cutoffs → SignificanceScore)
+- [x] T008 Implement TimeoutPolicy model with default 600s, per-decision override, validation (>0)
+- [x] T009 Implement `parse_band_cutoffs_from_policy()` for MissionPolicySnapshot.extras
+- [x] T010 Implement `parse_timeout_from_policy()` for MissionPolicySnapshot.extras
 
 ### Implementation Notes
 - SignificanceScore validates: exactly 6 dimensions, composite == sum of scores, effective_band == high when hard_trigger_classes non-empty
