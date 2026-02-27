@@ -36,7 +36,33 @@ from spec_kitty_runtime.schema import (
     RACIEscalationPayload,
     RACIRoleBinding,
     ResolvedRACIBinding,
+    SignificanceBlock,
     StepContextBundle,
+)
+from spec_kitty_runtime.significance import (
+    # Models
+    SignificanceDimension,
+    SignificanceScore,
+    RoutingBand,
+    HardTriggerClass,
+    TimeoutPolicy,
+    SoftGateDecision,
+    DimensionScoreOverride,
+    TimeoutEscalationResult,
+    SignificanceEvaluatedPayload,
+    TimeoutExpiredPayload,
+    # Functions
+    evaluate_significance,
+    compute_escalation_targets,
+    validate_band_cutoffs,
+    validate_dimension_scores,
+    parse_band_cutoffs_from_policy,
+    parse_timeout_from_policy,
+    resolve_hard_triggers,
+    # Constants
+    DIMENSION_NAMES,
+    HARD_TRIGGER_REGISTRY,
+    DEFAULT_BANDS,
 )
 
 __all__ = [
@@ -56,6 +82,7 @@ __all__ = [
     "MissionRuntimeError",
     "MissionTemplate",
     "PromptStep",
+    "SignificanceBlock",
     "StepContextBundle",
     # Mission pack manifest types
     "MissionPackEntry",
@@ -93,4 +120,27 @@ __all__ = [
     "render_prompt",
     # Adapters
     "CapabilityAdapter",
+    # Significance models (WP01-WP04)
+    "SignificanceDimension",
+    "SignificanceScore",
+    "RoutingBand",
+    "HardTriggerClass",
+    "TimeoutPolicy",
+    "SoftGateDecision",
+    "DimensionScoreOverride",
+    "TimeoutEscalationResult",
+    "SignificanceEvaluatedPayload",
+    "TimeoutExpiredPayload",
+    # Significance functions (WP01-WP02)
+    "evaluate_significance",
+    "compute_escalation_targets",
+    "validate_band_cutoffs",
+    "validate_dimension_scores",
+    "parse_band_cutoffs_from_policy",
+    "parse_timeout_from_policy",
+    "resolve_hard_triggers",
+    # Significance constants
+    "DIMENSION_NAMES",
+    "HARD_TRIGGER_REGISTRY",
+    "DEFAULT_BANDS",
 ]

@@ -283,6 +283,93 @@ def next_step(
     inputs = dict(snapshot.inputs)
     decisions = dict(snapshot.decisions)
 
+    # ====================================================================
+    # WP05: Significance evaluation for audit decisions
+    # ====================================================================
+    if (
+        decision.kind == "decision_required"
+        and decision.decision_id
+        and decision.decision_id.startswith("audit:")
+    ):
+        _sig_step_id = decision.decision_id[len("audit:"):]
+        _sig_step = _find_step_by_id(template, _sig_step_id)
+        if isinstance(_sig_step, AuditStep) and _sig_step.significance is not None:
+            _sig_score = evaluate_significance(
+                dimension_scores=_sig_step.significance.dimensions,
+                hard_trigger_classes=_sig_step.significance.hard_triggers,
+                band_cutoffs=parse_band_cutoffs_from_policy(effective_policy),
+            )
+            decisions[f"significance:{decision.decision_id}"] = _sig_score.model_dump(mode="json")
+
+            # Resolve RACI for the audit step (needed for timeout escalation)
+            from spec_kitty_runtime.raci import infer_raci as _infer_raci
+            _raci_inputs = {**inputs, "agent_id": agent_id}
+            try:
+                _resolved_raci = resolve_raci(_sig_step, _raci_inputs, effective_policy)
+                decisions[f"raci:{_sig_step_id}"] = _resolved_raci.model_dump(mode="json")
+            except MissionRuntimeError:
+                _inferred = _infer_raci(_sig_step, effective_policy)
+                decisions[f"raci:{_sig_step_id}"] = _inferred.model_dump(mode="json")
+
+            # Emit significance evaluated event
+            _sig_payload = SignificanceEvaluatedPayload(
+                run_id=snapshot.run_id,
+                decision_id=decision.decision_id,
+                step_id=_sig_step_id,
+                significance_score=_sig_score.model_dump(mode="json"),
+                hard_trigger_classes=tuple(
+                    ht.class_id for ht in _sig_score.hard_trigger_classes
+                ),
+                effective_band=_sig_score.effective_band.name,
+                actor=RACIRoleBinding(actor_type="service", actor_id="runtime"),
+            )
+            _append_event(
+                run_dir, "SignificanceEvaluated", _sig_payload.model_dump(mode="json")
+            )
+            emitter.emit_significance_evaluated(_sig_payload)
+
+            # Adjust decision based on effective band
+            if _sig_score.effective_band.name == "low":
+                # LOW band: auto-proceed — no human gate
+                _completed = list(snapshot.completed_steps)
+                if _sig_step_id not in _completed:
+                    _completed.append(_sig_step_id)
+                snapshot = MissionRunSnapshot(
+                    run_id=snapshot.run_id,
+                    mission_key=snapshot.mission_key,
+                    template_path=snapshot.template_path,
+                    template_hash=snapshot.template_hash,
+                    policy_snapshot=snapshot.policy_snapshot,
+                    issued_step_id=None,
+                    completed_steps=_completed,
+                    inputs=inputs,
+                    decisions=decisions,
+                    pending_decisions=pending_decisions,
+                    blocked_reason=snapshot.blocked_reason,
+                )
+                # Re-plan with updated state to get the actual next decision
+                decision = plan_next(
+                    snapshot,
+                    template,
+                    effective_policy,
+                    actor_context={**actor_context, "agent_id": agent_id},
+                    live_template_path=live_template_path,
+                )
+                issued_step_id = snapshot.issued_step_id
+            elif _sig_score.effective_band.name == "medium":
+                # MEDIUM band: soft gate with different options
+                decision = NextDecision(
+                    kind="decision_required",
+                    run_id=snapshot.run_id,
+                    mission_key=snapshot.mission_key,
+                    step_id=decision.step_id,
+                    step_title=decision.step_title,
+                    decision_id=decision.decision_id,
+                    question=decision.question,
+                    options=["decide_solo", "open_stand_up", "defer"],
+                )
+            # HIGH band: keep existing decision (approve/reject) — no change needed
+
     if decision.kind == "step" and decision.step_id:
         issued_step_id = decision.step_id
         si_actor = RuntimeActorIdentity(actor_id=agent_id, actor_type="llm")
@@ -442,11 +529,32 @@ def provide_decision_answer(
             )
             raise MissionRuntimeError(deny_reason)
 
-        # T015: Validate that answer is exactly "approve" or "reject".
-        if answer not in ("approve", "reject"):
-            raise MissionRuntimeError(
-                f"Invalid audit answer '{answer}': must be 'approve' or 'reject'"
-            )
+        # WP05: Significance-aware answer validation.
+        # Check if this audit decision has a significance evaluation.
+        _sig_key = f"significance:{decision_id}"
+        _sig_data = decisions.get(_sig_key)
+        _effective_band_name: str | None = None
+        if _sig_data is not None and isinstance(_sig_data, dict):
+            _eb = _sig_data.get("effective_band")
+            _effective_band_name = _eb.get("name") if isinstance(_eb, dict) else _eb
+
+        if _effective_band_name == "medium":
+            _valid_medium = {"decide_solo", "open_stand_up", "defer"}
+            if answer not in _valid_medium:
+                raise MissionRuntimeError(
+                    f"Medium-band decision requires one of {sorted(_valid_medium)}, got: {answer!r}"
+                )
+        elif _effective_band_name == "high":
+            if answer not in ("approve", "reject"):
+                raise MissionRuntimeError(
+                    f"High-band decision requires one of {{'approve', 'reject'}}, got: {answer!r}"
+                )
+        else:
+            # No significance evaluation — existing validation (T015).
+            if answer not in ("approve", "reject"):
+                raise MissionRuntimeError(
+                    f"Invalid audit answer '{answer}': must be 'approve' or 'reject'"
+                )
     elif actor.actor_type == "llm":
         delegation = _resolve_delegation_record(inputs, decision_id)
         if delegation is None:
@@ -482,13 +590,43 @@ def provide_decision_answer(
     del pending[decision_id]
 
     if decision_id.startswith("audit:"):
-        if answer == "approve":
-            # T016: Add audit_step_id to completed_steps so DAG can advance.
-            if audit_step_id not in completed_steps:
-                completed_steps.append(audit_step_id)
+        # WP05: Significance-aware gate handling.
+        _sig_key_handle = f"significance:{decision_id}"
+        _sig_data_handle = decisions.get(_sig_key_handle)
+        _eb_name_handle: str | None = None
+        if _sig_data_handle is not None and isinstance(_sig_data_handle, dict):
+            _eb_h = _sig_data_handle.get("effective_band")
+            _eb_name_handle = _eb_h.get("name") if isinstance(_eb_h, dict) else _eb_h
+
+        if _eb_name_handle == "medium":
+            # Medium-band: persist SoftGateDecision
+            _sig_score_obj = SignificanceScore.model_validate(_sig_data_handle)
+            _soft_gate = SoftGateDecision(
+                decision_id=decision_id,
+                action=answer,
+                actor=RACIRoleBinding(actor_type=actor.actor_type, actor_id=actor.actor_id),
+                timestamp=datetime.now(timezone.utc),
+                significance_score=_sig_score_obj,
+                outcome=answer if answer == "decide_solo" else None,
+            )
+            decisions[f"soft_gate:{decision_id}"] = _soft_gate.model_dump(mode="json")
+
+            if answer == "decide_solo":
+                # Gate clears — add to completed_steps
+                if audit_step_id not in completed_steps:
+                    completed_steps.append(audit_step_id)
+            else:
+                # open_stand_up / defer: gate stays open, re-add to pending
+                pending[decision_id] = snapshot.pending_decisions[decision_id]
         else:
-            # T017: Set blocked_reason; run is permanently blocked.
-            blocked_reason = f"Audit step '{audit_step_id}' rejected by {actor.actor_id}"
+            # HIGH band or no significance: existing behavior
+            if answer == "approve":
+                # T016: Add audit_step_id to completed_steps so DAG can advance.
+                if audit_step_id not in completed_steps:
+                    completed_steps.append(audit_step_id)
+            else:
+                # T017: Set blocked_reason; run is permanently blocked.
+                blocked_reason = f"Audit step '{audit_step_id}' rejected by {actor.actor_id}"
 
     elif decision_id.startswith("input:"):
         # For input-keyed decisions, write the answer into inputs so requires_inputs is satisfied.
@@ -564,9 +702,14 @@ def _authority_metadata(
 
 
 from spec_kitty_runtime.significance import (
+    SignificanceEvaluatedPayload,
+    SignificanceScore,
+    SoftGateDecision,
     TimeoutExpiredPayload,
     TimeoutEscalationResult,
     compute_escalation_targets,
+    evaluate_significance,
+    parse_band_cutoffs_from_policy,
     parse_timeout_from_policy,
 )
 from spec_kitty_runtime.schema import RACIRoleBinding, ResolvedRACIBinding
