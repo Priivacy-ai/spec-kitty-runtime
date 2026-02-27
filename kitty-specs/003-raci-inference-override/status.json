@@ -1,24 +1,24 @@
 {
-  "event_count": 4,
+  "event_count": 5,
   "feature_slug": "003-raci-inference-override",
-  "last_event_id": "01KJG6NCDM9F9XSN2YYX636X4R",
-  "materialized_at": "2026-02-27T18:44:32.820862+00:00",
+  "last_event_id": "01KJG6S6EBM1DWYQWJD4R3S1GN",
+  "materialized_at": "2026-02-27T18:46:37.771710+00:00",
   "summary": {
     "blocked": 0,
     "canceled": 0,
     "claimed": 0,
-    "done": 0,
+    "done": 1,
     "for_review": 0,
-    "in_progress": 1,
+    "in_progress": 0,
     "planned": 0
   },
   "work_packages": {
     "WP06": {
-      "actor": "claude-opus",
-      "force_count": 2,
-      "lane": "in_progress",
-      "last_event_id": "01KJG6NCDM9F9XSN2YYX636X4R",
-      "last_transition_at": "2026-02-27T18:44:32.820637+00:00"
+      "actor": "user",
+      "force_count": 3,
+      "lane": "done",
+      "last_event_id": "01KJG6S6EBM1DWYQWJD4R3S1GN",
+      "last_transition_at": "2026-02-27T18:46:37.771287+00:00"
     }
   }
 }
