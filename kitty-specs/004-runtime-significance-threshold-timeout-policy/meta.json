@@ -1,10 +1,24 @@
 {
+  "accept_commit": null,
+  "acceptance_history": [
+    {
+      "accepted_at": "2026-02-27T22:31:40Z",
+      "accepted_by": "claude",
+      "accepted_from_commit": "8f3e5353d95afc089781adf818cebeeadbd8621e",
+      "branch": "main",
+      "mode": "pr"
+    }
+  ],
+  "acceptance_mode": "pr",
+  "accepted_at": "2026-02-27T22:31:40Z",
+  "accepted_by": "claude",
+  "accepted_from_commit": "8f3e5353d95afc089781adf818cebeeadbd8621e",
+  "created_at": "2026-02-27T19:54:26.285982+00:00",
   "feature_number": "004",
-  "slug": "004-runtime-significance-threshold-timeout-policy",
   "friendly_name": "Runtime Significance Threshold & Timeout Policy",
   "mission": "software-dev",
+  "slug": "004-runtime-significance-threshold-timeout-policy",
   "source_description": "runtime significance threshold timeout policy",
-  "created_at": "2026-02-27T19:54:26.285982+00:00",
   "target_branch": "main",
   "vcs": "git"
 }
