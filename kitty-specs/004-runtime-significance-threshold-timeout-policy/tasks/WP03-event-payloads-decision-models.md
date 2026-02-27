@@ -15,7 +15,7 @@ subtasks:
 - T016
 phase: Phase 1 - Communication Layer
 assignee: ''
-agent: ''
+agent: "claude-opus"
 shell_pid: "18308"
 review_status: ''
 reviewed_by: ''
@@ -269,3 +269,4 @@ spec-kitty implement WP03 --base WP02
 > **CRITICAL**: Activity log entries MUST be in chronological order (oldest first, newest last).
 
 - 2026-02-27T20:43:12Z – system – lane=planned – Prompt created.
+- 2026-02-27T21:20:48Z – claude-opus – shell_pid=18308 – lane=doing – Assigned agent via workflow command
