@@ -1,7 +1,7 @@
 ---
 work_package_id: WP05
 title: Runtime Decision Authority Kernel
-lane: "in_progress"
+lane: "for_review"
 dependencies: []
 base_branch: codex/wp05-runtime-decision-authority-kernel
 base_commit: a8f1f41daeac3d036ba17af324d4c3a52cd49bc8
@@ -64,3 +64,4 @@ Establish a runtime authority kernel for P0 so final closure is strictly human-o
 - 2026-02-27T14:08:13Z – codex-reviewer – shell_pid=54810 – lane=done – Review passed: all 235 tests green, no regressions, no new lint violations. Denial path, audit payload fields, LLM delegation guard all verified. | Done override: Review agent works in worktree branch (002-decision-authority-kernel-WP05); implementation is committed and reviewed; merge into tracking branch handled by merge workflow.
 - 2026-02-27T14:08:55Z – codex-reviewer – shell_pid=54810 – lane=for_review – State correction after premature auto-approval
 - 2026-02-27T14:09:39Z – codex-reviewer – shell_pid=54810 – lane=in_progress – Reopened after P1 review finding
+- 2026-02-27T14:19:23Z – codex-reviewer – shell_pid=54810 – lane=for_review – Addressed P1 mission-owner bypass via commits 0010e77 + 833fee5; pytest authority/decision and audit/policy passing
