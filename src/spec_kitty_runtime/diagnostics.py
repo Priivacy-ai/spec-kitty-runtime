@@ -40,6 +40,7 @@ class CompatibilityReport(BaseModel):
 
 _VALID_TRIGGER_MODES = frozenset({"manual", "post_merge", "both"})
 _VALID_ENFORCEMENTS = frozenset({"advisory", "blocking"})
+_VALID_ACTOR_TYPES = frozenset({"human", "llm", "service"})
 
 
 def validate_mission_template_compatibility(path: Path | str) -> CompatibilityReport:
@@ -219,6 +220,106 @@ def validate_mission_template_compatibility(path: Path | str) -> CompatibilityRe
                     field=f"audit_steps[{i}].depends_on",
                     message=(
                         f"audit_steps[{i}].depends_on references unknown ID '{dep_str}'"
+                    ),
+                    severity="error",
+                ))
+
+    # WP06: RACI validation checks for all steps
+    all_raw_steps = steps + audit_steps
+    for i, step_raw in enumerate(all_raw_steps):
+        step_kind = "steps" if i < len(steps) else "audit_steps"
+        step_index = i if i < len(steps) else i - len(steps)
+        step_id = step_raw.get("id", f"<unknown-{step_index}>")
+
+        raci_block = step_raw.get("raci")
+        raci_override_reason = step_raw.get("raci_override_reason")
+
+        if raci_block is None and raci_override_reason is None:
+            continue  # No RACI config — skip
+
+        # Check: raci block present without override reason
+        if raci_block is not None and not raci_override_reason:
+            issues.append(CompatibilityIssue(
+                code="MISSING_OVERRIDE_REASON",
+                field=f"{step_kind}[{step_index}].raci_override_reason",
+                message=(
+                    f"Step '{step_id}' has explicit raci block but missing "
+                    f"raci_override_reason"
+                ),
+                severity="error",
+            ))
+
+        # Check: override reason without raci block
+        if raci_block is None and raci_override_reason is not None:
+            issues.append(CompatibilityIssue(
+                code="MISSING_OVERRIDE_REASON",
+                field=f"{step_kind}[{step_index}].raci",
+                message=(
+                    f"Step '{step_id}' has raci_override_reason but no raci block"
+                ),
+                severity="error",
+            ))
+
+        if not isinstance(raci_block, dict):
+            continue
+
+        # Validate individual role bindings
+        for role_name in ("responsible", "accountable", "consulted", "informed"):
+            role_data = raci_block.get(role_name)
+            if role_data is None:
+                if role_name in ("responsible", "accountable"):
+                    issues.append(CompatibilityIssue(
+                        code="INVALID_RACI_ROLE",
+                        field=f"{step_kind}[{step_index}].raci.{role_name}",
+                        message=(
+                            f"Step '{step_id}': required RACI role '{role_name}' is missing"
+                        ),
+                        severity="error",
+                    ))
+                continue
+
+            # Handle list roles (consulted, informed)
+            bindings = role_data if isinstance(role_data, list) else [role_data]
+            for b_idx, binding in enumerate(bindings):
+                if not isinstance(binding, dict):
+                    continue
+                actor_type = binding.get("actor_type")
+                if actor_type not in _VALID_ACTOR_TYPES:
+                    issues.append(CompatibilityIssue(
+                        code="UNKNOWN_ACTOR_TYPE",
+                        field=f"{step_kind}[{step_index}].raci.{role_name}",
+                        message=(
+                            f"Step '{step_id}': actor_type '{actor_type}' is not valid; "
+                            f"must be one of: {', '.join(sorted(_VALID_ACTOR_TYPES))}"
+                        ),
+                        severity="error",
+                    ))
+
+        # P0 invariant: accountable must be human
+        accountable = raci_block.get("accountable")
+        if isinstance(accountable, dict):
+            if accountable.get("actor_type") != "human":
+                issues.append(CompatibilityIssue(
+                    code="P0_INVARIANT_VIOLATION",
+                    field=f"{step_kind}[{step_index}].raci.accountable",
+                    message=(
+                        f"Step '{step_id}': P0 invariant violation — accountable must be "
+                        f"human, got '{accountable.get('actor_type')}'"
+                    ),
+                    severity="error",
+                ))
+
+        # P0 invariant: blocking audit responsible must be human
+        audit_block = step_raw.get("audit")
+        if isinstance(audit_block, dict) and audit_block.get("enforcement") == "blocking":
+            responsible = raci_block.get("responsible")
+            if isinstance(responsible, dict) and responsible.get("actor_type") != "human":
+                issues.append(CompatibilityIssue(
+                    code="INVALID_RACI_ROLE",
+                    field=f"{step_kind}[{step_index}].raci.responsible",
+                    message=(
+                        f"Step '{step_id}': blocking audit step requires human responsible, "
+                        f"got '{responsible.get('actor_type')}'"
                     ),
                     severity="error",
                 ))

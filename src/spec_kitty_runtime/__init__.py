@@ -16,6 +16,7 @@ from spec_kitty_runtime.engine import MissionRunRef, next_step, provide_decision
 from spec_kitty_runtime.events import JsonlEventLog, NullEmitter, RuntimeEventEmitter
 from spec_kitty_runtime.planner import serialize_decision
 from spec_kitty_runtime.prompting import render_prompt
+from spec_kitty_runtime.raci import infer_raci, resolve_raci, validate_raci_assignment
 from spec_kitty_events.mission_next import RuntimeActorIdentity
 from spec_kitty_runtime.schema import (
     ActorIdentity,
@@ -31,6 +32,10 @@ from spec_kitty_runtime.schema import (
     MissionTemplate,
     NextDecision,
     PromptStep,
+    RACIAssignment,
+    RACIEscalationPayload,
+    RACIRoleBinding,
+    ResolvedRACIBinding,
     StepContextBundle,
 )
 
@@ -41,6 +46,11 @@ __all__ = [
     "CommitContext",
     "DecisionAnswer",
     "DecisionRequest",
+    # RACI types (WP06)
+    "RACIAssignment",
+    "RACIEscalationPayload",
+    "RACIRoleBinding",
+    "ResolvedRACIBinding",
     # Mission template types
     "MissionPolicySnapshot",
     "MissionRuntimeError",
@@ -68,6 +78,10 @@ __all__ = [
     "next_step",
     "provide_decision_answer",
     "start_mission_run",
+    # RACI functions (WP06)
+    "infer_raci",
+    "resolve_raci",
+    "validate_raci_assignment",
     # Events
     "JsonlEventLog",
     "NullEmitter",
