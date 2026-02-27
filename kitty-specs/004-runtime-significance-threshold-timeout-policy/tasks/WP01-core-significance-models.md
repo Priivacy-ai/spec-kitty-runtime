@@ -1,7 +1,7 @@
 ---
 work_package_id: WP01
 title: Core Significance Models & Registries
-lane: "doing"
+lane: "done"
 dependencies: []
 base_branch: main
 base_commit: 15df224ca42e67fc9c8dce338e5675b4f4dba9f7
@@ -14,10 +14,10 @@ subtasks:
 - T005
 phase: Phase 0 - Foundation
 assignee: claude-opus
-agent: "claude-opus"
-shell_pid: "11868"
-review_status: has_feedback
-reviewed_by: Robert Douglass
+agent: claude-opus
+shell_pid: '11868'
+review_status: "approved"
+reviewed_by: "Robert Douglass"
 review_feedback: feedback://004-runtime-significance-threshold-timeout-policy/WP01/20260227T210712Z-857a32b9.md
 history:
 - timestamp: '2026-02-27T20:43:12Z'
@@ -300,3 +300,4 @@ spec-kitty implement WP01
 - 2026-02-27T21:08:10Z – codex – shell_pid=7578 – lane=in_progress – Reopened: previous rejection was based on main-branch view; WP01 implementation exists in worktree branch
 - 2026-02-27T21:08:12Z – claude-opus – shell_pid=7578 – lane=for_review – Ready for proper review: worktree commit 75160c9 has significance.py + test_significance.py; targeted tests passing
 - 2026-02-27T21:08:25Z – claude-opus – shell_pid=11868 – lane=doing – Started review via workflow command
+- 2026-02-27T21:11:37Z – claude-opus – shell_pid=11868 – lane=done – Review passed: WP01 merged to main. 3 frozen Pydantic models match contracts exactly. 74 new tests, 297 total, zero regressions. WP02 unblocked.
