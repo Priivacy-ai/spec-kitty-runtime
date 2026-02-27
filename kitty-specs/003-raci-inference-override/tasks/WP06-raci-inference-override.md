@@ -1,11 +1,11 @@
 ---
 work_package_id: WP06
 title: RACI Inference and Override
-lane: "in_progress"
+lane: "doing"
 dependencies: []
 base_branch: main
-base_commit: 8bc392f57b62d20ba66b741eb3c92ccb5ca667fd
-created_at: '2026-02-27T18:58:00+00:00'
+base_commit: 6987ac52bc4bed93096aa77bfd98e27d2160f221
+created_at: '2026-02-27T17:57:52.028223+00:00'
 subtasks:
 - T001-define-raci-models
 - T002-implement-raci-inference-engine
@@ -13,9 +13,9 @@ subtasks:
 - T004-add-template-validation
 - T005-create-test-suite
 phase: Phase 2 - Implementation
-assignee: "claude-opus-4.6"
-agent: "codex"
-shell_pid: "22747"
+assignee: claude-opus-4.6
+agent: "claude-opus"
+shell_pid: "23756"
 review_status: ''
 reviewed_by: ''
 review_feedback: ''
@@ -98,3 +98,4 @@ All acceptance criteria from the specification must be met:
 ## Activity Log
 
 - 2026-02-27T17:57:43Z – codex – shell_pid=22747 – lane=in_progress – Kickoff WP06 implementation orchestration
+- 2026-02-27T17:58:44Z – claude-opus – shell_pid=23756 – lane=doing – Started implementation via workflow command
