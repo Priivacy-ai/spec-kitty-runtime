@@ -1,36 +1,39 @@
 ---
-work_package_id: "WP07"
+work_package_id: WP07
+title: Integration Tests, Timeout Tests & Edge Cases
+lane: "doing"
+dependencies: [WP05, WP06]
+base_branch: main
+base_commit: 51b0204963f0731497e0c74c41af917779ff47bf
+created_at: '2026-02-27T22:22:08.056901+00:00'
 subtasks:
-  - "T032"
-  - "T033"
-  - "T034"
-  - "T035"
-  - "T036"
-  - "T037"
-title: "Integration Tests, Timeout Tests & Edge Cases"
-phase: "Phase 3 - Comprehensive Validation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
-review_status: ""
-reviewed_by: ""
-dependencies: ["WP05", "WP06"]
-requirement_refs:
-  - "FR-010"
-  - "FR-011"
-  - "FR-012"
-  - "FR-013"
-  - "FR-014"
-  - "FR-016"
-  - "FR-017"
-  - "FR-019"
+- T032
+- T033
+- T034
+- T035
+- T036
+- T037
+phase: Phase 3 - Comprehensive Validation
+assignee: ''
+agent: ''
+shell_pid: "47123"
+review_status: ''
+reviewed_by: ''
 history:
-  - timestamp: "2026-02-27T20:43:12Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2026-02-27T20:43:12Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+requirement_refs:
+- FR-010
+- FR-011
+- FR-012
+- FR-013
+- FR-014
+- FR-016
+- FR-017
+- FR-019
 ---
 
 # Work Package Prompt: WP07 – Integration Tests, Timeout Tests & Edge Cases
