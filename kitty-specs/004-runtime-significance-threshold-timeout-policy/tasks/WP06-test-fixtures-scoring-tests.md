@@ -15,7 +15,7 @@ subtasks:
 - T031
 phase: Phase 2 - Validation
 assignee: ''
-agent: ''
+agent: "claude-opus"
 shell_pid: "42199"
 review_status: ''
 reviewed_by: ''
@@ -524,3 +524,4 @@ spec-kitty implement WP06 --base WP02
 > **CRITICAL**: Activity log entries MUST be in chronological order (oldest first, newest last).
 
 - 2026-02-27T20:43:12Z – system – lane=planned – Prompt created.
+- 2026-02-27T22:12:36Z – claude-opus – shell_pid=42199 – lane=doing – Assigned agent via workflow command
