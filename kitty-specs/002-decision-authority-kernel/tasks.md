@@ -27,5 +27,5 @@ total_wps: 1
 
 <!-- status-model:start -->
 ## Canonical Status (Generated)
-- WP05: in_progress
+- WP05: for_review
 <!-- status-model:end -->
