@@ -1,15 +1,17 @@
 ---
 work_package_id: WP05
 title: Runtime Decision Authority Kernel
-lane: "doing"
+lane: "done"
 dependencies: []
 base_branch: codex/wp05-runtime-decision-authority-kernel
 base_commit: a8f1f41daeac3d036ba17af324d4c3a52cd49bc8
 created_at: '2026-02-27T13:48:10.856990+00:00'
 assignee: claude-opus-4.6
-agent: "codex-reviewer"
-shell_pid: "54810"
+agent: codex-reviewer
+shell_pid: '54810'
 requirement_refs: [FR-005]
+reviewed_by: "Robert Douglass"
+review_status: "approved"
 ---
 
 # WP05: Runtime Decision Authority Kernel
@@ -59,3 +61,4 @@ Establish a runtime authority kernel for P0 so final closure is strictly human-o
 - 2026-02-27T13:48:10Z – claude-opus-4.6 – shell_pid=54810 – lane=doing – Started implementation via workflow command
 - 2026-02-27T13:58:32Z – claude-opus-4.6 – shell_pid=54810 – lane=for_review – Ready for review: authority kernel + tests
 - 2026-02-27T14:00:05Z – codex-reviewer – shell_pid=54810 – lane=doing – Started review via workflow command
+- 2026-02-27T14:08:13Z – codex-reviewer – shell_pid=54810 – lane=done – Review passed: all 235 tests green, no regressions, no new lint violations. Denial path, audit payload fields, LLM delegation guard all verified. | Done override: Review agent works in worktree branch (002-decision-authority-kernel-WP05); implementation is committed and reviewed; merge into tracking branch handled by merge workflow.
