@@ -1,0 +1,26 @@
+mission:
+  key: sig-low-test
+  name: Low Significance Test Mission
+  version: "1.0.0"
+
+steps:
+  - id: prepare
+    title: Prepare artifacts
+    prompt: "Gather artifacts"
+
+audit_steps:
+  - id: low-review
+    title: Low-impact configuration review
+    audit:
+      trigger_mode: manual
+      enforcement: blocking
+    significance:
+      dimensions:
+        user_customer_impact: 1
+        architectural_system_impact: 1
+        data_security_compliance_impact: 1
+        operational_reliability_impact: 1
+        financial_commercial_impact: 1
+        cross_team_blast_radius: 1
+      hard_triggers: []
+    depends_on: [prepare]

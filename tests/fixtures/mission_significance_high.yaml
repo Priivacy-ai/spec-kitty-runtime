@@ -1,0 +1,26 @@
+mission:
+  key: sig-high-test
+  name: High Significance Test Mission
+  version: "1.0.0"
+
+steps:
+  - id: prepare
+    title: Prepare artifacts
+    prompt: "Gather artifacts"
+
+audit_steps:
+  - id: high-review
+    title: High-impact production deployment review
+    audit:
+      trigger_mode: manual
+      enforcement: blocking
+    significance:
+      dimensions:
+        user_customer_impact: 3
+        architectural_system_impact: 3
+        data_security_compliance_impact: 3
+        operational_reliability_impact: 2
+        financial_commercial_impact: 2
+        cross_team_blast_radius: 2
+      hard_triggers: []
+    depends_on: [prepare]
