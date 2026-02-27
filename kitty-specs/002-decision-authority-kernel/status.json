@@ -1,8 +1,8 @@
 {
-  "event_count": 2,
+  "event_count": 8,
   "feature_slug": "002-decision-authority-kernel",
-  "last_event_id": "01KJFNNXN5V2HRJH26A9KE26D7",
-  "materialized_at": "2026-02-27T13:47:44.677427+00:00",
+  "last_event_id": "01KJFPY1XWK9G9SVHP5XJRAVW9",
+  "materialized_at": "2026-02-27T14:09:39.772878+00:00",
   "summary": {
     "blocked": 0,
     "canceled": 0,
@@ -14,11 +14,11 @@
   },
   "work_packages": {
     "WP05": {
-      "actor": "codex",
-      "force_count": 0,
+      "actor": "codex-reviewer",
+      "force_count": 3,
       "lane": "in_progress",
-      "last_event_id": "01KJFNNXN5V2HRJH26A9KE26D7",
-      "last_transition_at": "2026-02-27T13:47:44.677279+00:00"
+      "last_event_id": "01KJFPY1XWK9G9SVHP5XJRAVW9",
+      "last_transition_at": "2026-02-27T14:09:39.772592+00:00"
     }
   }
 }
