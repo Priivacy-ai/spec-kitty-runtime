@@ -1,7 +1,7 @@
 ---
 work_package_id: WP01
 title: Core Significance Models & Registries
-lane: "doing"
+lane: "for_review"
 dependencies: []
 base_branch: main
 base_commit: 15df224ca42e67fc9c8dce338e5675b4f4dba9f7
@@ -14,8 +14,8 @@ subtasks:
 - T005
 phase: Phase 0 - Foundation
 assignee: ''
-agent: "claude-opus"
-shell_pid: "7578"
+agent: claude-opus
+shell_pid: '7578'
 review_status: ''
 reviewed_by: ''
 history:
@@ -294,3 +294,4 @@ spec-kitty implement WP01
 
 - 2026-02-27T20:43:12Z – system – lane=planned – Prompt created.
 - 2026-02-27T21:00:20Z – claude-opus – shell_pid=7578 – lane=doing – Assigned agent via workflow command
+- 2026-02-27T21:03:42Z – claude-opus – shell_pid=7578 – lane=for_review – Ready for review: All 5 subtasks complete. significance.py with 3 frozen Pydantic models (SignificanceDimension, RoutingBand, HardTriggerClass), fixed registries, band cutoff validation, dimension score validation. 74 new tests, 371 total passing.

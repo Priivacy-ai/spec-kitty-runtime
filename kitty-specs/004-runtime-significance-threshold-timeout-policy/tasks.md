@@ -347,3 +347,8 @@ WP01 → WP02 → WP03 → WP04 → WP05 → WP07
 | T035 | Audit trail capture tests | WP07 | P2 | Yes |
 | T036 | Determinism verification tests | WP07 | P2 | Yes |
 | T037 | Edge case tests + quickstart validation | WP07 | P2 | Yes |
+
+<!-- status-model:start -->
+## Canonical Status (Generated)
+- WP01: for_review
+<!-- status-model:end -->
