@@ -338,6 +338,27 @@ class AuditConfig(BaseModel):
     metadata: dict[str, Any] | None = None
 
 
+class SignificanceBlock(BaseModel):
+    """Optional significance declaration for an audit step.
+
+    Declares dimension scores and hard-trigger classes that determine
+    the routing band (low/medium/high) for the audit gate.
+    """
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    dimensions: dict[str, int]  # dimension_name → score (0-3)
+    hard_triggers: list[str] = Field(default_factory=list)  # hard-trigger class IDs
+
+    @model_validator(mode="after")
+    def _validate_dimensions(self) -> SignificanceBlock:
+        from spec_kitty_runtime.significance import validate_dimension_scores, HARD_TRIGGER_REGISTRY
+        validate_dimension_scores(self.dimensions)
+        for trigger_id in self.hard_triggers:
+            if trigger_id not in HARD_TRIGGER_REGISTRY:
+                raise ValueError(f"Unknown hard-trigger class: {trigger_id}")
+        return self
+
+
 class AuditStep(BaseModel):
     model_config = ConfigDict(frozen=True)
 
@@ -345,6 +366,7 @@ class AuditStep(BaseModel):
     title: str = Field(..., min_length=1)
     description: str = ""
     audit: AuditConfig
+    significance: SignificanceBlock | None = None
     depends_on: list[str] = Field(default_factory=list)
     raci: RACIAssignment | None = None
     raci_override_reason: str | None = None
