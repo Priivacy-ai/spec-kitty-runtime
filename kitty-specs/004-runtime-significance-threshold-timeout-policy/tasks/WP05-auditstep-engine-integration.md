@@ -14,7 +14,7 @@ subtasks:
 - T025
 phase: Phase 2 - Integration
 assignee: ''
-agent: ''
+agent: "claude-opus"
 shell_pid: "34730"
 review_status: ''
 reviewed_by: ''
@@ -351,3 +351,4 @@ spec-kitty implement WP05 --base WP04
 > **CRITICAL**: Activity log entries MUST be in chronological order (oldest first, newest last).
 
 - 2026-02-27T20:43:12Z – system – lane=planned – Prompt created.
+- 2026-02-27T21:56:39Z – claude-opus – shell_pid=34730 – lane=doing – Assigned agent via workflow command
