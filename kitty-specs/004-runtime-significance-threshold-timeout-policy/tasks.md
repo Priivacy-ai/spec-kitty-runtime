@@ -352,5 +352,5 @@ WP01 → WP02 → WP03 → WP04 → WP05 → WP07
 ## Canonical Status (Generated)
 - WP01: done
 - WP02: done
-- WP03: for_review
+- WP03: in_progress
 <!-- status-model:end -->
