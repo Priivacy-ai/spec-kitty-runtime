@@ -1,7 +1,7 @@
 ---
 work_package_id: WP02
 title: Significance Scoring Engine
-lane: "doing"
+lane: "for_review"
 dependencies: [WP01]
 base_branch: main
 base_commit: 10e7ee5310fb9a1d71a47dc15523cdf4c76327e4
@@ -14,8 +14,8 @@ subtasks:
 - T010
 phase: Phase 0 - Foundation
 assignee: ''
-agent: "claude-opus"
-shell_pid: "14111"
+agent: claude-opus
+shell_pid: '14111'
 review_status: ''
 reviewed_by: ''
 history:
@@ -293,3 +293,4 @@ spec-kitty implement WP02 --base WP01
 
 - 2026-02-27T20:43:12Z – system – lane=planned – Prompt created.
 - 2026-02-27T21:12:38Z – claude-opus – shell_pid=14111 – lane=doing – Assigned agent via workflow command
+- 2026-02-27T21:16:23Z – claude-opus – shell_pid=14111 – lane=for_review – Ready for review: SignificanceScore model, evaluate_significance() pure function, TimeoutPolicy model, parse_band_cutoffs_from_policy(), parse_timeout_from_policy(). 61 new tests, 432 total passing.

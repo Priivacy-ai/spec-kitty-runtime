@@ -351,4 +351,5 @@ WP01 → WP02 → WP03 → WP04 → WP05 → WP07
 <!-- status-model:start -->
 ## Canonical Status (Generated)
 - WP01: done
+- WP02: for_review
 <!-- status-model:end -->
