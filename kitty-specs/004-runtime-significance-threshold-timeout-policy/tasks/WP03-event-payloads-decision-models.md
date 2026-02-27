@@ -1,7 +1,7 @@
 ---
 work_package_id: WP03
 title: Event Payloads & Decision Models
-lane: "doing"
+lane: "for_review"
 dependencies: [WP02]
 base_branch: main
 base_commit: c94e977540297d57ab1133d99ae3f68046a95e52
@@ -15,8 +15,8 @@ subtasks:
 - T016
 phase: Phase 1 - Communication Layer
 assignee: ''
-agent: "claude-opus"
-shell_pid: "18308"
+agent: claude-opus
+shell_pid: '18308'
 review_status: ''
 reviewed_by: ''
 history:
@@ -270,3 +270,4 @@ spec-kitty implement WP03 --base WP02
 
 - 2026-02-27T20:43:12Z – system – lane=planned – Prompt created.
 - 2026-02-27T21:20:48Z – claude-opus – shell_pid=18308 – lane=doing – Assigned agent via workflow command
+- 2026-02-27T21:25:02Z – claude-opus – shell_pid=18308 – lane=for_review – Ready for review: 4 payload/decision models (T011-T014), protocol extension (T015-T016), 46 tests, 478 total passing
