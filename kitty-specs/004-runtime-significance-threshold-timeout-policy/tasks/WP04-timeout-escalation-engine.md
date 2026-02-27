@@ -1,30 +1,33 @@
 ---
-work_package_id: "WP04"
+work_package_id: WP04
+title: Timeout Escalation & Engine API
+lane: "doing"
+dependencies: [WP03]
+base_branch: main
+base_commit: cbf0cc05d0a4d9d9e4f49e1137fbfd13c3f10fa9
+created_at: '2026-02-27T21:45:17.519425+00:00'
 subtasks:
-  - "T017"
-  - "T018"
-  - "T019"
-  - "T020"
-title: "Timeout Escalation & Engine API"
-phase: "Phase 1 - Escalation Layer"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
-review_status: ""
-reviewed_by: ""
-dependencies: ["WP03"]
-requirement_refs:
-  - "FR-011"
-  - "FR-012"
-  - "FR-013"
-  - "FR-014"
+- T017
+- T018
+- T019
+- T020
+phase: Phase 1 - Escalation Layer
+assignee: ''
+agent: ''
+shell_pid: "29041"
+review_status: ''
+reviewed_by: ''
 history:
-  - timestamp: "2026-02-27T20:43:12Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2026-02-27T20:43:12Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+requirement_refs:
+- FR-011
+- FR-012
+- FR-013
+- FR-014
 ---
 
 # Work Package Prompt: WP04 – Timeout Escalation & Engine API
