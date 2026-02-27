@@ -1,108 +1,220 @@
-# Implementation Plan: [FEATURE]
-*Path: [templates/plan-template.md](templates/plan-template.md)*
+# Implementation Plan: RACI Inference and Override (WP06)
+*Path: kitty-specs/003-raci-inference-override/plan.md*
 
-
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/kitty-specs/[###-feature-name]/spec.md`
-
-**Note**: This template is filled in by the `/spec-kitty.plan` command. See `src/specify_cli/missions/software-dev/command-templates/plan.md` for the execution workflow.
-
-The planner will not begin until all planning questions have been answered—capture those answers in this document before progressing to later phases.
+**Branch**: `main` | **Date**: 2026-02-27 | **Spec**: [spec.md](spec.md)
+**Input**: Feature specification from `/kitty-specs/003-raci-inference-override/spec.md`
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+Extend the runtime with a deterministic RACI role model that governs who may act on each mission step and decision. Four new Pydantic models (`RACIRoleBinding`, `RACIAssignment`, `ResolvedRACIBinding`, `RACIEscalationPayload`) define the schema. A new `raci.py` module provides pure-function inference and resolution. The WP05 authority kernel in `engine.py` is extended (not replaced) with RACI-aware validation and audit trail recording. Template diagnostics gain four new issue codes for RACI validation.
+
+**P0 invariants enforced at every layer:**
+- Human mission owner is always `accountable` (no LLM-as-A)
+- LLMs participate in advisory capacity only (`consulted`/`informed` roles)
+- Explicit `raci:` overrides require `raci_override_reason` justification
+- Unresolvable `responsible`/`accountable` roles fail-closed with `RACIEscalationPayload`
+- All RACI operations are local, offline, deterministic — no fallbacks
 
 ## Technical Context
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
-
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: Python 3.11+
+**Primary Dependencies**: pydantic>=2.0, pyyaml>=6.0, spec-kitty-events==2.3.1
+**Storage**: File-based run state (`.kittify/runtime/runs/<run_id>/state.json`)
+**Testing**: pytest 8.x, deterministic fixtures (no mocks, no network, no randomness)
+**Target Platform**: Library (importable by host repos)
+**Project Type**: single
+**Performance Goals**: All RACI inference/resolution calls <1 ms (pure in-memory, zero I/O)
+**Constraints**: Offline-only, fail-closed, no fallback mechanisms, no legacy compat shims
+**Scale/Scope**: Single library package; 1 new module + 3 modified modules + 2 new test modules + fixture YAMLs
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+| Gate | Status | Notes |
+|------|--------|-------|
+| P0 human authority | PASS | `accountable.actor_type` enforced as `"human"` at schema, inference, resolution, and diagnostics layers (defense in depth) |
+| LLM advisory-only | PASS | LLM restricted to C/I roles; LLM-as-R permitted only for prompt execution, never decision closure |
+| No network calls | PASS | All resolution is local, offline, deterministic |
+| No fallback mechanisms | PASS | Invalid RACI configs fail explicitly — no silent degradation |
+| WP05 compatibility | PASS | Additive extension; WP05 authority kernel tests pass unmodified |
+| Events contract stability | PASS | No new event types; additive optional fields on `DecisionAuthorityDenied` |
+| Auth0/SAML/SCIM | OUT OF SCOPE | Explicitly excluded from P0/MVP |
+| LLM-as-A mode | OUT OF SCOPE | Explicitly excluded from P0/MVP |
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```
-kitty-specs/[###-feature]/
-├── plan.md              # This file (/spec-kitty.plan command output)
-├── research.md          # Phase 0 output (/spec-kitty.plan command)
-├── data-model.md        # Phase 1 output (/spec-kitty.plan command)
-├── quickstart.md        # Phase 1 output (/spec-kitty.plan command)
-├── contracts/           # Phase 1 output (/spec-kitty.plan command)
-└── tasks.md             # Phase 2 output (/spec-kitty.tasks command - NOT created by /spec-kitty.plan)
+kitty-specs/003-raci-inference-override/
+├── spec.md              # Feature specification (complete)
+├── plan.md              # This file
+├── tasks/               # Work package prompt files (generated by /spec-kitty.tasks)
+└── mission-events.jsonl # Mission event log
 ```
 
-### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
+### Source Code Changes
 
 ```
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+src/spec_kitty_runtime/
+├── schema.py         # + RACIRoleBinding, RACIAssignment, ResolvedRACIBinding,
+│                     #   RACIEscalationPayload; extend PromptStep & AuditStep
+├── raci.py           # NEW: infer_raci(), resolve_raci(), validate_raci_assignment()
+├── engine.py         # Extend _authority_metadata(), next_step(), provide_decision_answer()
+└── diagnostics.py    # + 4 RACI issue codes in validate_mission_template_compatibility()
 
 tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+├── test_raci_schema.py          # AC-1, AC-2: Schema validation + YAML loading
+├── test_raci.py                 # AC-3–7, AC-11: Inference, resolution, escalation, determinism
+├── test_raci_engine.py          # AC-8, AC-9, AC-12: Authority integration, audit trail, backward compat
+├── test_compat_diagnostics.py   # AC-10: Diagnostics extension (extend existing test module)
+└── fixtures/
+    ├── raci_prompt_default.yaml          # PromptStep without raci: (inferred)
+    ├── raci_prompt_explicit.yaml         # PromptStep with explicit raci: + override_reason
+    ├── raci_audit_blocking.yaml          # AuditStep blocking without raci: (inferred)
+    ├── raci_audit_advisory.yaml          # AuditStep advisory without raci: (inferred)
+    ├── raci_audit_explicit.yaml          # AuditStep with explicit raci: + override_reason
+    ├── raci_invalid_llm_accountable.yaml # P0 invariant violation: LLM as A
+    ├── raci_missing_override_reason.yaml # raci: without raci_override_reason
+    └── raci_llm_blocking_audit.yaml      # LLM as R for blocking audit (invalid)
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Single-project layout. All changes within existing `src/spec_kitty_runtime/` package. One new module (`raci.py`), three modified modules (`schema.py`, `engine.py`, `diagnostics.py`). Two new test modules, one extended test module. Eight new YAML fixtures.
+
+## Work Package Decomposition
+
+### WP01 — RACI Schema Models + Step Extensions
+
+**Files**: `src/spec_kitty_runtime/schema.py`
+**Tests**: `tests/test_raci_schema.py`
+
+Add four Pydantic models to `schema.py` and extend step types:
+
+1. **`RACIRoleBinding`**: `actor_type: Literal["human", "llm", "service"]`, `actor_id: str | None`. Frozen, `extra="forbid"`. Unknown `actor_type` → `ValidationError` (Pydantic strict).
+
+2. **`RACIAssignment`**: Required `responsible: RACIRoleBinding`, `accountable: RACIRoleBinding`. Optional `consulted: list[RACIRoleBinding]`, `informed: list[RACIRoleBinding]`. Frozen, `extra="forbid"`. `model_validator` enforces `accountable.actor_type == "human"` (P0 invariant) — raises `ValueError` on violation.
+
+3. **`ResolvedRACIBinding`**: All fields from `RACIAssignment` plus `step_id: str`, `source: Literal["inferred", "explicit"]`, `inferred_rule: str | None`, `override_reason: str | None`. Cross-field validators: `source="explicit"` requires non-empty `override_reason`; `source="inferred"` requires non-empty `inferred_rule` and `override_reason=None`.
+
+4. **`RACIEscalationPayload`**: `run_id`, `step_id`, `decision_id | None`, `unresolved_role: Literal["responsible", "accountable"]`, `actor_type_expected`, `resolution_candidates: list[dict]`, `reason`, `resolution_hint`. All string fields required non-empty.
+
+5. **Step extensions**: Add `raci: RACIAssignment | None = None` and `raci_override_reason: str | None = None` to both `PromptStep` and `AuditStep`. `model_validator` enforces: `raci` present ↔ `raci_override_reason` present (bidirectional constraint).
+
+**Acceptance**: AC-1 (schema validation), AC-2 (YAML loading)
+
+---
+
+### WP02 — RACI Inference + Resolution Engine
+
+**Files**: `src/spec_kitty_runtime/raci.py` (new)
+**Tests**: `tests/test_raci.py`
+**Depends on**: WP01
+
+New module with three pure functions — no I/O, no side effects, no imports beyond schema models:
+
+1. **`infer_raci(step, mission_policy) -> ResolvedRACIBinding`**
+   - `PromptStep` → rule `prompt_default`: R=llm, A=human(mission_owner)
+   - `AuditStep` + `enforcement=blocking` → rule `audit_blocking`: R=human(mission_owner), A=human(mission_owner)
+   - `AuditStep` + `enforcement=advisory` → rule `audit_advisory`: R=llm, A=human(mission_owner)
+   - Returns with `source="inferred"`, `inferred_rule` set, `override_reason=None`
+   - Deterministic rule selection: step type first, then enforcement level. No ambiguity, no fallthrough.
+
+2. **`validate_raci_assignment(assignment, step) -> tuple[bool, list[str]]`**
+   - P0 invariant: `accountable.actor_type == "human"`
+   - Blocking audit: `responsible.actor_type == "human"`
+   - LLM never in R/A for audit decisions
+   - Returns `(True, [])` or `(False, [errors])`
+
+3. **`resolve_raci(step, inputs, mission_policy) -> ResolvedRACIBinding`**
+   - If step has explicit `raci:` block → validate, resolve `actor_id` placeholders, return `source="explicit"`
+   - If step has no `raci:` block → call `infer_raci()`, resolve `actor_id`, return `source="inferred"`
+   - Placeholder resolution: `"{{mission_owner_id}}"` → `inputs["mission_owner_id"]`; `None` → convention by `actor_type` (human→mission_owner_id, llm→agent_id/default-agent, service→service_id)
+   - **Fail-closed escalation**: Unresolvable R/A → `RACIEscalationPayload` + `MissionRuntimeError`. Unresolvable C/I → silently dropped.
+
+**Acceptance**: AC-3 (PromptStep inference), AC-4 (AuditStep blocking inference), AC-5 (AuditStep advisory inference), AC-6 (explicit override), AC-7 (escalation), AC-11 (determinism)
+
+---
+
+### WP03 — Authority Kernel Integration + Audit Trail
+
+**Files**: `src/spec_kitty_runtime/engine.py`
+**Tests**: `tests/test_raci_engine.py`
+**Depends on**: WP02
+
+Extend the WP05 authority kernel with RACI-aware enforcement and audit recording:
+
+1. **Extend `_authority_metadata()`** (engine.py:485-493): Add `raci_source: str | None = None` and `override_reason: str | None = None` parameters with defaults. Existing callers pass `None` implicitly — backward compatible. Persisted alongside existing `actor_type`, `actor_id`, `authority_role`, `rationale_linkage`.
+
+2. **RACI resolution in `next_step()`**: When issuing a step, call `resolve_raci()` and persist the result to `snapshot.decisions[f"raci:{step_id}"]`. This creates a queryable RACI audit record for every step execution. Handles both PromptStep and AuditStep.
+
+3. **RACI validation in `provide_decision_answer()`**: After WP05 authority checks pass (human-only audit, mission_owner_id match, delegation records), resolve the step's RACI binding and validate the acting actor against the resolved binding. On mismatch → emit `DecisionAuthorityDenied` with `raci_source` and `override_reason` fields + raise `MissionRuntimeError`. WP05 checks run first (additive layering, not replacement).
+
+4. **`DecisionAuthorityDenied` event extension**: Payload gains two optional fields: `raci_source: str | None`, `override_reason: str | None`. Additive change — no breaking impact on existing consumers.
+
+5. **Backward compatibility**: Missions without `raci:` blocks behave identically to pre-WP06. The `_authority_metadata()` signature uses default parameters so existing call sites are unaffected. All WP05 tests must pass unmodified.
+
+**Acceptance**: AC-8 (authority integration), AC-9 (audit trail), AC-12 (backward compatibility)
+
+---
+
+### WP04 — Template Diagnostics Extension + Fixtures
+
+**Files**: `src/spec_kitty_runtime/diagnostics.py`, `tests/test_compat_diagnostics.py`
+**Tests**: `tests/test_compat_diagnostics.py`
+**Depends on**: WP01 (independent of WP02/WP03)
+
+Extend `validate_mission_template_compatibility()` with RACI-specific validation:
+
+1. **New issue codes**:
+   - `P0_INVARIANT_VIOLATION` (error): `accountable.actor_type` is not `"human"`
+   - `INVALID_RACI_ROLE` (error): LLM as R for blocking audit step
+   - `MISSING_OVERRIDE_REASON` (error): explicit `raci:` without `raci_override_reason`
+   - `UNKNOWN_ACTOR_TYPE` (error): `actor_type` not in `{"human", "llm", "service"}`
+
+2. **Validation logic**: Iterate all `steps` and `audit_steps` in loaded template. For each step with a `raci:` block, run `validate_raci_assignment()` and map violations to issue codes. For steps without `raci:`, no diagnostics needed (inference is always P0-compliant).
+
+3. **YAML test fixtures** (8 files): Cover inferred defaults, explicit overrides, P0 violations, missing override reasons, LLM-as-R-blocking, and unknown actor types. Each fixture is a minimal, self-contained mission YAML.
+
+**Acceptance**: AC-10 (template diagnostics)
+
+---
+
+## Dependency Graph
+
+```
+WP01 (schema)
+  ├─> WP02 (inference/resolution engine)
+  │     └─> WP03 (authority kernel integration)
+  └─> WP04 (diagnostics, independent of WP02/WP03)
+```
+
+WP04 can be developed in parallel with WP02 after WP01 is done.
+
+## Integration Points with WP05
+
+| WP05 Artifact | WP06 Extension | Change Type |
+|----------------|----------------|-------------|
+| `_authority_metadata()` (engine.py:485-493) | +`raci_source`, +`override_reason` params | Additive (default params) |
+| `_resolve_mission_owner_id()` (engine.py:465-471) | Reused for RACI A-role resolution | No change |
+| `provide_decision_answer()` audit gate (engine.py:360-415) | +RACI validation after WP05 checks | Additive layer |
+| `DecisionAuthorityDenied` event payload | +`raci_source`, +`override_reason` fields | Additive (optional) |
+| `MissionRunSnapshot.decisions` dict | +`raci:<step_id>` entries for RACI audit trail | Additive (new keys) |
+
+## Key Design Decisions
+
+1. **Defense-in-depth for P0 invariant**: `accountable.actor_type="human"` is enforced at four independent layers — Pydantic model validator, inference engine, resolution engine, template diagnostics. Failure at any single layer is caught by the others.
+
+2. **Pure-function inference engine**: `infer_raci()` and `resolve_raci()` are stateless pure functions in a dedicated `raci.py` module. No engine state, no I/O, no side effects. This enables deterministic testing and prevents coupling to the engine lifecycle.
+
+3. **Additive WP05 layering**: RACI validation runs after WP05 authority checks, never replacing them. Both gates must pass for an action to proceed. This preserves WP05's proven fail-closed semantics while adding structured role governance.
+
+4. **Fail-closed escalation**: Unresolvable `responsible` or `accountable` roles emit `RACIEscalationPayload` and raise `MissionRuntimeError`. No guessing, no silent degradation, no fallback to a default actor. Matches WP05's behavior for missing `mission_owner_id`.
+
+5. **RACI audit trail co-located with decisions**: `snapshot.decisions[f"raci:{step_id}"]` stores the full `ResolvedRACIBinding` alongside decision records. No schema change to `MissionRunSnapshot` needed — the `decisions` dict is `dict[str, Any]`.
+
+6. **No new event types**: WP06 extends existing `DecisionAuthorityDenied` with optional fields. This avoids dependency on `spec-kitty-events` version bumps and maintains backward compatibility with existing event consumers.
 
 ## Complexity Tracking
 
-*Fill ONLY if Constitution Check has violations that must be justified*
-
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+No constitution violations. This is an additive, offline, single-library change. The new `raci.py` module is the only new file; all other changes extend existing modules. No external dependencies added, no network calls introduced, no fallback mechanisms.
