@@ -1,7 +1,7 @@
 ---
 work_package_id: WP01
 title: Core Significance Models & Registries
-lane: "in_progress"
+lane: "for_review"
 dependencies: []
 base_branch: main
 base_commit: 15df224ca42e67fc9c8dce338e5675b4f4dba9f7
@@ -13,8 +13,8 @@ subtasks:
 - T004
 - T005
 phase: Phase 0 - Foundation
-assignee: "claude-opus"
-agent: "codex"
+assignee: claude-opus
+agent: "claude-opus"
 shell_pid: '7578'
 review_status: has_feedback
 reviewed_by: Robert Douglass
@@ -298,3 +298,4 @@ spec-kitty implement WP01
 - 2026-02-27T21:03:42Z – claude-opus – shell_pid=7578 – lane=for_review – Ready for review: All 5 subtasks complete. significance.py with 3 frozen Pydantic models (SignificanceDimension, RoutingBand, HardTriggerClass), fixed registries, band cutoff validation, dimension score validation. 74 new tests, 371 total passing.
 - 2026-02-27T21:07:13Z – codex – shell_pid=7578 – lane=planned – Rejected in review: implementation artifacts missing on main branch
 - 2026-02-27T21:08:10Z – codex – shell_pid=7578 – lane=in_progress – Reopened: previous rejection was based on main-branch view; WP01 implementation exists in worktree branch
+- 2026-02-27T21:08:12Z – claude-opus – shell_pid=7578 – lane=for_review – Ready for proper review: worktree commit 75160c9 has significance.py + test_significance.py; targeted tests passing
