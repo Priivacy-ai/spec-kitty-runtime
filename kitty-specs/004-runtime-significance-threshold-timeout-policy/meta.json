@@ -1,0 +1,9 @@
+{
+  "feature_number": "004",
+  "slug": "004-runtime-significance-threshold-timeout-policy",
+  "feature_slug": "004-runtime-significance-threshold-timeout-policy",
+  "friendly_name": "runtime significance threshold timeout policy",
+  "mission": "software-dev",
+  "target_branch": "main",
+  "created_at": "2026-02-27T19:54:26.285982+00:00"
+}
