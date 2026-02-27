@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from spec_kitty_runtime.schema import RACIRoleBinding
+from spec_kitty_runtime.schema import RACIRoleBinding, ResolvedRACIBinding
 
 if TYPE_CHECKING:
     from spec_kitty_runtime.schema import MissionPolicySnapshot
@@ -610,6 +610,50 @@ class DimensionScoreOverride(BaseModel):
         return self
 
 
+# ---------------------------------------------------------------------------
+# T017: compute_escalation_targets() pure function
+# ---------------------------------------------------------------------------
+
+def compute_escalation_targets(
+    raci_binding: ResolvedRACIBinding,
+    effective_band: Literal["medium", "high"],
+) -> tuple[RACIRoleBinding, ...]:
+    """Compute escalation targets for a timed-out decision.
+
+    Pure function: deterministic output from inputs.
+
+    Medium band: escalate to accountable (mission owner) only.
+    High band / hard-trigger: escalate to accountable + consulted actors.
+
+    Empty consulted set is allowed — escalation proceeds with accountable only.
+    """
+    if effective_band == "medium":
+        return (raci_binding.accountable,)
+
+    # high band (includes hard-trigger)
+    targets = [raci_binding.accountable]
+    targets.extend(raci_binding.consulted)
+    return tuple(targets)
+
+
+# ---------------------------------------------------------------------------
+# T018: TimeoutEscalationResult model
+# ---------------------------------------------------------------------------
+
+class TimeoutEscalationResult(BaseModel):
+    """Return type from notify_decision_timeout().
+
+    Provides the caller with escalation targets and the emitted event payload.
+    The caller (host process) uses escalation_targets to deliver notifications.
+    """
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    decision_id: str = Field(..., min_length=1)
+    escalation_targets: tuple[RACIRoleBinding, ...] = Field(default_factory=tuple)
+    band: Literal["medium", "high"]
+    timeout_expired_payload: TimeoutExpiredPayload
+
+
 __all__ = [
     # Constants
     "DIMENSION_NAMES",
@@ -627,6 +671,8 @@ __all__ = [
     "TimeoutExpiredPayload",
     "SoftGateDecision",
     "DimensionScoreOverride",
+    # Models (WP04)
+    "TimeoutEscalationResult",
     # Functions (WP01)
     "make_routing_bands",
     "validate_band_cutoffs",
@@ -636,4 +682,6 @@ __all__ = [
     "evaluate_significance",
     "parse_band_cutoffs_from_policy",
     "parse_timeout_from_policy",
+    # Functions (WP04)
+    "compute_escalation_targets",
 ]

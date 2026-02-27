@@ -559,6 +559,133 @@ def _authority_metadata(
 
 
 # ============================================================================
+# WP04: Timeout Escalation & Engine API
+# ============================================================================
+
+
+from spec_kitty_runtime.significance import (
+    TimeoutExpiredPayload,
+    TimeoutEscalationResult,
+    compute_escalation_targets,
+    parse_timeout_from_policy,
+)
+from spec_kitty_runtime.schema import RACIRoleBinding, ResolvedRACIBinding
+
+
+def notify_decision_timeout(
+    run_ref: MissionRunRef,
+    decision_id: str,
+    actor: RACIRoleBinding,
+    emitter: RuntimeEventEmitter | None = None,
+) -> TimeoutEscalationResult:
+    """Notify the runtime that a decision has timed out.
+
+    Called by the host process (caller manages wall-clock timers per C-004).
+    The runtime computes escalation targets, emits timeout-expired event,
+    and persists the timeout record. The run remains blocked (fail-closed).
+
+    Args:
+        run_ref: Reference to the mission run
+        decision_id: The decision that timed out (e.g., "audit:deploy-approval")
+        actor: System actor identity (typically service/runtime)
+        emitter: Optional event emitter (uses NullEmitter if None)
+
+    Returns:
+        TimeoutEscalationResult with escalation targets and event payload
+
+    Raises:
+        MissionRuntimeError: If decision not found, RACI not resolved, or significance not evaluated
+    """
+    emitter = emitter or NullEmitter()
+    run_dir = Path(run_ref.run_dir)
+    snapshot = _read_snapshot(run_dir)
+
+    # Extract step_id from decision_id (strip "audit:" prefix)
+    if decision_id.startswith("audit:"):
+        step_id = decision_id[len("audit:"):]
+    else:
+        step_id = decision_id
+
+    # Load RACI binding from decisions
+    raci_key = f"raci:{step_id}"
+    raci_data = snapshot.decisions.get(raci_key)
+    if raci_data is None or not isinstance(raci_data, dict):
+        raise MissionRuntimeError(f"No RACI binding for step '{step_id}'")
+    raci_binding = ResolvedRACIBinding.model_validate(raci_data)
+
+    # Load significance score from decisions
+    sig_key = f"significance:{decision_id}"
+    sig_data = snapshot.decisions.get(sig_key)
+    if sig_data is None or not isinstance(sig_data, dict):
+        raise MissionRuntimeError(f"No significance evaluation for decision '{decision_id}'")
+
+    # Determine effective_band from stored significance score
+    effective_band_data = sig_data.get("effective_band")
+    if isinstance(effective_band_data, dict):
+        effective_band = effective_band_data.get("name")
+    else:
+        effective_band = effective_band_data
+
+    if effective_band not in ("medium", "high"):
+        raise MissionRuntimeError(
+            f"Unexpected effective_band '{effective_band}' for decision '{decision_id}'. "
+            f"Only 'medium' and 'high' bands can timeout."
+        )
+
+    # Compute escalation targets
+    escalation_targets = compute_escalation_targets(raci_binding, effective_band)
+
+    # Determine timeout_configured_seconds from policy
+    timeout_seconds = parse_timeout_from_policy(snapshot.policy_snapshot)
+
+    # Build TimeoutExpiredPayload
+    payload = TimeoutExpiredPayload(
+        run_id=snapshot.run_id,
+        decision_id=decision_id,
+        step_id=step_id,
+        significance_score=sig_data,
+        effective_band=effective_band,
+        timeout_configured_seconds=timeout_seconds,
+        escalation_targets=escalation_targets,
+        raci_snapshot=raci_data,
+        actor=actor,
+    )
+
+    # Emit timeout event BEFORE persisting (consistent with existing patterns)
+    _append_event(run_dir, "DecisionTimeoutExpired", payload.model_dump(mode="json"))
+    emitter.emit_decision_timeout_expired(payload)
+
+    # T020: Persist timeout event to decisions dict
+    updated_decisions = dict(snapshot.decisions)
+    updated_decisions[f"timeout:{decision_id}"] = payload.model_dump(mode="json")
+
+    # Build updated snapshot (frozen model, so create new)
+    updated_snapshot = MissionRunSnapshot(
+        run_id=snapshot.run_id,
+        mission_key=snapshot.mission_key,
+        template_path=snapshot.template_path,
+        template_hash=snapshot.template_hash,
+        policy_snapshot=snapshot.policy_snapshot,
+        issued_step_id=snapshot.issued_step_id,
+        completed_steps=snapshot.completed_steps,
+        inputs=snapshot.inputs,
+        decisions=updated_decisions,
+        pending_decisions=snapshot.pending_decisions,
+        blocked_reason=snapshot.blocked_reason,
+    )
+
+    # Save to state.json
+    _write_snapshot(run_dir, updated_snapshot)
+
+    return TimeoutEscalationResult(
+        decision_id=decision_id,
+        escalation_targets=escalation_targets,
+        band=effective_band,
+        timeout_expired_payload=payload,
+    )
+
+
+# ============================================================================
 # WP02: Transition-Gate Engine - Deterministic Context Resolution
 # ============================================================================
 
