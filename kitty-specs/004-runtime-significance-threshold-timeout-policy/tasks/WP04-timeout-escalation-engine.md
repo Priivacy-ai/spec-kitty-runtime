@@ -1,7 +1,7 @@
 ---
 work_package_id: WP04
 title: Timeout Escalation & Engine API
-lane: "doing"
+lane: "for_review"
 dependencies: [WP03]
 base_branch: main
 base_commit: cbf0cc05d0a4d9d9e4f49e1137fbfd13c3f10fa9
@@ -13,8 +13,8 @@ subtasks:
 - T020
 phase: Phase 1 - Escalation Layer
 assignee: ''
-agent: "claude-opus"
-shell_pid: "29041"
+agent: claude-opus
+shell_pid: '29041'
 review_status: ''
 reviewed_by: ''
 history:
@@ -275,3 +275,4 @@ spec-kitty implement WP04 --base WP03
 
 - 2026-02-27T20:43:12Z – system – lane=planned – Prompt created.
 - 2026-02-27T21:45:17Z – claude-opus – shell_pid=29041 – lane=doing – Assigned agent via workflow command
+- 2026-02-27T21:51:47Z – claude-opus – shell_pid=29041 – lane=for_review – Ready for review: Timeout escalation engine API with compute_escalation_targets(), TimeoutEscalationResult, notify_decision_timeout(), and timeout persistence. 30 new tests, 508 total passing.
