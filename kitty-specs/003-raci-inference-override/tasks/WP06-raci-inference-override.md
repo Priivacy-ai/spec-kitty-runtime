@@ -1,7 +1,7 @@
 ---
 work_package_id: WP06
 title: RACI Inference and Override
-lane: "for_review"
+lane: "doing"
 dependencies: []
 base_branch: main
 base_commit: 6987ac52bc4bed93096aa77bfd98e27d2160f221
@@ -14,8 +14,8 @@ subtasks:
 - T005-create-test-suite
 phase: Phase 2 - Implementation
 assignee: claude-opus-4.6
-agent: claude-opus
-shell_pid: '23756'
+agent: "claude-opus"
+shell_pid: "46465"
 review_status: ''
 reviewed_by: ''
 review_feedback: ''
@@ -100,3 +100,4 @@ All acceptance criteria from the specification must be met:
 - 2026-02-27T17:57:43Z – codex – shell_pid=22747 – lane=in_progress – Kickoff WP06 implementation orchestration
 - 2026-02-27T17:58:44Z – claude-opus – shell_pid=23756 – lane=doing – Started implementation via workflow command
 - 2026-02-27T18:43:00Z – claude-opus – shell_pid=23756 – lane=for_review – Ready for review: RACI inference/override system implemented. 59 new tests + 238 existing tests all pass (297 total). Schema models, inference engine, authority kernel integration, template validation all complete.
+- 2026-02-27T18:44:32Z – claude-opus – shell_pid=46465 – lane=doing – Started review via workflow command
