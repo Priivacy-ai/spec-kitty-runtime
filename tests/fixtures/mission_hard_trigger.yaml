@@ -1,0 +1,27 @@
+mission:
+  key: sig-hard-trigger-test
+  name: Hard Trigger Override Test Mission
+  version: "1.0.0"
+
+steps:
+  - id: prepare
+    title: Prepare artifacts
+    prompt: "Gather artifacts"
+
+audit_steps:
+  - id: trigger-review
+    title: Destructive production data review
+    audit:
+      trigger_mode: manual
+      enforcement: blocking
+    significance:
+      dimensions:
+        user_customer_impact: 0
+        architectural_system_impact: 0
+        data_security_compliance_impact: 1
+        operational_reliability_impact: 0
+        financial_commercial_impact: 0
+        cross_team_blast_radius: 0
+      hard_triggers:
+        - production_data_destructive
+    depends_on: [prepare]
