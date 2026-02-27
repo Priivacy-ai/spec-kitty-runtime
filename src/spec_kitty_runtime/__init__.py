@@ -12,7 +12,7 @@ from spec_kitty_runtime.discovery import (
     discover_missions_with_warnings,
     load_mission_template,
 )
-from spec_kitty_runtime.engine import MissionRunRef, next_step, provide_decision_answer, start_mission_run
+from spec_kitty_runtime.engine import MissionRunRef, next_step, notify_decision_timeout, provide_decision_answer, start_mission_run
 from spec_kitty_runtime.events import JsonlEventLog, NullEmitter, RuntimeEventEmitter
 from spec_kitty_runtime.planner import serialize_decision
 from spec_kitty_runtime.prompting import render_prompt
@@ -76,6 +76,7 @@ __all__ = [
     "MissionRunRef",
     "NextDecision",
     "next_step",
+    "notify_decision_timeout",
     "provide_decision_answer",
     "start_mission_run",
     # RACI functions (WP06)
