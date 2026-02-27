@@ -1,0 +1,9 @@
+{
+  "feature_number": "003",
+  "slug": "003-raci-inference-override",
+  "feature_slug": "003-raci-inference-override",
+  "friendly_name": "raci inference override",
+  "mission": "software-dev",
+  "target_branch": "main",
+  "created_at": "2026-02-27T17:37:31.032612+00:00"
+}
