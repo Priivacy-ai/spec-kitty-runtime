@@ -5,5 +5,7 @@
   "friendly_name": "decision authority kernel",
   "mission": "software-dev",
   "target_branch": "codex/wp05-runtime-decision-authority-kernel",
-  "created_at": "2026-02-27T13:30:40.659171+00:00"
+  "created_at": "2026-02-27T13:30:40.659171+00:00",
+  "vcs": "git",
+  "vcs_locked_at": "2026-02-27T13:48:10.614455+00:00"
 }
