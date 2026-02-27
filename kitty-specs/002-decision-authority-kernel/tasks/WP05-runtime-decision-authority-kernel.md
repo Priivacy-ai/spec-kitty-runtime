@@ -1,14 +1,14 @@
 ---
 work_package_id: WP05
 title: Runtime Decision Authority Kernel
-lane: "doing"
+lane: "done"
 dependencies: []
 base_branch: codex/wp05-runtime-decision-authority-kernel
 base_commit: a8f1f41daeac3d036ba17af324d4c3a52cd49bc8
 created_at: '2026-02-27T13:48:10.856990+00:00'
 assignee: claude-opus-4.6
 agent: "codex-reviewer"
-shell_pid: "54810"
+shell_pid: '54810'
 review_status: approved
 reviewed_by: Robert Douglass
 requirement_refs: [FR-005]
@@ -66,3 +66,4 @@ Establish a runtime authority kernel for P0 so final closure is strictly human-o
 - 2026-02-27T14:09:39Z – codex-reviewer – shell_pid=54810 – lane=in_progress – Reopened after P1 review finding
 - 2026-02-27T14:19:23Z – codex-reviewer – shell_pid=54810 – lane=for_review – Addressed P1 mission-owner bypass via commits 0010e77 + 833fee5; pytest authority/decision and audit/policy passing
 - 2026-02-27T14:19:31Z – codex-reviewer – shell_pid=54810 – lane=doing – Started review via workflow command
+- 2026-02-27T14:25:46Z – codex-reviewer – shell_pid=54810 – lane=done – Review passed after P1 fix: authority fail-closed enforced, mission-owner-only audit closure validated; pytest -k 'authority or decision' (31 pass) and -k 'audit or policy' (90 pass); ruff failures remain pre-existing repo issues | Done override: Implementation commits 0010e77 and 833fee5 were cherry-picked into target branch; remaining worktree-only commit b8af6f8 contains local prompt artifacts and is intentionally not merged.
