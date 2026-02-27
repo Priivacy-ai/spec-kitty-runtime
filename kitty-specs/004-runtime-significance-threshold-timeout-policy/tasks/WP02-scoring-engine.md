@@ -1,33 +1,36 @@
 ---
-work_package_id: "WP02"
+work_package_id: WP02
+title: Significance Scoring Engine
+lane: "doing"
+dependencies: [WP01]
+base_branch: main
+base_commit: 10e7ee5310fb9a1d71a47dc15523cdf4c76327e4
+created_at: '2026-02-27T21:12:38.319357+00:00'
 subtasks:
-  - "T006"
-  - "T007"
-  - "T008"
-  - "T009"
-  - "T010"
-title: "Significance Scoring Engine"
-phase: "Phase 0 - Foundation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
-review_status: ""
-reviewed_by: ""
-dependencies: ["WP01"]
-requirement_refs:
-  - "FR-001"
-  - "FR-002"
-  - "FR-003"
-  - "FR-010"
-  - "FR-016"
-  - "FR-017"
+- T006
+- T007
+- T008
+- T009
+- T010
+phase: Phase 0 - Foundation
+assignee: ''
+agent: ''
+shell_pid: "14111"
+review_status: ''
+reviewed_by: ''
 history:
-  - timestamp: "2026-02-27T20:43:12Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2026-02-27T20:43:12Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+requirement_refs:
+- FR-001
+- FR-002
+- FR-003
+- FR-010
+- FR-016
+- FR-017
 ---
 
 # Work Package Prompt: WP02 – Significance Scoring Engine
