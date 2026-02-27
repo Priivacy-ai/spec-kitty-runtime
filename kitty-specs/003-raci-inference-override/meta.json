@@ -1,11 +1,29 @@
 {
+  "accept_commit": null,
+  "acceptance_history": [
+    {
+      "accepted_at": "2026-02-27T19:22:32Z",
+      "accepted_by": "claude",
+      "accepted_from_commit": "2b7cf4fd2fc518df8e7bd56fc085e5c927607872",
+      "branch": "main",
+      "mode": "pr",
+      "validation_commands": [
+        "pytest -k 'raci or authority or audit'",
+        "ruff check ."
+      ]
+    }
+  ],
+  "acceptance_mode": "pr",
+  "accepted_at": "2026-02-27T19:22:32Z",
+  "accepted_by": "claude",
+  "accepted_from_commit": "2b7cf4fd2fc518df8e7bd56fc085e5c927607872",
+  "created_at": "2026-02-27T17:37:31.032612+00:00",
   "feature_number": "003",
-  "slug": "003-raci-inference-override",
   "feature_slug": "003-raci-inference-override",
   "friendly_name": "raci inference override",
   "mission": "software-dev",
+  "slug": "003-raci-inference-override",
   "target_branch": "main",
-  "created_at": "2026-02-27T17:37:31.032612+00:00",
   "vcs": "git",
   "vcs_locked_at": "2026-02-27T17:57:51.764921+00:00"
 }
