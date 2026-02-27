@@ -127,10 +127,10 @@
 **Requirement Refs**: FR-011, FR-012, FR-013, FR-014
 
 ### Included Subtasks
-- [ ] T017 Implement `compute_escalation_targets()` pure function in `significance.py`
-- [ ] T018 Implement TimeoutEscalationResult frozen model in `significance.py`
-- [ ] T019 Implement `notify_decision_timeout()` in `engine.py`
-- [ ] T020 Persist timeout events to `MissionRunSnapshot.decisions` dict
+- [x] T017 Implement `compute_escalation_targets()` pure function in `significance.py`
+- [x] T018 Implement TimeoutEscalationResult frozen model in `significance.py`
+- [x] T019 Implement `notify_decision_timeout()` in `engine.py`
+- [x] T020 Persist timeout events to `MissionRunSnapshot.decisions` dict
 
 ### Implementation Notes
 - `compute_escalation_targets(raci_binding, effective_band)` — pure function, deterministic
