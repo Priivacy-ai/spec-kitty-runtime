@@ -16,9 +16,12 @@ All registries are fixed in V1 (no custom dimensions or triggers).
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from spec_kitty_runtime.schema import RACIRoleBinding
 
 if TYPE_CHECKING:
     from spec_kitty_runtime.schema import MissionPolicySnapshot
@@ -502,6 +505,111 @@ def parse_timeout_from_policy(
     return timeout
 
 
+# ---------------------------------------------------------------------------
+# T011: SignificanceEvaluatedPayload
+# ---------------------------------------------------------------------------
+
+class SignificanceEvaluatedPayload(BaseModel):
+    """Event payload emitted when a decision's significance is scored and routed.
+
+    Persisted in JSONL event log. Field names align with
+    contracts/significance-evaluation.yaml.
+    """
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    run_id: str = Field(..., min_length=1)
+    decision_id: str = Field(..., min_length=1)
+    step_id: str = Field(..., min_length=1)
+    significance_score: dict  # Serialized SignificanceScore
+    hard_trigger_classes: tuple[str, ...] = Field(default_factory=tuple)
+    effective_band: Literal["low", "medium", "high"]
+    actor: RACIRoleBinding  # System actor (service/runtime)
+
+
+# ---------------------------------------------------------------------------
+# T012: TimeoutExpiredPayload
+# ---------------------------------------------------------------------------
+
+class TimeoutExpiredPayload(BaseModel):
+    """Event payload emitted when a decision exceeds its configured timeout window.
+
+    Field names align with contracts/timeout-expired-event.yaml.
+    """
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    run_id: str = Field(..., min_length=1)
+    decision_id: str = Field(..., min_length=1)
+    step_id: str = Field(..., min_length=1)
+    significance_score: dict  # Serialized SignificanceScore
+    effective_band: Literal["medium", "high"]  # Never "low" — low auto-proceeds
+    timeout_configured_seconds: int = Field(..., gt=0)
+    escalation_targets: tuple[RACIRoleBinding, ...] = Field(default_factory=tuple)
+    raci_snapshot: dict  # Serialized ResolvedRACIBinding
+    actor: RACIRoleBinding  # System actor (service/runtime)
+
+
+# ---------------------------------------------------------------------------
+# T013: SoftGateDecision model
+# ---------------------------------------------------------------------------
+
+class SoftGateDecision(BaseModel):
+    """Captures the responsible human's action on a medium-band decision.
+
+    Per FR-005 and FR-006. Field names align with
+    contracts/soft-gate-decision.yaml.
+    """
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    decision_id: str = Field(..., min_length=1)
+    action: Literal["decide_solo", "open_stand_up", "defer"]
+    actor: RACIRoleBinding  # Must be human
+    timestamp: datetime  # UTC
+    significance_score: SignificanceScore
+    participants: tuple[RACIRoleBinding, ...] = Field(default_factory=tuple)
+    outcome: str | None = None  # approve/reject/defer — None until resolved
+    rationale: str | None = None
+
+    @model_validator(mode="after")
+    def _validate_actor_human(self) -> SoftGateDecision:
+        if self.actor.actor_type != "human":
+            raise ValueError(
+                f"SoftGateDecision actor must be human, got {self.actor.actor_type}"
+            )
+        return self
+
+
+# ---------------------------------------------------------------------------
+# T014: DimensionScoreOverride model
+# ---------------------------------------------------------------------------
+
+class DimensionScoreOverride(BaseModel):
+    """Audit record for runtime score overrides.
+
+    The secondary scoring path where a human adjusts template-declared scores.
+    Per research R-004 and ED-4.
+    """
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    decision_id: str = Field(..., min_length=1)
+    overridden_by: RACIRoleBinding  # Must be human (FR-018)
+    override_reason: str = Field(..., min_length=1)  # Mandatory justification
+    original_scores: dict[str, int]  # dimension_name → before value
+    new_scores: dict[str, int]  # dimension_name → after value
+    override_timestamp: datetime  # UTC
+
+    @model_validator(mode="after")
+    def _validate_override(self) -> DimensionScoreOverride:
+        if self.overridden_by.actor_type != "human":
+            raise ValueError(
+                f"Overrides must be by human actors, got {self.overridden_by.actor_type}"
+            )
+        # Validate that overridden dimensions exist in DIMENSION_NAMES
+        for name in {**self.original_scores, **self.new_scores}:
+            if name not in DIMENSION_NAMES:
+                raise ValueError(f"Unknown dimension: {name}")
+        return self
+
+
 __all__ = [
     # Constants
     "DIMENSION_NAMES",
@@ -514,6 +622,11 @@ __all__ = [
     # Models (WP02)
     "SignificanceScore",
     "TimeoutPolicy",
+    # Models (WP03)
+    "SignificanceEvaluatedPayload",
+    "TimeoutExpiredPayload",
+    "SoftGateDecision",
+    "DimensionScoreOverride",
     # Functions (WP01)
     "make_routing_bands",
     "validate_band_cutoffs",

@@ -23,6 +23,10 @@ from spec_kitty_events.mission_next import (
     NextStepAutoCompletedPayload,
     NextStepIssuedPayload,
 )
+from spec_kitty_runtime.significance import (
+    SignificanceEvaluatedPayload,
+    TimeoutExpiredPayload,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -47,6 +51,10 @@ class RuntimeEventEmitter(Protocol):
     def emit_decision_input_answered(self, payload: DecisionInputAnsweredPayload) -> None: ...
 
     def emit_mission_run_completed(self, payload: MissionRunCompletedPayload) -> None: ...
+
+    def emit_significance_evaluated(self, payload: SignificanceEvaluatedPayload) -> None: ...
+
+    def emit_decision_timeout_expired(self, payload: TimeoutExpiredPayload) -> None: ...
 
 
 # ---------------------------------------------------------------------------
@@ -75,6 +83,12 @@ class NullEmitter:
         pass
 
     def emit_mission_run_completed(self, payload: MissionRunCompletedPayload) -> None:
+        pass
+
+    def emit_significance_evaluated(self, payload: SignificanceEvaluatedPayload) -> None:
+        pass
+
+    def emit_decision_timeout_expired(self, payload: TimeoutExpiredPayload) -> None:
         pass
 
 
