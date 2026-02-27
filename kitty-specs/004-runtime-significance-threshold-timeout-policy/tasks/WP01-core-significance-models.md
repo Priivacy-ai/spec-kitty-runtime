@@ -1,32 +1,35 @@
 ---
-work_package_id: "WP01"
-subtasks:
-  - "T001"
-  - "T002"
-  - "T003"
-  - "T004"
-  - "T005"
-title: "Core Significance Models & Registries"
-phase: "Phase 0 - Foundation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
-review_status: ""
-reviewed_by: ""
+work_package_id: WP01
+title: Core Significance Models & Registries
+lane: "doing"
 dependencies: []
-requirement_refs:
-  - "FR-001"
-  - "FR-002"
-  - "FR-003"
-  - "FR-008"
-  - "FR-015"
+base_branch: main
+base_commit: 15df224ca42e67fc9c8dce338e5675b4f4dba9f7
+created_at: '2026-02-27T21:00:20.500268+00:00'
+subtasks:
+- T001
+- T002
+- T003
+- T004
+- T005
+phase: Phase 0 - Foundation
+assignee: ''
+agent: ''
+shell_pid: "7578"
+review_status: ''
+reviewed_by: ''
 history:
-  - timestamp: "2026-02-27T20:43:12Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2026-02-27T20:43:12Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+requirement_refs:
+- FR-001
+- FR-002
+- FR-003
+- FR-008
+- FR-015
 ---
 
 # Work Package Prompt: WP01 – Core Significance Models & Registries
