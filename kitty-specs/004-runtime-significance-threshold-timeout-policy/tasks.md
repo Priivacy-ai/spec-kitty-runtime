@@ -170,11 +170,11 @@
 **Requirement Refs**: FR-004, FR-005, FR-007, FR-008, FR-017, FR-018
 
 ### Included Subtasks
-- [ ] T021 Extend AuditStep schema in `schema.py` with optional `significance` block
-- [ ] T022 Integrate significance evaluation into `next_step()` flow in `engine.py`
-- [ ] T023 Integrate significance routing into `provide_decision_answer()` flow in `engine.py`
-- [ ] T024 Persist significance data in `MissionRunSnapshot.decisions` under `"significance:<decision_id>"`
-- [ ] T025 Update `__init__.py` to re-export significance public API types and functions
+- [x] T021 Extend AuditStep schema in `schema.py` with optional `significance` block
+- [x] T022 Integrate significance evaluation into `next_step()` flow in `engine.py`
+- [x] T023 Integrate significance routing into `provide_decision_answer()` flow in `engine.py`
+- [x] T024 Persist significance data in `MissionRunSnapshot.decisions` under `"significance:<decision_id>"`
+- [x] T025 Update `__init__.py` to re-export significance public API types and functions
 
 ### Implementation Notes
 - AuditStep gets optional `significance: SignificanceBlock | None = None` field
