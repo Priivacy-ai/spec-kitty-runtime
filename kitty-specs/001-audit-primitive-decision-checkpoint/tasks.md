@@ -95,7 +95,7 @@ total_wps: 4
 
 <!-- status-model:start -->
 ## Canonical Status (Generated)
-- WP01: for_review
+- WP01: in_progress
 - WP02: done
 - WP03: done
 - WP04: done
