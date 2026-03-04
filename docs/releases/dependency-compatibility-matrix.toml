@@ -1,0 +1,13 @@
+[release_train]
+order = [
+  "spec-kitty-events",
+  "spec-kitty-runtime",
+  "spec-kitty-tracker",
+  "spec-kitty-cli",
+]
+
+[runtime."0.4.0-rc1".dependencies]
+"spec-kitty-events" = "2.3.1"
+
+[runtime."0.4.0-rc1"]
+notes = "Current runtime release line pinned to mission-next events contracts."
