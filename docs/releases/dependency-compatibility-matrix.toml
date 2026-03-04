@@ -11,3 +11,9 @@ order = [
 
 [runtime."0.4.0-rc2"]
 notes = "Release line pinned to MIT-clear mission-next events contracts."
+
+[runtime."0.4.0".dependencies]
+"spec-kitty-events" = "2.3.2"
+
+[runtime."0.4.0"]
+notes = "Stable release line pinned to MIT-clear mission-next events contracts."
