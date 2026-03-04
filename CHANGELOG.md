@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0 - 2026-03-04
+
+**Stable runtime release** — promotes the MIT-clear events repin from RC to final.
+
+### Changed
+
+- Promoted `0.4.0-rc2` to stable `0.4.0` with no dependency changes.
+- Keeps runtime pinned to `spec-kitty-events==2.3.2` (MIT-cleared on PyPI).
+
 ## 0.4.0-rc2 - 2026-03-04
 
 **Release-train alignment** — repin runtime to MIT-clear `spec-kitty-events`.
