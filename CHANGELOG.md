@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0-rc2 - 2026-03-04
+
+**Release-train alignment** — repin runtime to MIT-clear `spec-kitty-events`.
+
+### Changed
+
+- Dependency updated from `spec-kitty-events==2.3.1` to `spec-kitty-events==2.3.2`.
+- Added release-train publish gates and metadata checks to enforce MIT-clear dependency pins for future releases.
+
 ## 0.4.0-rc1 - 2026-02-21
 
 **Contract Freeze Release** — Step-Aware Context Binding and Artifact Manifests (Runtime V1).
