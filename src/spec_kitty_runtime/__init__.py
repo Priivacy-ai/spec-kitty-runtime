@@ -1,6 +1,6 @@
 """Public API for spec-kitty-runtime."""
 
-from spec_kitty_runtime.adapters.capabilities import CapabilityAdapter
+from spec_kitty_runtime.adapters.capabilities import CapabilityAdapter, UserConnection
 from spec_kitty_runtime.discovery import (
     DiscoveryContext,
     DiscoveryResult,
@@ -120,6 +120,7 @@ __all__ = [
     "render_prompt",
     # Adapters
     "CapabilityAdapter",
+    "UserConnection",
     # Significance models (WP01-WP04)
     "SignificanceDimension",
     "SignificanceScore",
