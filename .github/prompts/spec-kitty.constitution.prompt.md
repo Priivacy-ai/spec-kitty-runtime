@@ -80,3 +80,13 @@ Use JSON `text` as governance context. If `mode=bootstrap`, follow referenced do
 - Pin dependencies and cross-repo references to immutable commit SHAs or release tags.
 - Never use moving branch refs as release or production pins.
 - Keep temporary local pin or branch overrides uncommitted.
+
+---
+
+## Terminology Canon (Mission vs Feature)
+
+- Canonical product term is **Mission** (plural: **Missions**).
+- `Feature` / `Features` are prohibited in canonical, operator, and user-facing language for active systems.
+- Hard-break policy: do not introduce or preserve `feature*` aliases (API/query params, routes, fields, flags, env vars, command names, or docs) when the domain object is a Mission.
+- Use `Mission` / `Missions` as the only canonical term in active codepaths and interfaces.
+- Historical archived artifacts may retain legacy wording only as immutable snapshots and must be explicitly marked legacy.
