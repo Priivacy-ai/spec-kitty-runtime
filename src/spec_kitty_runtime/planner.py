@@ -59,21 +59,6 @@ def _resolve_next_unified_step(
     return None
 
 
-# Keep the old name as an alias so existing tests/code that call _resolve_next_step still work.
-def _resolve_next_step(
-    template: MissionTemplate,
-    snapshot: MissionRunSnapshot,
-) -> PromptStep | None:
-    """Legacy wrapper — returns only PromptStep or None.
-
-    New callers should use _resolve_next_unified_step.
-    """
-    result = _resolve_next_unified_step(template, snapshot)
-    if isinstance(result, PromptStep):
-        return result
-    return None
-
-
 def _has_remaining_steps(
     template: MissionTemplate,
     snapshot: MissionRunSnapshot,

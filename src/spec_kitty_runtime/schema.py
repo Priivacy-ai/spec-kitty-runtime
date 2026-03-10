@@ -56,9 +56,6 @@ class DecisionAnswer(BaseModel):
 # RACI role model types (WP06)
 # ---------------------------------------------------------------------------
 
-_VALID_ACTOR_TYPES = frozenset({"human", "llm", "service"})
-
-
 class RACIRoleBinding(BaseModel):
     """Single actor-role binding in a RACI assignment."""
     model_config = ConfigDict(frozen=True, extra="forbid")

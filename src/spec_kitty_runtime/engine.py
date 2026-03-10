@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Literal
@@ -12,6 +13,7 @@ from uuid import uuid4
 import yaml
 from pydantic import BaseModel, ConfigDict
 
+from spec_kitty_runtime.contracts import RemediationPayload
 from spec_kitty_runtime.discovery import DiscoveryContext, discover_missions, load_mission_template
 from spec_kitty_events.mission_next import (
     DecisionInputAnsweredPayload,
@@ -33,10 +35,12 @@ from spec_kitty_runtime.events import (
     RuntimeEventEmitter,
 )
 from spec_kitty_runtime.planner import plan_next
-from spec_kitty_runtime.raci import resolve_raci
+from spec_kitty_runtime.raci import infer_raci, resolve_raci
 from spec_kitty_runtime.schema import (
     ActorIdentity,
     AuditStep,
+    ContextType,
+    ContextTypeRegistry,
     DecisionAnswer,
     DecisionRequest,
     MissionPolicySnapshot,
@@ -45,7 +49,21 @@ from spec_kitty_runtime.schema import (
     MissionTemplate,
     NextDecision,
     PromptStep,
+    RACIRoleBinding,
+    ResolvedRACIBinding,
+    StepContextContract,
     load_mission_template_file,
+)
+from spec_kitty_runtime.significance import (
+    SignificanceEvaluatedPayload,
+    SignificanceScore,
+    SoftGateDecision,
+    TimeoutExpiredPayload,
+    TimeoutEscalationResult,
+    compute_escalation_targets,
+    evaluate_significance,
+    parse_band_cutoffs_from_policy,
+    parse_timeout_from_policy,
 )
 
 
@@ -87,7 +105,7 @@ def _append_event(run_dir: Path, event_type: str, payload: dict[str, Any]) -> No
         "payload": payload,
     }
     with open(event_file, "a", encoding="utf-8") as handle:
-        handle.write(json.dumps(event, sort_keys=True) + "\n")
+        handle.write(json.dumps(event, sort_keys=True, default=str) + "\n")
 
 
 def _read_snapshot(run_dir: Path) -> MissionRunSnapshot:
@@ -302,13 +320,12 @@ def next_step(
             decisions[f"significance:{decision.decision_id}"] = _sig_score.model_dump(mode="json")
 
             # Resolve RACI for the audit step (needed for timeout escalation)
-            from spec_kitty_runtime.raci import infer_raci as _infer_raci
             _raci_inputs = {**inputs, "agent_id": agent_id}
             try:
                 _resolved_raci = resolve_raci(_sig_step, _raci_inputs, effective_policy)
                 decisions[f"raci:{_sig_step_id}"] = _resolved_raci.model_dump(mode="json")
             except MissionRuntimeError:
-                _inferred = _infer_raci(_sig_step, effective_policy)
+                _inferred = infer_raci(_sig_step, effective_policy)
                 decisions[f"raci:{_sig_step_id}"] = _inferred.model_dump(mode="json")
 
             # Emit significance evaluated event
@@ -386,7 +403,6 @@ def next_step(
         # actor IDs. Fail-closed enforcement happens in provide_decision_answer().
         step_obj = _find_step_by_id(template, decision.step_id)
         if step_obj is not None:
-            from spec_kitty_runtime.raci import infer_raci
             raci_inputs = {**inputs, "agent_id": agent_id}
             try:
                 resolved_raci = resolve_raci(step_obj, raci_inputs, effective_policy)
@@ -701,20 +717,6 @@ def _authority_metadata(
 # ============================================================================
 
 
-from spec_kitty_runtime.significance import (
-    SignificanceEvaluatedPayload,
-    SignificanceScore,
-    SoftGateDecision,
-    TimeoutExpiredPayload,
-    TimeoutEscalationResult,
-    compute_escalation_targets,
-    evaluate_significance,
-    parse_band_cutoffs_from_policy,
-    parse_timeout_from_policy,
-)
-from spec_kitty_runtime.schema import RACIRoleBinding, ResolvedRACIBinding
-
-
 def notify_decision_timeout(
     run_ref: MissionRunRef,
     decision_id: str,
@@ -831,11 +833,6 @@ def notify_decision_timeout(
 # ============================================================================
 # WP02: Transition-Gate Engine - Deterministic Context Resolution
 # ============================================================================
-
-
-import re
-from spec_kitty_runtime.contracts import RemediationPayload
-from spec_kitty_runtime.schema import ContextType, ContextTypeRegistry, StepContextContract
 
 
 class TransitionGate:
