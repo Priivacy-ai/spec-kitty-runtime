@@ -3,9 +3,9 @@
 # DO NOT EDIT MANUALLY
 
 spec_kitty:
-  version: 2.0.5
+  version: 2.0.7
   initialized_at: '2026-02-26T15:06:32.527186'
-  last_upgraded_at: '2026-03-10T10:31:53.156913'
+  last_upgraded_at: '2026-03-11T08:08:39.815189'
 environment:
   python_version: 3.11.14
   platform: darwin
@@ -19,3 +19,17 @@ migrations:
       Updated: .claude/commands/spec-kitty.checklist.md; Updated: .claude/commands/spec-kitty.merge.md;
       Updated: .codex/prompts/spec-kitty.accept.md; Updated: .codex/prompts/spec-kitty.analyze.md;
       Updated: .codex/prompts/spec-kitty.checklist.md; Updated: .codex/prompts/spec-kitty.merge.md'
+  - id: 2.0.6_consistency_sweep
+    applied_at: '2026-03-11T08:08:39.812758'
+    result: success
+    notes: 'migrated 0 identical and 79 customized legacy runtime asset(s); cleaned
+      9 worktree(s) with legacy command/script assets; 001-audit-primitive-decision-checkpoint:
+      normalized 4 work package files; 002-decision-authority-kernel: normalized 1
+      work package files; 003-raci-inference-override: normalized 1 work package files;
+      004-runtime-significance-threshold-timeout-policy: wrote baseline meta.json;
+      004-runtime-significance-threshold-timeout-policy: normalized 7 work package
+      files'
+  - id: 2.0.7_fix_stale_overrides
+    applied_at: '2026-03-11T08:08:39.815183'
+    result: skipped
+    notes: Not applicable

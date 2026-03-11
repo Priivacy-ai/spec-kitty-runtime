@@ -1,7 +1,7 @@
 ---
 work_package_id: WP01
 title: Core Significance Models & Registries
-lane: "done"
+lane: done
 dependencies: []
 base_branch: main
 base_commit: 15df224ca42e67fc9c8dce338e5675b4f4dba9f7
@@ -16,8 +16,8 @@ phase: Phase 0 - Foundation
 assignee: claude-opus
 agent: claude-opus
 shell_pid: '11868'
-review_status: "approved"
-reviewed_by: "Robert Douglass"
+review_status: approved
+reviewed_by: Robert Douglass
 review_feedback: feedback://004-runtime-significance-threshold-timeout-policy/WP01/20260227T210712Z-857a32b9.md
 history:
 - timestamp: '2026-02-27T20:43:12Z'

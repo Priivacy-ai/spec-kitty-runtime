@@ -2,8 +2,9 @@
   "event_count": 31,
   "feature_slug": "001-audit-primitive-decision-checkpoint",
   "last_event_id": "01KJM64SDK0NKTBVQFQQVJ602Q",
-  "materialized_at": "2026-03-01T07:52:26.803970+00:00",
+  "materialized_at": "2026-03-11T07:08:39.598595+00:00",
   "summary": {
+    "approved": 0,
     "blocked": 0,
     "canceled": 0,
     "claimed": 0,

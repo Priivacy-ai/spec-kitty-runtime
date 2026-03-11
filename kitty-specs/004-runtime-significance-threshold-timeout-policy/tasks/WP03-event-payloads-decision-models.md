@@ -1,7 +1,7 @@
 ---
 work_package_id: WP03
 title: Event Payloads & Decision Models
-lane: "done"
+lane: done
 dependencies: [WP02]
 base_branch: main
 base_commit: c94e977540297d57ab1133d99ae3f68046a95e52
@@ -17,8 +17,8 @@ phase: Phase 1 - Communication Layer
 assignee: ''
 agent: claude-opus
 shell_pid: '27231'
-review_status: "approved"
-reviewed_by: "Robert Douglass"
+review_status: approved
+reviewed_by: Robert Douglass
 history:
 - timestamp: '2026-02-27T20:43:12Z'
   lane: planned

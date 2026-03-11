@@ -1,7 +1,7 @@
 ---
 work_package_id: WP04
 title: Timeout Escalation & Engine API
-lane: "done"
+lane: done
 dependencies: [WP03]
 base_branch: main
 base_commit: cbf0cc05d0a4d9d9e4f49e1137fbfd13c3f10fa9
@@ -15,8 +15,8 @@ phase: Phase 1 - Escalation Layer
 assignee: ''
 agent: claude-opus-reviewer
 shell_pid: '32586'
-review_status: "approved"
-reviewed_by: "Robert Douglass"
+review_status: approved
+reviewed_by: Robert Douglass
 history:
 - timestamp: '2026-02-27T20:43:12Z'
   lane: planned

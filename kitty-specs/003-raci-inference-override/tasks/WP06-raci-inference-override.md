@@ -1,7 +1,7 @@
 ---
 work_package_id: WP06
 title: RACI Inference and Override
-lane: "done"
+lane: done
 dependencies: []
 base_branch: main
 base_commit: 6987ac52bc4bed93096aa77bfd98e27d2160f221
@@ -16,8 +16,8 @@ phase: Phase 2 - Implementation
 assignee: claude-opus-4.6
 agent: claude-opus
 shell_pid: '46465'
-review_status: "approved"
-reviewed_by: "Robert Douglass"
+review_status: approved
+reviewed_by: Robert Douglass
 review_feedback: ''
 history:
 - timestamp: '2026-02-27T00:00:00Z'

@@ -2,8 +2,9 @@
   "event_count": 5,
   "feature_slug": "003-raci-inference-override",
   "last_event_id": "01KJG6S6EBM1DWYQWJD4R3S1GN",
-  "materialized_at": "2026-02-27T18:46:37.771710+00:00",
+  "materialized_at": "2026-03-11T07:08:39.692842+00:00",
   "summary": {
+    "approved": 0,
     "blocked": 0,
     "canceled": 0,
     "claimed": 0,

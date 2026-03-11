@@ -1,7 +1,7 @@
 ---
 work_package_id: WP02
 title: Significance Scoring Engine
-lane: "done"
+lane: done
 dependencies: [WP01]
 base_branch: main
 base_commit: 10e7ee5310fb9a1d71a47dc15523cdf4c76327e4
@@ -16,8 +16,8 @@ phase: Phase 0 - Foundation
 assignee: ''
 agent: claude-opus
 shell_pid: '16364'
-review_status: "approved"
-reviewed_by: "Robert Douglass"
+review_status: approved
+reviewed_by: Robert Douglass
 history:
 - timestamp: '2026-02-27T20:43:12Z'
   lane: planned

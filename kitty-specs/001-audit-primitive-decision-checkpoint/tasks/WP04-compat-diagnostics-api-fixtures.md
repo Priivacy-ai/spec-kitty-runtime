@@ -1,7 +1,7 @@
 ---
 work_package_id: WP04
 title: Compatibility Diagnostics API + Fixtures
-lane: "done"
+lane: done
 dependencies: '[]'
 base_branch: main
 base_commit: 85f890303f434bb2fd345df7e5863692d1d200b4

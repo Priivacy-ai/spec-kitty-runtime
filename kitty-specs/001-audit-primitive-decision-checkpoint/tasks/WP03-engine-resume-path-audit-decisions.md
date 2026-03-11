@@ -1,7 +1,7 @@
 ---
 work_package_id: WP03
 title: Engine Resume Path for Audit Decisions
-lane: "done"
+lane: done
 dependencies: '[]'
 base_branch: main
 base_commit: 31af87b219286d03319240adfab9154b312fc19d
@@ -17,8 +17,8 @@ phase: Phase 3 - Engine Integration
 assignee: ''
 agent: claude-reviewer
 shell_pid: '7979'
-review_status: "approved"
-reviewed_by: "Robert Douglass"
+review_status: approved
+reviewed_by: Robert Douglass
 history:
 - timestamp: '2026-02-26T00:00:00Z'
   lane: planned

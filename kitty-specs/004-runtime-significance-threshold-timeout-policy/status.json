@@ -2,8 +2,9 @@
   "event_count": 31,
   "feature_slug": "004-runtime-significance-threshold-timeout-policy",
   "last_event_id": "01KJGKK67PFJCMKE3P9J9WHJX1",
-  "materialized_at": "2026-02-27T22:30:32.439648+00:00",
+  "materialized_at": "2026-03-11T07:08:39.769212+00:00",
   "summary": {
+    "approved": 0,
     "blocked": 0,
     "canceled": 0,
     "claimed": 0,

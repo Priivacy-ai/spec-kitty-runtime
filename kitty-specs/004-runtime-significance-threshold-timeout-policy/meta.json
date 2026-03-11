@@ -20,5 +20,6 @@
   "slug": "004-runtime-significance-threshold-timeout-policy",
   "source_description": "runtime significance threshold timeout policy",
   "target_branch": "main",
-  "vcs": "git"
+  "vcs": "git",
+  "feature_slug": "004-runtime-significance-threshold-timeout-policy"
 }

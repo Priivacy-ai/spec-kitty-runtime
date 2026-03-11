@@ -1,7 +1,7 @@
 ---
 work_package_id: WP01
 title: AuditConfig + AuditStep Schema
-lane: "done"
+lane: done
 dependencies: '[]'
 base_branch: main
 base_commit: 35ff370855f7e734b94aac3b630b187f0a98dace
@@ -18,8 +18,8 @@ phase: Phase 1 - Schema Foundation
 assignee: ''
 agent: claude-opus-reviewer
 shell_pid: '95001'
-review_status: "approved"
-reviewed_by: "Robert Douglass"
+review_status: approved
+reviewed_by: Robert Douglass
 history:
 - timestamp: '2026-02-26T00:00:00Z'
   lane: planned

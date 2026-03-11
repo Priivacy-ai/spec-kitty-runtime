@@ -1,13 +1,13 @@
 ---
 work_package_id: WP05
 title: Runtime Decision Authority Kernel
-lane: "done"
+lane: done
 dependencies: []
 base_branch: codex/wp05-runtime-decision-authority-kernel
 base_commit: a8f1f41daeac3d036ba17af324d4c3a52cd49bc8
 created_at: '2026-02-27T13:48:10.856990+00:00'
 assignee: claude-opus-4.6
-agent: "codex-reviewer"
+agent: codex-reviewer
 shell_pid: '54810'
 review_status: approved
 reviewed_by: Robert Douglass
