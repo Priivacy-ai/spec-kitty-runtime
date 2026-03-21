@@ -3,9 +3,9 @@
 # DO NOT EDIT MANUALLY
 
 spec_kitty:
-  version: 2.1.0
+  version: 2.1.1
   initialized_at: '2026-02-26T15:06:32.527186'
-  last_upgraded_at: '2026-03-21T14:01:37.594503'
+  last_upgraded_at: '2026-03-21T15:02:29.700784'
 environment:
   python_version: 3.11.14
   platform: darwin
@@ -48,3 +48,7 @@ migrations:
     notes: 'Removed: .claude/commands/spec-kitty.clarify.md; Removed: .codex/prompts/spec-kitty.clarify.md;
       Removed: .github/prompts/spec-kitty.clarify.prompt.md; Removed: .opencode/command/spec-kitty.clarify.md;
       Removed 4 clarify command artifacts'
+  - id: 2.1.1_repair_skill_pack
+    applied_at: '2026-03-21T15:02:29.696933'
+    result: success
+    notes: Installed 6 skill(s) for 2 agent(s) (34 managed files); Rebuilt .kittify/skills-manifest.json
