@@ -31,5 +31,6 @@
   "slug": "001-audit-primitive-decision-checkpoint",
   "target_branch": "main",
   "vcs": "git",
-  "vcs_locked_at": "2026-02-26T14:12:36.341090+00:00"
+  "vcs_locked_at": "2026-02-26T14:12:36.341090+00:00",
+  "mission_id": "01KN234FRN2DACHD1S4PM2264H"
 }

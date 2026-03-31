@@ -1,7 +1,6 @@
 ---
 work_package_id: WP04
 title: Compatibility Diagnostics API + Fixtures
-lane: done
 dependencies: '[]'
 base_branch: main
 base_commit: 85f890303f434bb2fd345df7e5863692d1d200b4
@@ -18,19 +17,28 @@ subtasks:
 - T028
 - T029
 phase: Phase 2 - Diagnostics
-assignee: ''
-agent: claude-reviewer
-shell_pid: '13561'
-review_status: approved
-reviewed_by: Robert Douglass
 history:
 - timestamp: '2026-02-26T00:00:00Z'
   lane: planned
   agent: system
   action: Prompt generated via /spec-kitty.specify
+authoritative_surface: ''
 depends_on:
 - WP01
+execution_mode: code_change
 feature: 001-audit-primitive-decision-checkpoint
+mission_id: 01KN234FRN2DACHD1S4PM2264H
+owned_files:
+- src/spec_kitty_runtime/diagnostics.py
+- tests/fixtures/audit_bad_dependency.yaml
+- tests/fixtures/audit_invalid_trigger.yaml
+- tests/fixtures/audit_missing_config.yaml
+- tests/fixtures/audit_mixed_steps.yaml
+- tests/fixtures/audit_only_steps.yaml
+- tests/fixtures/audit_valid_advisory.yaml
+- tests/fixtures/audit_valid_blocking.yaml
+- tests/test_compat_diagnostics.py
+wp_code: WP04
 ---
 
 # Work Package Prompt: WP04 – Compatibility Diagnostics API + Fixtures

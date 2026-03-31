@@ -1,7 +1,6 @@
 ---
 work_package_id: WP03
 title: Engine Resume Path for Audit Decisions
-lane: done
 dependencies: '[]'
 base_branch: main
 base_commit: 31af87b219286d03319240adfab9154b312fc19d
@@ -14,19 +13,23 @@ subtasks:
 - T018
 - T019
 phase: Phase 3 - Engine Integration
-assignee: ''
-agent: claude-reviewer
-shell_pid: '7979'
-review_status: approved
-reviewed_by: Robert Douglass
 history:
 - timestamp: '2026-02-26T00:00:00Z'
   lane: planned
   agent: system
   action: Prompt generated via /spec-kitty.specify
+authoritative_surface: ''
 depends_on:
 - WP02
+execution_mode: code_change
 feature: 001-audit-primitive-decision-checkpoint
+mission_id: 01KN234FRN2DACHD1S4PM2264H
+owned_files:
+- src/spec_kitty_runtime/engine.py
+- tests/test_audit_engine.py
+- tests/test_audit_planner.py
+- tests/test_audit_schema.py
+wp_code: WP03
 ---
 
 # Work Package Prompt: WP03 – Engine Resume Path for Audit Decisions

@@ -25,5 +25,6 @@
   "slug": "003-raci-inference-override",
   "target_branch": "main",
   "vcs": "git",
-  "vcs_locked_at": "2026-02-27T17:57:51.764921+00:00"
+  "vcs_locked_at": "2026-02-27T17:57:51.764921+00:00",
+  "mission_id": "01KN234FRPZWM9YKQZJY41ANVK"
 }

@@ -1,7 +1,6 @@
 ---
 work_package_id: WP02
 title: Planner DAG Extension for Audit Steps
-lane: done
 dependencies: '[]'
 base_branch: main
 base_commit: 5df98f2229229aa9ef51b58860e8118cd6d92746
@@ -14,19 +13,22 @@ subtasks:
 - T012
 - T013
 phase: Phase 2 - Planner Logic
-assignee: ''
-agent: claude-reviewer
-shell_pid: '3626'
-review_status: approved
-reviewed_by: Robert Douglass
 history:
 - timestamp: '2026-02-26T00:00:00Z'
   lane: planned
   agent: system
   action: Prompt generated via /spec-kitty.specify
+authoritative_surface: ''
 depends_on:
 - WP01
+execution_mode: code_change
 feature: 001-audit-primitive-decision-checkpoint
+mission_id: 01KN234FRN2DACHD1S4PM2264H
+owned_files:
+- src/spec_kitty_runtime/planner.py
+- tests/test_audit_planner.py
+- tests/test_audit_schema.py
+wp_code: WP02
 ---
 
 # Work Package Prompt: WP02 – Planner DAG Extension for Audit Steps
