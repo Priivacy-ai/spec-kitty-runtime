@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.1 - 2026-04-04
+
+**Approved-lane alignment** — repins the runtime to the canonical events contract that defines `approved`.
+
+### Changed
+
+- Dependency updated from `spec-kitty-events==2.3.2` to `spec-kitty-events==2.9.0`.
+- No runtime API changes; this release exists to keep consumers on PyPI packages while accepting the shared approved-lane model.
+
 ## 0.4.0 - 2026-03-04
 
 **Stable runtime release** — promotes the MIT-clear events repin from RC to final.
