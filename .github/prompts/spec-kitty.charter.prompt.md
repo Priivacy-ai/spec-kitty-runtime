@@ -1,9 +1,9 @@
 ---
-description: Generate or update the project constitution from a structured interview.
+description: Generate or update the project charter from a structured interview.
 ---
 
 
-# /spec-kitty.constitution - Interview + Compile Constitution
+# /spec-kitty.charter - Interview + Compile Charter
 
 ## User Input
 
@@ -15,14 +15,14 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Command Contract
 
-This command delegates constitution work to the CLI constitution workflow. Do not hand-author long governance content in chat unless the user explicitly asks for manual drafting.
+This command delegates charter work to the CLI charter workflow. Do not hand-author long governance content in chat unless the user explicitly asks for manual drafting.
 
 ### Output location
 
-- Constitution markdown: `.kittify/constitution/constitution.md`
-- Interview answers: `.kittify/constitution/interview/answers.yaml`
-- Reference manifest: `.kittify/constitution/references.yaml`
-- Local reference docs: `.kittify/constitution/library/*.md`
+- Charter markdown: `.kittify/charter/charter.md`
+- Interview answers: `.kittify/charter/interview/answers.yaml`
+- Reference manifest: `.kittify/charter/references.yaml`
+- Local reference docs: `.kittify/charter/library/*.md`
 
 ## Execution Paths
 
@@ -31,8 +31,8 @@ This command delegates constitution work to the CLI constitution workflow. Do no
 Use when user wants speed, defaults, or bootstrap:
 
 ```bash
-spec-kitty constitution interview --defaults --profile minimal --json
-spec-kitty constitution generate --from-interview --json
+spec-kitty charter interview --defaults --profile minimal --json
+spec-kitty charter generate --from-interview --json
 ```
 
 ### Path B: Interactive interview (full)
@@ -40,33 +40,33 @@ spec-kitty constitution generate --from-interview --json
 Use when the user wants project-specific policy capture:
 
 ```bash
-spec-kitty constitution interview --profile comprehensive
-spec-kitty constitution generate --from-interview
+spec-kitty charter interview --profile comprehensive
+spec-kitty charter generate --from-interview
 ```
 
 ## Editing Rules
 
-- To revise policy inputs, rerun `constitution interview` (or edit `answers.yaml`) and regenerate.
-- Use `--force` with generate if the constitution already exists and must be replaced.
-- Keep constitution concise; full detail belongs in reference docs listed in `references.yaml`.
+- To revise policy inputs, rerun `charter interview` (or edit `answers.yaml`) and regenerate.
+- Use `--force` with generate if the charter already exists and must be replaced.
+- Keep charter concise; full detail belongs in reference docs listed in `references.yaml`.
 
 ## Validation + Status
 
 After generation, verify status:
 
 ```bash
-spec-kitty constitution status --json
+spec-kitty charter status --json
 ```
 
 ## Context Bootstrap Requirement
 
-After constitution generation, first-run lifecycle actions should load context explicitly:
+After charter generation, first-run lifecycle actions should load context explicitly:
 
 ```bash
-spec-kitty constitution context --action specify --json
-spec-kitty constitution context --action plan --json
-spec-kitty constitution context --action implement --json
-spec-kitty constitution context --action review --json
+spec-kitty charter context --action specify --json
+spec-kitty charter context --action plan --json
+spec-kitty charter context --action implement --json
+spec-kitty charter context --action review --json
 ```
 
 Use JSON `text` as governance context. If `mode=bootstrap`, follow referenced docs as needed.
