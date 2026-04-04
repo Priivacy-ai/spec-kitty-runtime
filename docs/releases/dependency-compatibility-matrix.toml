@@ -17,3 +17,9 @@ notes = "Release line pinned to MIT-clear mission-next events contracts."
 
 [runtime."0.4.0"]
 notes = "Stable release line pinned to MIT-clear mission-next events contracts."
+
+[runtime."0.4.2".dependencies]
+"spec-kitty-events" = "2.9.0"
+
+[runtime."0.4.2"]
+notes = "Approved-lane alignment release pinned to the canonical spec-kitty-events 2.9.0 contract."
