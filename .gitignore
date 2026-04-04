@@ -19,3 +19,6 @@ __pycache__/
 .github/copilot/
 .kittify/.dashboard
 .kittify/missions/__pycache__/
+.kittify/derived/
+.kittify/runtime/
+.kittify/.migration-backup/

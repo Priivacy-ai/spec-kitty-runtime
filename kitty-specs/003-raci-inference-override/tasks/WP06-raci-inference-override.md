@@ -1,8 +1,8 @@
 ---
 work_package_id: WP06
 title: RACI Inference and Override
-lane: "done"
 dependencies: []
+requirement_refs: [FR-006]
 base_branch: main
 base_commit: 6987ac52bc4bed93096aa77bfd98e27d2160f221
 created_at: '2026-02-27T17:57:52.028223+00:00'
@@ -13,18 +13,17 @@ subtasks:
 - T004-add-template-validation
 - T005-create-test-suite
 phase: Phase 2 - Implementation
-assignee: claude-opus-4.6
-agent: claude-opus
-shell_pid: '46465'
-review_status: "approved"
-reviewed_by: "Robert Douglass"
-review_feedback: ''
 history:
 - timestamp: '2026-02-27T00:00:00Z'
   lane: planned
   agent: system
   action: Prompt generated via /spec-kitty.tasks
-requirement_refs: [FR-006]
+authoritative_surface: kitty-specs/003-raci-inference-override/
+execution_mode: planning_artifact
+mission_id: 01KN234FRPZWM9YKQZJY41ANVK
+owned_files:
+- kitty-specs/003-raci-inference-override/**
+wp_code: WP06
 ---
 
 # Work Package Prompt: WP06 – RACI Inference and Override
