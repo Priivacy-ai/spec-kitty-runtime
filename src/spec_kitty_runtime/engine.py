@@ -209,7 +209,7 @@ def start_mission_run(
     )
     _write_snapshot(run_dir, snapshot)
     actor = RuntimeActorIdentity(actor_id="system", actor_type="service")
-    payload = MissionRunStartedPayload(run_id=run_id, mission_key=template.mission.key, actor=actor)
+    payload = MissionRunStartedPayload(run_id=run_id, mission_type=template.mission.key, actor=actor)
     _append_event(run_dir, MISSION_RUN_STARTED, payload.model_dump(mode="json"))
     emitter.emit_mission_run_started(payload)
 
@@ -443,7 +443,7 @@ def next_step(
         # not on re-polls of an already-terminal run.
         mc_actor = RuntimeActorIdentity(actor_id=agent_id, actor_type="llm")
         mc_payload = MissionRunCompletedPayload(
-            run_id=snapshot.run_id, mission_key=snapshot.mission_key, actor=mc_actor,
+            run_id=snapshot.run_id, mission_type=snapshot.mission_key, actor=mc_actor,
         )
         _append_event(run_dir, MISSION_RUN_COMPLETED, mc_payload.model_dump(mode="json"))
         emitter.emit_mission_run_completed(mc_payload)
