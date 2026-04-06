@@ -1,0 +1,93 @@
+name: Acceptance
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      approve_prerelease_dependencies:
+        description: Explicitly allow prerelease spec-kitty-* dependency pins for this run
+        required: false
+        default: false
+        type: boolean
+      approve_direct_reference_dependencies:
+        description: Explicitly allow direct URL spec-kitty-* dependencies for this run
+        required: false
+        default: false
+        type: boolean
+  workflow_call:
+    inputs:
+      approve_prerelease_dependencies:
+        description: Explicitly allow prerelease spec-kitty-* dependency pins
+        required: false
+        default: false
+        type: boolean
+      approve_direct_reference_dependencies:
+        description: Explicitly allow direct URL spec-kitty-* dependencies
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test and build tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade build twine pytest
+          python -m pip install -e .[test]
+
+      - name: Run tests
+        run: pytest -q
+
+      - name: Validate dependency compatibility matrix
+        run: python scripts/release/validate_dependency_matrix.py
+
+      - name: Validate dependency policy
+        env:
+          INPUT_ALLOW_PRERELEASE: ${{ inputs.approve_prerelease_dependencies }}
+          INPUT_ALLOW_DIRECT_REF: ${{ inputs.approve_direct_reference_dependencies }}
+          SECRET_ALLOW_PRERELEASE: ${{ secrets.RELEASE_APPROVE_PRERELEASE_DEPS }}
+          SECRET_ALLOW_DIRECT_REF: ${{ secrets.RELEASE_APPROVE_DIRECT_REFERENCE_DEPS }}
+        run: |
+          set -euo pipefail
+          POLICY_ARGS=()
+
+          if [[ "${INPUT_ALLOW_PRERELEASE}" == "true" || "${SECRET_ALLOW_PRERELEASE}" == "1" ]]; then
+            POLICY_ARGS+=(--allow-prerelease)
+          fi
+
+          if [[ "${INPUT_ALLOW_DIRECT_REF}" == "true" || "${SECRET_ALLOW_DIRECT_REF}" == "1" ]]; then
+            POLICY_ARGS+=(--allow-direct-reference)
+          fi
+
+          # PR-time runs may hit unreleased versions; skip PyPI fetch to avoid false failures
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            POLICY_ARGS+=(--skip-pypi-check)
+          fi
+
+          python scripts/release/validate_dependency_policy.py "${POLICY_ARGS[@]}"
+
+      - name: Build distribution artifacts
+        run: |
+          python -m build
+          twine check dist/*
+
+      - name: Validate distribution metadata
+        run: python scripts/release/validate_distribution_metadata.py --package spec-kitty-runtime
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*

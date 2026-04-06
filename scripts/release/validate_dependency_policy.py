@@ -42,6 +42,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Allow libraries not present in dependency list.",
     )
+    parser.add_argument(
+        "--skip-pypi-check",
+        action="store_true",
+        help="Skip PyPI fetch and MIT license validation (for PR-time runs where the pinned version may not be published yet).",
+    )
     return parser.parse_args()
 
 
@@ -166,18 +171,21 @@ def main() -> int:
                 f"{library}: prerelease pin '{pinned}' is not allowed without explicit approval."
             )
 
-        try:
-            info = fetch_pypi_info(library, pinned)
-        except SystemExit as exc:
-            issues.append(str(exc))
-            continue
-        if not has_mit_metadata(info):
-            issues.append(
-                f"{library}=={pinned}: missing clear MIT metadata on PyPI "
-                "(classifier/license/license_expression)."
-            )
+        if args.skip_pypi_check:
+            summary.append(f"{library}: validated {pinned} (PyPI check skipped)")
+        else:
+            try:
+                info = fetch_pypi_info(library, pinned)
+            except SystemExit as exc:
+                issues.append(str(exc))
+                continue
+            if not has_mit_metadata(info):
+                issues.append(
+                    f"{library}=={pinned}: missing clear MIT metadata on PyPI "
+                    "(classifier/license/license_expression)."
+                )
 
-        summary.append(f"{library}: validated {pinned}")
+            summary.append(f"{library}: validated {pinned}")
 
     print("Dependency Policy Summary")
     print("-------------------------")

@@ -15,66 +15,16 @@ on:
         type: boolean
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install test and build tooling
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install --upgrade build twine pytest
-          python -m pip install -e .[test]
-
-      - name: Run tests
-        run: pytest -q
-
-      - name: Validate dependency compatibility matrix
-        run: python scripts/release/validate_dependency_matrix.py
-
-      - name: Validate dependency policy
-        env:
-          INPUT_ALLOW_PRERELEASE: ${{ github.event.inputs.approve_prerelease_dependencies }}
-          INPUT_ALLOW_DIRECT_REF: ${{ github.event.inputs.approve_direct_reference_dependencies }}
-          SECRET_ALLOW_PRERELEASE: ${{ secrets.RELEASE_APPROVE_PRERELEASE_DEPS }}
-          SECRET_ALLOW_DIRECT_REF: ${{ secrets.RELEASE_APPROVE_DIRECT_REFERENCE_DEPS }}
-        run: |
-          set -euo pipefail
-          POLICY_ARGS=()
-
-          if [[ "${INPUT_ALLOW_PRERELEASE}" == "true" || "${SECRET_ALLOW_PRERELEASE}" == "1" ]]; then
-            POLICY_ARGS+=(--allow-prerelease)
-          fi
-
-          if [[ "${INPUT_ALLOW_DIRECT_REF}" == "true" || "${SECRET_ALLOW_DIRECT_REF}" == "1" ]]; then
-            POLICY_ARGS+=(--allow-direct-reference)
-          fi
-
-          python scripts/release/validate_dependency_policy.py "${POLICY_ARGS[@]}"
-
-      - name: Build distribution artifacts
-        run: |
-          python -m build
-          twine check dist/*
-
-      - name: Validate distribution metadata
-        run: python scripts/release/validate_distribution_metadata.py --package spec-kitty-runtime
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist/*
+  acceptance:
+    uses: ./.github/workflows/acceptance.yml
+    with:
+      approve_prerelease_dependencies: ${{ inputs.approve_prerelease_dependencies || false }}
+      approve_direct_reference_dependencies: ${{ inputs.approve_direct_reference_dependencies || false }}
+    secrets: inherit
 
   publish:
     name: Publish package to TestPyPI
-    needs: build
+    needs: acceptance
     runs-on: ubuntu-latest
     environment: testpypi
     permissions:
