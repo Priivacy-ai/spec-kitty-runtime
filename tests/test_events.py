@@ -21,7 +21,7 @@ def test_null_emitter_is_noop() -> None:
 
     actor = RuntimeActorIdentity(actor_id="a1", actor_type="llm")
     emitter.emit_mission_run_started(
-        MissionRunStartedPayload(run_id="r1", mission_key="key", actor=actor)
+        MissionRunStartedPayload(run_id="r1", mission_type="key", actor=actor)
     )
     emitter.emit_next_step_issued(
         NextStepIssuedPayload(run_id="r1", step_id="S1", agent_id="agent-1", actor=actor)
@@ -36,7 +36,7 @@ def test_null_emitter_is_noop() -> None:
         DecisionInputAnsweredPayload(run_id="r1", decision_id="d1", answer="A", actor=actor)
     )
     emitter.emit_mission_run_completed(
-        MissionRunCompletedPayload(run_id="r1", mission_key="key", actor=actor)
+        MissionRunCompletedPayload(run_id="r1", mission_type="key", actor=actor)
     )
 
 
