@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.3 - 2026-04-06
+
+**Bugfix** — corrects the dependency pin that caused `ModuleNotFoundError` at import time.
+
+### Fixed
+
+- Updated dependency from `spec-kitty-events==2.9.0` to `spec-kitty-events==3.0.0`. The runtime code imports from `spec_kitty_events.mission_next`, which only exists in 3.0.0. The 2.9.0 pin caused `ModuleNotFoundError` for all consumers. (Fixes #10)
+
 ## 0.4.2 - 2026-04-04
 
 **Approved-lane alignment** — repins the runtime to the canonical events contract that defines `approved`.
