@@ -3,6 +3,7 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 .venv/
+.idea
 
 # Added by Spec Kitty CLI (auto-managed)
 .claude/
