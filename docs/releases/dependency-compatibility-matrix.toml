@@ -29,3 +29,9 @@ notes = "Approved-lane alignment release pinned to the canonical spec-kitty-even
 
 [runtime."0.4.3"]
 notes = "Bugfix: update dependency pin to spec-kitty-events 3.0.0 to match mission_next imports."
+
+[runtime."0.4.4".dependencies]
+"spec-kitty-events" = "3.2.0"
+
+[runtime."0.4.4"]
+notes = "Bugfix: update dependency pin to spec-kitty-events 3.2.0 to align with spec-kitty-cli 3.2.0a2."
