@@ -83,6 +83,9 @@ jobs:
           python -m build
           twine check dist/*
 
+      - name: Verify exact installability from built wheel
+        run: python scripts/release/check_exact_install.py --package spec-kitty-runtime
+
       - name: Validate distribution metadata
         run: python scripts/release/validate_distribution_metadata.py --package spec-kitty-runtime
 
