@@ -35,3 +35,9 @@ notes = "Bugfix: update dependency pin to spec-kitty-events 3.0.0 to match missi
 
 [runtime."0.4.4"]
 notes = "Bugfix: update dependency pin to spec-kitty-events 3.2.0 to align with spec-kitty-cli 3.2.0a2."
+
+[runtime."0.4.5".dependencies]
+"spec-kitty-events" = "3.3.0"
+
+[runtime."0.4.5"]
+notes = "Release-train alignment release pinned to spec-kitty-events 3.3.0 for mission analytics telemetry."
