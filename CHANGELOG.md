@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.5 - 2026-04-22
+
+**Release-train alignment** — repins the runtime to the analytics-enabled events
+contract required by Mission Scorecard telemetry.
+
+### Fixed
+
+- Updated dependency from `spec-kitty-events==3.2.0` to
+  `spec-kitty-events==3.3.0`.
+- Added the corresponding dependency-compatibility matrix entry so the release
+  gates validate the current train.
+
 ## 0.4.3 - 2026-04-06
 
 **Bugfix** — corrects the dependency pin that caused `ModuleNotFoundError` at import time.
