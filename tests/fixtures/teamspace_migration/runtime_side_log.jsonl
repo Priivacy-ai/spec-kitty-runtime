@@ -1,0 +1,4 @@
+{"event_type":"MissionNextInvoked","payload":{"mission_key":"runtime-demo","run_id":"run-001"},"timestamp":"2026-01-01T00:00:00+00:00"}
+{"event_type":"MissionRunStarted","payload":{"actor":{"actor_id":"agent-1","actor_type":"llm"},"mission_type":"software-dev","run_id":"run-001"},"timestamp":"2026-01-01T00:00:01+00:00"}
+{"event_type":"NextStepIssued","payload":{"actor":{"actor_id":"agent-1","actor_type":"llm"},"agent_id":"agent-1","run_id":"run-001","step_id":"S1"},"timestamp":"2026-01-01T00:00:02+00:00"}
+{"event_type":"MissionRunCompleted","payload":{"actor":{"actor_id":"agent-1","actor_type":"llm"},"mission_type":"software-dev","run_id":"run-001"},"timestamp":"2026-01-01T00:00:03+00:00"}

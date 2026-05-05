@@ -407,20 +407,20 @@ wheels = [
 
 [[package]]
 name = "spec-kitty-events"
-version = "3.0.0"
+version = "3.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
     { name = "python-ulid" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/28/ff/fe70d757505e2b786decf4708d20b9844d860f563c3decaf9fdefa92ab19/spec_kitty_events-3.0.0.tar.gz", hash = "sha256:97383f3f8cf7e0c4722a318749414dc560e3e38aef943c02dbfb4be16c451c7d", size = 152627 }
+sdist = { url = "https://files.pythonhosted.org/packages/a8/20/5fbbaaa943672199b3aceced851392048ffea6017121cc884afb0c444453/spec_kitty_events-3.3.0.tar.gz", hash = "sha256:8ba7d1fb1c79e1be2b35d6cc11f529723984099b86f8572a5b77de22b88f964a", size = 162421 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/17/f0/0b7320de5dd8434359733930e5ec99a966f7bc807d69f2e88a191481ae66/spec_kitty_events-3.0.0-py3-none-any.whl", hash = "sha256:eb468256303947c000b43cac2b077220b7d47dc5f98b282b89f4ac5779ceee51", size = 227397 },
+    { url = "https://files.pythonhosted.org/packages/05/df/513f986d0f9c18b7bbfcced6d117e25577bfda10a44178aeac828e91c3a7/spec_kitty_events-3.3.0-py3-none-any.whl", hash = "sha256:9b271e96dc222e3321c175c039e34113eb6b623306f0467c5fa1847bbda97841", size = 246431 },
 ]
 
 [[package]]
 name = "spec-kitty-runtime"
-version = "0.4.3"
+version = "0.4.5"
 source = { editable = "." }
 dependencies = [
     { name = "jsonschema" },
@@ -440,7 +440,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.0,<3.0" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8.0" },
     { name = "pyyaml", specifier = ">=6.0" },
-    { name = "spec-kitty-events", specifier = "==3.0.0" },
+    { name = "spec-kitty-events", specifier = "==3.3.0" },
 ]
 
 [[package]]
