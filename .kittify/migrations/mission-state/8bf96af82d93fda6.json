@@ -1,0 +1,990 @@
+{
+  "manifest_path": ".kittify/migrations/mission-state/8bf96af82d93fda6.json",
+  "missions": [
+    {
+      "file_changes": [
+        {
+          "new_sha256": "e94a4e5532c1ed5a32bdde39e8d522ef00b4da1ad97da6957e402ffb5ab30b62",
+          "new_size": 1127,
+          "old_sha256": "f59313683d6c4688a558cbdd60578ba4f6a7a90f4b56c4bc86b7dff9129519f1",
+          "old_size": 1126,
+          "path": "kitty-specs/001-audit-primitive-decision-checkpoint/meta.json"
+        },
+        {
+          "new_sha256": "34ff7d22c90127e34fcadf65c396ede44fa4bce3f7c6198e2e383077b50d3d06",
+          "new_size": 20009,
+          "old_sha256": "aa1c28ebdff6c96f29be5dd9e1e9c33cfc523bbbeaea181739029d1bc8199c09",
+          "old_size": 19482,
+          "path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl"
+        }
+      ],
+      "mission_id": "01KN234FRN2DACHD1S4PM2264H",
+      "mission_slug": "001-audit-primitive-decision-checkpoint",
+      "quarantined_rows": 0,
+      "row_transformations": [
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD4Y09XPF1ZDE7SH6SAVWTV",
+          "line_number": 1,
+          "new_sha256": "a082e4a67e42f99c6ba7832f8fa6638de1ce6a94e602eb6e118e9373afe978f5",
+          "old_sha256": "b9a50aadd1cdb0a27ff0a01d75b677077efd4981bfeddd7c6500550812d0e00f"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD4Y0DTKPZ3MK49X4SXAQNF",
+          "line_number": 2,
+          "new_sha256": "0086be3c4ed1857ec7cc27f8734e24e1ee92150a6f59847d345fe06e9d19fe72",
+          "old_sha256": "ddc8c8cd2b362275972fcb5e0e292d67524dcb66b1c163bc417855a2c3af550f"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD53BC2K03Z3TYB7Q3XQTAS",
+          "line_number": 3,
+          "new_sha256": "4b90e5339d4aa8f167317ccfd9ee0b627d9aa4ea475cdb65e8547ddd27545e75",
+          "old_sha256": "e35f8994230d24c2a67e5062895a7815535af5918d703f141b7740b962be5968"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD53BFN87GM39K9W6NAPRKT",
+          "line_number": 4,
+          "new_sha256": "7d75d9aceaecb67c301b81910afe5e23fc51a9cfd8dd21629d19c5ef78da288f",
+          "old_sha256": "5f233cbe1b4d295e0ba450f57ed14893a06438b3ea900278620be4462c089175"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD53BG7XEF4PPMGJGNHQH5D",
+          "line_number": 5,
+          "new_sha256": "1ce05efde3d6b3748ec19cfbbedd7ba2e76325b85ee577fbed8fdb8ba4de1294",
+          "old_sha256": "d9a5e14e6f95fb6eda154e8133b3194bf86ee21def52120cf2ac0bac687b0db4"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD5B3WPEDDNSZP52455HF58",
+          "line_number": 6,
+          "new_sha256": "449a91f3d7b23248678c8e5c4984544b563f54360331b51f72f3ad31920dd607",
+          "old_sha256": "3dbbfe757ca8703af6959c7b8407e8850c8193671adc09450842d725db1e1eff"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD5B3ZJQFZZ54MRQ109VA5E",
+          "line_number": 7,
+          "new_sha256": "1e8a672c623c8ff179b9127cc45f09accc20d8ca8dfbbebaf822bc20f5bf97ae",
+          "old_sha256": "ab713f0ebf31cbc0c4cf79d16810cb6787978518968087a887481f73116b81f2"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD5ECRXWEDYFRZKV1RXHTEY",
+          "line_number": 8,
+          "new_sha256": "f53210cff55f046e92654071fd0ff7de83061de7bf971678592c069325a34270",
+          "old_sha256": "af906967bf672d7f54b0f8fc36f74db927c5bca93cc94ad2a89a55d437ac0b6b"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD5ECWPR49KMXC1JHMVGB6P",
+          "line_number": 9,
+          "new_sha256": "f00fc74aaefd33a5a1734599e2844339360b9e64a941c8504ec55a040bfa5dfa",
+          "old_sha256": "c3439d11eca7c94cbc025b4e21b1a4ac39e22e5f1fcc012fa7da5d03eef277f0"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD5HZ3TKCT5GG4N14326A8S",
+          "line_number": 10,
+          "new_sha256": "6832c9fb9093866ebb417c4b9ca7c80cda34dde4b7756c079a35d1228b48566a",
+          "old_sha256": "734c212f27a2e3b9a4c5807a0e44c843eed940faf8a9715d5490361bfb2adb61"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD5HZ7GGA2D10K92NJFEHM3",
+          "line_number": 11,
+          "new_sha256": "764036681c2544463f47e4b6eb2fb79e97747dd57e6fe739fb5ac0f602f7ed58",
+          "old_sha256": "632d1c354e3f50b3f38e2e534c7b64770d0b566b3a2a7e8abee659ce7ccc40a9"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD5HZ85HE12533SEWADVC81",
+          "line_number": 12,
+          "new_sha256": "4cb15001f756d13f4c8ba1c905fa34ff0d576c68999466f023da138d9ee40248",
+          "old_sha256": "3eba40066f183493e75447fb0012a6fd3461cb324e1fb42963c40f4eaf021c79"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD5QQ28DZTQFGQASABC4KNG",
+          "line_number": 13,
+          "new_sha256": "184dbdea90f882d18971c668ef1d86cf7f97588e1ff5714e3ea4ffb6cf20d7b6",
+          "old_sha256": "5d384ce20f6dbe2be24fd5b6507aaba90487b41ed485d9ebce1bdc293b04acaa"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD60N0XHAKYHJPBFJ1EJ4P4",
+          "line_number": 14,
+          "new_sha256": "ab794a3e67de74008ccc02cd6e250c5d1c7a3ea22d332d333ee32daea9e973cf",
+          "old_sha256": "caca6c9c1066bee382311f506feaf1c7d21f1454aa443fddacfee2c5da37f747"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD66XDV11C65SS838S95VHF",
+          "line_number": 15,
+          "new_sha256": "25ecb1db12aba62268cacca0918832feeb6b5e659b08c789dbe59678d9ab37a2",
+          "old_sha256": "e4e0a46efe4abcdae4f5230368c42b2920f599111cd582751e05a1d1f9a9da61"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD66XJB0927EM00G34BCC1G",
+          "line_number": 16,
+          "new_sha256": "21735894769d9ace6b80135a0eb8d3620d7663b284c5af4880fc90a481b0f975",
+          "old_sha256": "7f40f21751bb5406ae56b6225952a11e5e8e754758f24cf89bdaef27d8e2b3ec"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD66XK0QYJZ2WXHTME3D45Q",
+          "line_number": 17,
+          "new_sha256": "98d669150779c2c69b3b962d4da5250414dcfe5f1d7117edbaf163ddd2147501",
+          "old_sha256": "04625db2293ce67b7bc21222f7269753f4ede40814413da65125f130be399a46"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD6G6P3PRDP4MR06HGRS4XM",
+          "line_number": 18,
+          "new_sha256": "3091e4d3dc5da47e3e0b9b28b67193ec6458f38b783d1cd650dfa67a1b2fc1bf",
+          "old_sha256": "60a346bacd8c4b59ba4090f1f7c96961b7e48eb822149931b89c21a7b08b3c62"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD6G6SN0AQA31GE7W6G0SKS",
+          "line_number": 19,
+          "new_sha256": "7f687cc3bb1791215cecafb49472e39fc57d57dcb2675b18cf5832361f0bb0bd",
+          "old_sha256": "47039ae4dfc7d68a69ca1797d5815c2245d22db588b5f058fc4859ab0df2521f"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD6KR8GMBSHKR31CFEBZ6CV",
+          "line_number": 20,
+          "new_sha256": "d84903fbab3ac6558366e2084c2d21162dea9a0019cacc8c22e6f2a153ca9fb4",
+          "old_sha256": "deef0578d0f4c32862b25dd2b32b59ac24b39cfe4c9207333e1ed271bd184165"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD6KRBEA2H7W1G0B06VCNVY",
+          "line_number": 21,
+          "new_sha256": "7b6fff46e6d0124d98d9a1dc614e8260315d10ebf1a180e4c4e7f65d445a8ff7",
+          "old_sha256": "1cf78a0d6032aef5162e3f2815866a02f942620da9d4aa59a8ad5379735c8179"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD6KRC55WW76C50BQ64V8MH",
+          "line_number": 22,
+          "new_sha256": "b83ebe1827d8e98e4b16b8a0ea08c4e769dc55d384d24ba750e6b216cc62cd3d",
+          "old_sha256": "901d9d58f1d89601f17ec5470f33402b94491388fc2bf80e38335f7d10dd51ef"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD6WC9P8RVN5M6J72M2271S",
+          "line_number": 23,
+          "new_sha256": "0a3b6db3b4ae7814f2333149191099ac942c2f6575215378c8f7a3a10504eab4",
+          "old_sha256": "2f408a871ffb6e271c409b41ed046bc4f365b940af2b636bfd65fa2daa1fc70c"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD6WCDBJMX7RKRPXKFP359Y",
+          "line_number": 24,
+          "new_sha256": "a1ec3af2aaf2bf202b1335492692ed4ff032f77e06ab660e6d747cc8549fe422",
+          "old_sha256": "0aa3ae1313c9b0fb98c831963f9f39e49ba6995713f9ce9372dfb531cabe0a37"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD6Z6GBQH8HM4C45EEF55XG",
+          "line_number": 25,
+          "new_sha256": "78944f69e2a830dbdd845afbf1f76dc1e7fe71d95d5fdaa8d12361aaa684e2e7",
+          "old_sha256": "2695f88fc7556eced00b05476392a692639a7bd94763e21fac6559c33f5ca7d6"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD6Z6KB204F7RVAAFDBA127",
+          "line_number": 26,
+          "new_sha256": "aab181a97c79bf86abd1b1fafab58ad84bc8e68cbe1ec153b0be362f13cc5fd8",
+          "old_sha256": "6821591fce7f5332660c7dc74902527b991c0e7349621019f716af8c1ff9b540"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJD6Z6M2GA144A88QKD9278Q",
+          "line_number": 27,
+          "new_sha256": "a93f72397cb57caaee8d012356d4a0311e805ca6f601f17abda9809ced83fb04",
+          "old_sha256": "16ee7168ffe389ef6b80a926613d96118cc3afdf0db90cd6cf27bc8688f592ff"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJM5ZZ3RWY5F3NQS6FQQ2GWW",
+          "line_number": 28,
+          "new_sha256": "3fbe8bdb1c366ce2e3b7034972fedecb8830af0fb113aa0cdcd8d8cda62003c9",
+          "old_sha256": "7b6f5e608798f5aa3e4a7b241c7a400d80945b67959606cb1e79bc0f6cf3f9e3"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJM5ZZ70GB9CP0TS0PYFRD4F",
+          "line_number": 29,
+          "new_sha256": "ee3efbe0acc68a0a2fb38dc6051485c07745fef5ae77d96d828c4bb5ad283563",
+          "old_sha256": "fc81ac07ede50b00e8534865cedcababdb13672f979581831ae23196d101c64e"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJM613XMYAY2XWAYBGN2HZS2",
+          "line_number": 30,
+          "new_sha256": "06c13c34d0f2037fba4d3d25326c4a4420fae6dd470719f0328000d3d0c55c75",
+          "old_sha256": "0a82ab54595d6f3e4341703a461f76c9028a1ed74469fd7b274401b6af316dfc"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/001-audit-primitive-decision-checkpoint/status.events.jsonl",
+          "event_id": "01KJM64SDK0NKTBVQFQQVJ602Q",
+          "line_number": 31,
+          "new_sha256": "0009ed479fee0bbe572e830762f345425d27d4639b28b153a5bbcb2fca27161a",
+          "old_sha256": "a7a73a9ab089b3ace50700586b0c72a7959cd850aab76049d3115bd3a4404b16"
+        }
+      ],
+      "status": "updated",
+      "validation_errors": []
+    },
+    {
+      "file_changes": [
+        {
+          "new_sha256": "88cb462a1979a2aedcb1d8da9dd95325d178c8eb315d2572c5de634e0ea208c9",
+          "new_size": 438,
+          "old_sha256": "b6c3aeb4fa789ecfd0476c68d93773894a9860147c5f856c187a435984bc53a8",
+          "old_size": 437,
+          "path": "kitty-specs/002-decision-authority-kernel/meta.json"
+        },
+        {
+          "new_sha256": "5f93b95a9d7cd5c756c3f7e7fd9ea90b713855291864f99334cf98cb08056f4f",
+          "new_size": 7287,
+          "old_sha256": "142b381946db597350dee8284c0031907bcbd1a06faf1a41334e46435705fac7",
+          "old_size": 7083,
+          "path": "kitty-specs/002-decision-authority-kernel/status.events.jsonl"
+        }
+      ],
+      "mission_id": "01KN234FRN2DACHD1S4PM2264J",
+      "mission_slug": "002-decision-authority-kernel",
+      "quarantined_rows": 0,
+      "row_transformations": [
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/002-decision-authority-kernel/status.events.jsonl",
+          "event_id": "01KJFNNXGEPG985KF67EF6MPC0",
+          "line_number": 1,
+          "new_sha256": "18b6c5b32e6316d929cd839a1acd1b0034be1d4071f488d48343b0f385953d65",
+          "old_sha256": "c2b2e05448fc9e6399bdd9013989fb5d222e35263eb8ad6ce06158c2882cb1fe"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/002-decision-authority-kernel/status.events.jsonl",
+          "event_id": "01KJFNNXN5V2HRJH26A9KE26D7",
+          "line_number": 2,
+          "new_sha256": "18c5ac7a672a50001ecd2401ae2fda7f2f1ec1403cb3302bcf96c686c51dee42",
+          "old_sha256": "ba9483615c8f04cd1f00556a4d817102ec36bdd39d5599dbc6c35b48992c24c5"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/002-decision-authority-kernel/status.events.jsonl",
+          "event_id": "01KJFP9P66KCXZQGCPG95ZGAYS",
+          "line_number": 3,
+          "new_sha256": "7228882322f3c895d0295c1d400f2a25fab930c2b1cd6091595526a4a37502b5",
+          "old_sha256": "fb0e29a29792a45c0696a2cd9cd573971505edc02e0fd2a4be7c95c01dc7f20d"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/002-decision-authority-kernel/status.events.jsonl",
+          "event_id": "01KJFPVDW9049Q7B3Y9VQAA4HP",
+          "line_number": 4,
+          "new_sha256": "7acc63da47aff9065ee51b235391e8b75b0f57c90b7d30a56720bafe32030245",
+          "old_sha256": "af4130eddff53b07da92060848f64f8c23d2ef9e033318f43ad4b021e5a57f36"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/002-decision-authority-kernel/status.events.jsonl",
+          "event_id": "01KJFPVDZH0HD45YM29N1PF7XG",
+          "line_number": 5,
+          "new_sha256": "4206c2dd09ecd6814fb91ff93b795967ecd1a2bcea183595812e84c7e0f998f9",
+          "old_sha256": "abc4a90407872739403785bbdd94c78b57528076f2733ceed9e9b3bd9a0487cc"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/002-decision-authority-kernel/status.events.jsonl",
+          "event_id": "01KJFPVE07ZP58ZDCYWQDD44JW",
+          "line_number": 6,
+          "new_sha256": "8cf9d6ef28236e203b039e1a3f00305f2a62d98b13133dc110b58c1d74ab20c3",
+          "old_sha256": "73abaa19a63b269771c2421a1e0167d512b3db46f61ea88a5696bf7acb28c10f"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/002-decision-authority-kernel/status.events.jsonl",
+          "event_id": "01KJFPWPQVJ8CYG5YEV36VNN6E",
+          "line_number": 7,
+          "new_sha256": "25d2b51af4221ba1f3c3930e2e044313a98afe564373756af16393c791a5ccd5",
+          "old_sha256": "69f2f72a174f382b001e63032cf90a87ffa8e99eff2039f096f20c9f7f12303d"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/002-decision-authority-kernel/status.events.jsonl",
+          "event_id": "01KJFPY1XWK9G9SVHP5XJRAVW9",
+          "line_number": 8,
+          "new_sha256": "b123272b17a540e269d82138a31b99170351801830c9065f80a7af25b0a99a13",
+          "old_sha256": "214874d791f3113371b51180db3c906c7746123e91d5995857c15d2e4caf9980"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/002-decision-authority-kernel/status.events.jsonl",
+          "event_id": "01KJFQFW733W183FGAJWH2YXKW",
+          "line_number": 9,
+          "new_sha256": "258477549f4264af6004a44c2fac0a6c6005c018748b699b802dcdf2b8967f89",
+          "old_sha256": "e487915c0ac68cd54b5ccb653767e972f92b023bd25ce187268f11b3342e0c0d"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/002-decision-authority-kernel/status.events.jsonl",
+          "event_id": "01KJFQVHDZZ3JCRZA4P4C7GHXS",
+          "line_number": 10,
+          "new_sha256": "b0f888d2bcaf16ba4fbc073e66a13102cc92ce23558edb6e1556a0f43573ff05",
+          "old_sha256": "02b625239f7d86a88d979b066d9f57137d31b87d002833675ad00aad0d3e6434"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/002-decision-authority-kernel/status.events.jsonl",
+          "event_id": "01KJFQVHGHE8JRDA9XMPG5WJF4",
+          "line_number": 11,
+          "new_sha256": "7087614659a3f73966fa810605321c1c6ed585b2c2a7e31e43517ae6f814e5e6",
+          "old_sha256": "8ded32a9eda9192164463fbd0d938cad05f91778f02dc35a67ee099e70bf7296"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/002-decision-authority-kernel/status.events.jsonl",
+          "event_id": "01KJFQVHH0RGCD41QNR8MB221M",
+          "line_number": 12,
+          "new_sha256": "bdaa1ba3e8c7768806c413199b2661ebc48197928bb1009256cefa885653643f",
+          "old_sha256": "9c25b77159b9cb15a15db248cc48c7050b4716eeb9b30befe5f636f5d5299459"
+        }
+      ],
+      "status": "updated",
+      "validation_errors": []
+    },
+    {
+      "file_changes": [
+        {
+          "new_sha256": "a7005ebc66ef27f29180f1211e7c7bf32bd089c3889d23e592a9d023f871105c",
+          "new_size": 931,
+          "old_sha256": "f14cb3190c3df61b6a12091a99d7fb14538f84679df967b6c74c70e20518952d",
+          "old_size": 930,
+          "path": "kitty-specs/003-raci-inference-override/meta.json"
+        },
+        {
+          "new_sha256": "8c5a63fbe404680349c07f104ef230163d125a87f35f6b2ba79502b5bcf7ac9a",
+          "new_size": 2960,
+          "old_sha256": "f04539c7a0853c7ddf3b038fb67225472c52edafa296e10c5a2ecd9c8381a979",
+          "old_size": 2875,
+          "path": "kitty-specs/003-raci-inference-override/status.events.jsonl"
+        }
+      ],
+      "mission_id": "01KN234FRPZWM9YKQZJY41ANVK",
+      "mission_slug": "003-raci-inference-override",
+      "quarantined_rows": 0,
+      "row_transformations": [
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/003-raci-inference-override/status.events.jsonl",
+          "event_id": "01KJG3ZMDTBCY3E3MYKSCN3K4F",
+          "line_number": 1,
+          "new_sha256": "686f8d6a1d976c32c3693681e8d1a2b72e61c8b860690f87a887f97bd1c08f5c",
+          "old_sha256": "14d52419999b3d792793e1e74dbe856fcd079d1dd0da0aac56946136361084b8"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/003-raci-inference-override/status.events.jsonl",
+          "event_id": "01KJG3ZMHV39E93APP7HZYDX05",
+          "line_number": 2,
+          "new_sha256": "8a973dcf8b1193f3d4f2b5e2be7a7d6fc6d7e4717282a1273100714cced5f366",
+          "old_sha256": "37c03dc9d7234da7da41f8b1480ed67d02a38f87e5a0bab4d0138e944d3bdf0f"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/003-raci-inference-override/status.events.jsonl",
+          "event_id": "01KJG6JHQEP3NXCW3Z2BWA0XR3",
+          "line_number": 3,
+          "new_sha256": "b3745916a57b1fb8527992dd3246a3657ff213760b23e78aee9fc85a648d8e90",
+          "old_sha256": "3bbd4f81663f96ff6318703370552ca05235f8b191b3a44294a811a8c7007aeb"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/003-raci-inference-override/status.events.jsonl",
+          "event_id": "01KJG6NCDM9F9XSN2YYX636X4R",
+          "line_number": 4,
+          "new_sha256": "19d97a96be02acccb428784aa8b798fea53b6c07af1bef1b11ada4934f76ccc0",
+          "old_sha256": "5dd8a0aa763d224ae0602c6d07a41a4a21587984e6bb9c24bb4b3317254f0154"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/003-raci-inference-override/status.events.jsonl",
+          "event_id": "01KJG6S6EBM1DWYQWJD4R3S1GN",
+          "line_number": 5,
+          "new_sha256": "4754630ebc1bca56ad1d7d175412990122de51cb7657da86c2eb5ddc84c31cd3",
+          "old_sha256": "df05e1ae1b14e0510b83deae51ac2adf6479fb345caecff8b8003f8cc0aff14c"
+        }
+      ],
+      "status": "updated",
+      "validation_errors": []
+    },
+    {
+      "file_changes": [
+        {
+          "new_sha256": "2d075b67a614eb21e8dc424b01f3ef91003d42d7fa710aa1b7b876ea5e1e4da7",
+          "new_size": 904,
+          "old_sha256": "7f914c976ed537d2e93760af30d82353b06ba5a522490e7af390eaa19a6f1f47",
+          "old_size": 903,
+          "path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/meta.json"
+        },
+        {
+          "new_sha256": "62cbebe2f7ca18146052a75986544a13154c314e0bc04ddcbe5e028a98c86bac",
+          "new_size": 18051,
+          "old_sha256": "3149e8f1e91d57eb7b35127d30725c2d7f43ef2b0f185aa1fa7430f5bf1696fc",
+          "old_size": 17524,
+          "path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl"
+        }
+      ],
+      "mission_id": "01KN234FRPZWM9YKQZJY41ANVM",
+      "mission_slug": "004-runtime-significance-threshold-timeout-policy",
+      "quarantined_rows": 0,
+      "row_transformations": [
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGEM65G3BP230BMEFJRTNVB",
+          "line_number": 1,
+          "new_sha256": "c74a14a9054700a04386667f8a384a8d46b9567698a32fea4f9fded9a203b21d",
+          "old_sha256": "8c2431885558d6c1d77569b1dd3ae6fc63ad9602323fd27e5b227fdc4772be9e"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGEM69BKYFZNCS2FDZK3A54",
+          "line_number": 2,
+          "new_sha256": "f4be36211a33f1a517c594856f2496fd73ef25dd6889dfb6fe2ec3cab9f0b3de",
+          "old_sha256": "0769e75e8c0738ce52c19b0816e221b70d5a476f77d56ab651a50bd70fe61f79"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGETKWG1G4DNJVDR9NYH191",
+          "line_number": 3,
+          "new_sha256": "b1269afb26c43ee4ec98cdb820dafda09a5e34fc7293b102f01bbcfcd665d42d",
+          "old_sha256": "29110c2598ac7c3fd17e43d5de974df3eb7178001b8f0a2ba67638e38c386506"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGEWCDDDWW97QRHP4B3G8EN",
+          "line_number": 4,
+          "new_sha256": "96e5c83aafdc6c3b0fa84261772123705f18fa3781c218a9737e0e31b3c05c5a",
+          "old_sha256": "5ad5c3005c840c3cc68696e7466aabe1c837db33d87d5556c29cfe3d28296705"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGEWDNRH74QT960XGZWCRNA",
+          "line_number": 5,
+          "new_sha256": "726a976e04bb6bb6b67d430268f37928c50f1aea26f29cbdb135c629d3f57c52",
+          "old_sha256": "58acf99dbbb4bf9585dd60133cfa5e6c628e5eb75e28ae10bd36775392eb9441"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGEWT9ZB8BPTF9JPTV0XRM3",
+          "line_number": 6,
+          "new_sha256": "e63339cbdaf82be031df56ffcdfebcd9f4649f34ba4230da2754334fdd18b4f5",
+          "old_sha256": "de0c909191324cdbfc09707a998675ad25261092514f7e5f27f366a9775522ba"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGF2NTYDJ53Z0Y8SSJMY128",
+          "line_number": 7,
+          "new_sha256": "6a351297f38b3fb4ee611b001f27cfc503354a0ba02dc3d5103aa4da53ec6079",
+          "old_sha256": "49cb4322bb7f577bc8c648befac063fce4810ff5b80eaebb6137642b17e2a4cd"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGFBDJT633K1PV8ABADSKX5",
+          "line_number": 8,
+          "new_sha256": "6de09dd233fd86e370eb150e4a5698db176fa282c9d469980f0f458029fb8eb8",
+          "old_sha256": "13a9aa2a57ed5979122711b6b45748ad733a85f7bbea698924a998768e00f34a"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGFBDNVAX7AVACBBRHVB4S0",
+          "line_number": 9,
+          "new_sha256": "fef11b4388ab76b589aaf22296218af95803c7e2e891729069931e0204dbb864",
+          "old_sha256": "8b376ca41200696b97062b28e276a315cdfc85775851c228188c2fe9dddc759c"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGFCMP5FRWBXKS03FX68VQ2",
+          "line_number": 10,
+          "new_sha256": "b03fc6cbe2c5b1e612e5a07c06b7ab2274f145d3c06785e891660bc05c68f001",
+          "old_sha256": "d396739beb140fc289181d32755b1eeeaef9f18c1c48d84538f14c54e426768e"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGFJE8HFGN7628Y7MBZQTJQ",
+          "line_number": 11,
+          "new_sha256": "57e4be533cd890330099f37c4d1af0860483d41fd2e6ab4e1b52a766f03269ab",
+          "old_sha256": "73a59aee8121bf400d57670473896e5b5330ed3038535a67bdafc77895358946"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGFV7YGQG57P3M1VBFFCT85",
+          "line_number": 12,
+          "new_sha256": "21ff41799c79d8901ece2b53369a99bebae4b533a2b494eacf524f3db5199612",
+          "old_sha256": "e21665dd6b7ddef4c8a741a049f529957646ed7797246353df09a961ae56b9c5"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGFV81FMR93ZXB9REJSJD5E",
+          "line_number": 13,
+          "new_sha256": "3a6483dab70a214375798685dab4a2125f6c0011d3c635d52741aa2563905702",
+          "old_sha256": "0452d483c4456af91e937fbd7fab4c663329079d9e79f1f6eb6aec4e8b8ddfb1"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGGTG3V7JZF2VSCAPDSN5QA",
+          "line_number": 14,
+          "new_sha256": "96207a1695ce1913fb03668cedc2e549865c4816acd4ce2fcb719ca03ca92f7a",
+          "old_sha256": "ad9172cfb286d43a91166f78a7ef219b302079f0a4c4e788693fba574f607184"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGGYW0KWN1NCP6MTC539MCR",
+          "line_number": 15,
+          "new_sha256": "b0c7325e1f66bcd9a052f1b6aa2aff59bd7ef2d9fcf3108f9fcff6565c618623",
+          "old_sha256": "798b49919c0e3a463dffb3be3321c462371d86a0f13c7416a5875be6a50fc542"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGHC7VYWXAN6S93JEB1VWQJ",
+          "line_number": 16,
+          "new_sha256": "f95bdde2d4411a48294b7b0968bb0c5faade4eaebdb7102cce388bad03e86a31",
+          "old_sha256": "b87341d98ae4c2785de4ebebfab6d54d63c20e914e1709f1849403eecfbe2a85"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGHC7Z3KH5S7E748FW2VYB8",
+          "line_number": 17,
+          "new_sha256": "a1b94055becffa1d5613fe254295eeebd882641671bb82de269d5da27197bfc6",
+          "old_sha256": "2b7f350ecf2ec6b797b76195353d04fdfd923968183f567aeba32c2de6aca970"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGHDSGK3E2TB6FW7MG3QJE5",
+          "line_number": 18,
+          "new_sha256": "63542cf1db4dbe533ed4b7b711899c693821812143e1b1b1fc46a3893ceec26a",
+          "old_sha256": "3aaa0dec906c70b28f221c8ee12c3faf657cbc0f41150fe06907344d7d9a96a5"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGHK9ZDNX5YA6KGY1ZBVTNR",
+          "line_number": 19,
+          "new_sha256": "fb3cbffb8deb279c2d7be2422556a2bc838da40026375259708c0f35b1f80211",
+          "old_sha256": "7463d51499203b74409df9187183e8f0801ab08a7eb5390cf7fcdbe5982c5535"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGJ9KGA4PJHKWTPYB85RZNR",
+          "line_number": 20,
+          "new_sha256": "113b1ae843615c253c68d26d6d4adc3d861b5109843148e9168914c0bacbbcf8",
+          "old_sha256": "8da6499948ae64620d0c13494a05396306769bd7724664e7a78dc56d22b0d9d4"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGJ9KMETRYD9NC7XTJ50YZE",
+          "line_number": 21,
+          "new_sha256": "fa077491ac6eab0e516b0d040e0214742b72a0ca7fc03436e6276a5c6f1c6ec2",
+          "old_sha256": "2463ba1f91422c8c6acca3ffd8731a90dd2316292ffd5be907c0f5bfe18e7901"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGJB3B13DNANKSS85675CV7",
+          "line_number": 22,
+          "new_sha256": "47fe1a7f1069ed03691e57fc0501c24be82be91296ab6c3a4c37f5f703e499f9",
+          "old_sha256": "e91377eb6204bb9b4711abdbfc9b4b2e7ede479d617ecc5a6ac62cbf9a9b6615"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGJGKCS0HSVQW61YRGQF9YW",
+          "line_number": 23,
+          "new_sha256": "9ecb4dee5171cee8a8f36b50165c7237c23530d329be28bbbe39208305c50d9a",
+          "old_sha256": "33c50fae92175b640d08c8cdedbf9e4e3ec6abe8d7de1846106f8eb610181984"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGJVY1DTTWZAX0NRVZ1HY6Y",
+          "line_number": 24,
+          "new_sha256": "3dab9dbd291fc61a1741759b62a09700aa704d21019049bc5ae5324a58adaa36",
+          "old_sha256": "776a64de27a76fe23e10912c7f2a7741dbd6bfb7e31ec70faee7f5e49f7a2a9f"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGJVY5THASFQ7A7X23HZE85",
+          "line_number": 25,
+          "new_sha256": "4c536c4bb9dd8a5bc9401d7e28dbba4925e8b11181bc9ce2e0fed7aee6cf7dc2",
+          "old_sha256": "195147e92563ba342b1242292b5c15005d974e5e7c1e4ec598d94aa0b6d49336"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGJXAQWR1C2CWFRY8T5N2MZ",
+          "line_number": 26,
+          "new_sha256": "c9153680ae7617ea2611ac03bea1ba959a02ce238b3f3d8001262e68879e68f6",
+          "old_sha256": "aa9f51c8ab88009c8c8b7bd02dd7425df04a9ff5ddd708e7029bbdb19a61d83e"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGK2F9R28HXTC3KJFYH2F1R",
+          "line_number": 27,
+          "new_sha256": "3c36e24e6558106a0f790120ef414af524d27c3e9c0ac8887eee498a76cf9fb3",
+          "old_sha256": "723ef1bd13cbb0d009300af0840146df582673c7793e02b7576347263c92cbc1"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGKDN6RZFFM6R2AJR41HMSJ",
+          "line_number": 28,
+          "new_sha256": "b050c17167fbbf94ea3ff02ed0532f2d5b1eb4f391a97f844ee54a6d9f1c4780",
+          "old_sha256": "ac660b01e1f9b15fe87a4b22038b2faf3f69b33d32c421215fc83529680a97c4"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGKDNB78E6Y634TJQ4Q4WFF",
+          "line_number": 29,
+          "new_sha256": "ff23feb3b00f30b56a96651f55c0746f855685541b80648be60157e229451375",
+          "old_sha256": "cf380213c5d9e5fba44f6061eb4027decd72f7fa738aa783259a6f49b984b369"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGKF2Y1P0ZCH7KMCATTDFYN",
+          "line_number": 30,
+          "new_sha256": "0e496386ba5e047a3cc237252a3a387c9220e001e37752763b79a9ae8a73a8f9",
+          "old_sha256": "fa805b061692b4bd79783afc9906bd4037060d0b1e29af000cdec2c6d2c2712a"
+        },
+        {
+          "actions": [
+            "renamed_key:feature_slug->mission_slug",
+            "renamed_key:work_package_id->wp_id"
+          ],
+          "artifact_path": "kitty-specs/004-runtime-significance-threshold-timeout-policy/status.events.jsonl",
+          "event_id": "01KJGKK67PFJCMKE3P9J9WHJX1",
+          "line_number": 31,
+          "new_sha256": "75582e73e04d6e99d5bb277ca9acea0b14083e3138c577c5100a9adcadaa022a",
+          "old_sha256": "f5f4cf06388635398e582c355e28d6e40a9d6abc3218ade9f7bcdd5683a7398b"
+        }
+      ],
+      "status": "updated",
+      "validation_errors": []
+    }
+  ],
+  "repo_head": "f092e86e827cba75ecc8f768264400714906f8b1",
+  "run_id": "8bf96af82d93fda6",
+  "schema_version": "1.0.0",
+  "summary": {
+    "missions_error": 0,
+    "missions_total": 4,
+    "missions_unchanged": 0,
+    "missions_updated": 4,
+    "quarantined_rows": 0
+  },
+  "target_missions": [
+    "001-audit-primitive-decision-checkpoint",
+    "002-decision-authority-kernel",
+    "003-raci-inference-override",
+    "004-runtime-significance-threshold-timeout-policy"
+  ]
+}

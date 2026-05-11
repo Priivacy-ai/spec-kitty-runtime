@@ -24,13 +24,13 @@
   "accepted_by": "robert",
   "accepted_from_commit": "199b2fe09f315f5583c0d122473a336130a857c6",
   "created_at": "2026-02-26T14:06:35.496842+00:00",
-  "feature_number": "001",
-  "feature_slug": "001-audit-primitive-decision-checkpoint",
   "friendly_name": "audit primitive decision checkpoint",
-  "mission": "software-dev",
+  "mission_id": "01KN234FRN2DACHD1S4PM2264H",
+  "mission_number": 1,
+  "mission_slug": "001-audit-primitive-decision-checkpoint",
+  "mission_type": "software-dev",
   "slug": "001-audit-primitive-decision-checkpoint",
   "target_branch": "main",
   "vcs": "git",
-  "vcs_locked_at": "2026-02-26T14:12:36.341090+00:00",
-  "mission_id": "01KN234FRN2DACHD1S4PM2264H"
+  "vcs_locked_at": "2026-02-26T14:12:36.341090+00:00"
 }
