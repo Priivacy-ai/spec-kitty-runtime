@@ -22,7 +22,8 @@ subtasks:
 - T004
 - T005
 - T006
-agent: claude
+agent: "claude:sonnet-4-6:operator:implementer"
+shell_pid: "82323"
 history:
 - at: '2026-05-11T11:04:35Z'
   event: created
@@ -157,3 +158,7 @@ Write all evidence from T001–T005 to `checklists/wp01-verification-results.md`
 - [ ] T004: status_authority=False for all runtime types; True only for WPStatusChanged
 - [ ] T005: CLI dry-run valid=True, errors=[]
 - [ ] T006: wp01-verification-results.md written
+
+## Activity Log
+
+- 2026-05-11T11:06:19Z – claude:sonnet-4-6:operator:implementer – shell_pid=82323 – Started implementation via action command
