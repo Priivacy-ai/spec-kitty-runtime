@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "mission_slug": "runtime-side-log-classification-closeout-01KRBB8C",
+  "mission_id": "01KRBB8CCJKT3ZEJZ8B3QP2BFS",
+  "mission_branch": "kitty/mission-runtime-side-log-classification-closeout-01KRBB8C",
+  "target_branch": "main",
+  "lanes": [
+    {
+      "lane_id": "lane-planning",
+      "wp_ids": [
+        "WP01",
+        "WP02"
+      ],
+      "write_scope": [
+        "kitty-specs/runtime-side-log-classification-closeout-01KRBB8C/checklists/wp01-verification-results.md",
+        "kitty-specs/runtime-side-log-classification-closeout-01KRBB8C/checklists/wp02-issue-closeout-evidence.md"
+      ],
+      "predicted_surfaces": [
+        "planning"
+      ],
+      "depends_on_lanes": [],
+      "parallel_group": 0
+    }
+  ],
+  "computed_at": "2026-05-11T11:06:12.748699+00:00",
+  "computed_from": "dependency_graph+ownership",
+  "planning_artifact_wps": [
+    "WP01",
+    "WP02"
+  ]
+}
