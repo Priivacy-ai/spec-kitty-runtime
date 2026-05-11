@@ -1,7 +1,7 @@
 {
-  "event_count": 10,
-  "last_event_id": "01KRBBRA4PSASV3EW5VTMFR3T7",
-  "materialized_at": "2026-05-11T11:11:30.454538+00:00",
+  "event_count": 11,
+  "last_event_id": "01KRBBRE14150NHRS2913MPCD6",
+  "materialized_at": "2026-05-11T11:11:34.436964+00:00",
   "mission_number": "",
   "mission_slug": "runtime-side-log-classification-closeout-01KRBB8C",
   "mission_type": "software-dev",
@@ -11,9 +11,9 @@
     "canceled": 0,
     "claimed": 0,
     "done": 0,
-    "for_review": 1,
+    "for_review": 0,
     "in_progress": 0,
-    "in_review": 0,
+    "in_review": 1,
     "planned": 0
   },
   "work_packages": {
@@ -25,11 +25,11 @@
       "last_transition_at": "2026-05-11T11:10:15.077709+00:00"
     },
     "WP02": {
-      "actor": "user",
+      "actor": "claude:sonnet-4-6:operator:reviewer",
       "force_count": 1,
-      "lane": "for_review",
-      "last_event_id": "01KRBBRA4PSASV3EW5VTMFR3T7",
-      "last_transition_at": "2026-05-11T11:11:30.454538+00:00"
+      "lane": "in_review",
+      "last_event_id": "01KRBBRE14150NHRS2913MPCD6",
+      "last_transition_at": "2026-05-11T11:11:34.436964+00:00"
     }
   }
 }

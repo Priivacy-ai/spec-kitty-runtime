@@ -15,8 +15,8 @@ subtasks:
 - T007
 - T008
 - T009
-agent: "claude:sonnet-4-6:operator:implementer"
-shell_pid: "83810"
+agent: "claude:sonnet-4-6:operator:reviewer"
+shell_pid: "84352"
 history:
 - at: '2026-05-11T11:04:35Z'
   event: created
@@ -140,3 +140,4 @@ Record the comment URL from T007 and T008, confirm #17 is CLOSED, confirm #920 i
 
 - 2026-05-11T11:10:21Z – claude:sonnet-4-6:operator:implementer – shell_pid=83810 – Started implementation via action command
 - 2026-05-11T11:11:30Z – claude:sonnet-4-6:operator:implementer – shell_pid=83810 – T007: #17 closed with evidence comment (4420120373). T008: #920 updated with Mission 2 progress (4420122139). T009: wp02-issue-closeout-evidence.md written.
+- 2026-05-11T11:11:34Z – claude:sonnet-4-6:operator:reviewer – shell_pid=84352 – Started review via action command
