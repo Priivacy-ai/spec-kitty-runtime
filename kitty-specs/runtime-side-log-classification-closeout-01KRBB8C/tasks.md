@@ -40,9 +40,9 @@
 **Dependencies**: WP01  
 **Execution mode**: planning_artifact (GitHub actions + evidence file)
 
-- [ ] T007 Close spec-kitty-runtime#17 with evidence comment (WP02)
-- [ ] T008 Post progress on spec-kitty#920 (WP02)
-- [ ] T009 Write wp02-issue-closeout-evidence.md (WP02)
+- [x] T007 Close spec-kitty-runtime#17 with evidence comment (WP02)
+- [x] T008 Post progress on spec-kitty#920 (WP02)
+- [x] T009 Write wp02-issue-closeout-evidence.md (WP02)
 
 **Definition of Done**: #17 CLOSED; #920 updated; evidence written to `checklists/wp02-issue-closeout-evidence.md`.
 
