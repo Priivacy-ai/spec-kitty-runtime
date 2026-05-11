@@ -162,3 +162,4 @@ Write all evidence from T001–T005 to `checklists/wp01-verification-results.md`
 ## Activity Log
 
 - 2026-05-11T11:06:19Z – claude:sonnet-4-6:operator:implementer – shell_pid=82323 – Started implementation via action command
+- 2026-05-11T11:09:52Z – claude:sonnet-4-6:operator:implementer – shell_pid=82323 – All T001-T006 done. 11 tests pass, ruff+mypy clean, fixtures confirmed, status_authority verified, CLI dry-run valid=True. Evidence in wp01-verification-results.md.
