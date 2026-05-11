@@ -3,9 +3,10 @@
 # DO NOT EDIT MANUALLY
 
 spec_kitty:
-  version: 3.0.3
+  version: 3.2.0rc4
   initialized_at: '2026-02-26T15:06:32.527186'
-  last_upgraded_at: '2026-04-04T09:58:19.041474'
+  last_upgraded_at: '2026-05-11T12:30:37.757357'
+  schema_version: 3
 environment:
   python_version: 3.11.14
   platform: darwin
@@ -52,7 +53,7 @@ migrations:
     applied_at: '2026-03-21T15:02:29.696933'
     result: success
     notes: Installed 6 skill(s) for 2 agent(s) (34 managed files); Rebuilt .kittify/skills-manifest.json
-  - id: 2.1.2_fix_constitution_doctrine_skill
+  - id: 2.1.2_fix_charter_doctrine_skill
     applied_at: '2026-03-27T14:33:14.535290'
     result: success
     notes: Replaced .claude/skills/spec-kitty-constitution-doctrine/SKILL.md; Replaced
@@ -126,3 +127,57 @@ migrations:
     result: success
     notes: Processed 2 agent directories; Wrote 32 command files; Deleted 0 stale
       files
+  - id: 3.0.3_globalize_skill_pack
+    applied_at: '2026-05-11T12:30:37.608404'
+    result: success
+    notes: 'Relinked 14 canonical skill(s) for 2 agent(s) (66 managed files); Updated
+      .kittify/skills-manifest.json for global canonical skill links; Archived customized
+      skill file for manual review: .kittify/.migration-backup/agent-skills/20260511T103037Z/.agents/skills/spec-kitty-git-workflow/SKILL.md;
+      Archived customized skill file for manual review: .kittify/.migration-backup/agent-skills/20260511T103037Z/.agents/skills/spec-kitty-git-workflow/references/git-operations-matrix.md;
+      Archived customized skill file for manual review: .kittify/.migration-backup/agent-skills/20260511T103037Z/.agents/skills/spec-kitty-glossary-context/references/glossary-field-guide.md;
+      Archived customized skill file for manual review: .kittify/.migration-backup/agent-skills/20260511T103037Z/.agents/skills/spec-kitty-mission-system/SKILL.md;
+      Archived customized skill file for manual review: .kittify/.migration-backup/agent-skills/20260511T103037Z/.agents/skills/spec-kitty-orchestrator-api-operator/SKILL.md;
+      Archived customized skill file for manual review: .kittify/.migration-backup/agent-skills/20260511T103037Z/.agents/skills/spec-kitty-orchestrator-api-operator/references/host-boundary-rules.md;
+      Archived customized skill file for manual review: .kittify/.migration-backup/agent-skills/20260511T103037Z/.agents/skills/spec-kitty-orchestrator-api-operator/references/orchestrator-api-contract.md;
+      Archived customized skill file for manual review: .kittify/.migration-backup/agent-skills/20260511T103037Z/.agents/skills/spec-kitty-runtime-next/SKILL.md;
+      Archived customized skill file for manual review: .kittify/.migration-backup/agent-skills/20260511T103037Z/.agents/skills/spec-kitty-runtime-next/references/blocked-state-recovery.md;
+      Archived customized skill file for manual review: .kittify/.migration-backup/agent-skills/20260511T103037Z/.agents/skills/spec-kitty-runtime-review/SKILL.md;
+      Archived customized skill file for manual review: .kittify/.migration-backup/agent-skills/20260511T103037Z/.agents/skills/spec-kitty-runtime-review/references/review-checklist.md;
+      Archived customized skill file for manual review: .kittify/.migration-backup/agent-skills/20260511T103037Z/.agents/skills/spec-kitty-setup-doctor/SKILL.md;
+      Archived customized skill file for manual review: .kittify/.migration-backup/agent-skills/20260511T103037Z/.agents/skills/spec-kitty-setup-doctor/references/agent-path-matrix.md;
+      Archived customized skill file for manual review: .kittify/.migration-backup/agent-skills/20260511T103037Z/.agents/skills/spec-kitty-setup-doctor/references/common-failure-signatures.md'
+  - id: 3.1.1_charter_rename
+    applied_at: '2026-05-11T12:30:37.617407'
+    result: skipped
+    notes: Not applicable
+  - id: 3.1.1_direct_canonical_commands
+    applied_at: '2026-05-11T12:30:37.626174'
+    result: skipped
+    notes: Not applicable
+  - id: 3.1.1_event_log_merge_driver
+    applied_at: '2026-05-11T12:30:37.703571'
+    result: success
+    notes: 'Added .gitattributes entry: kitty-specs/**/status.events.jsonl merge=spec-kitty-event-log;
+      Configured git merge.spec-kitty-event-log.name; Configured git merge.spec-kitty-event-log.driver'
+  - id: 3.1.1_normalize_status_json
+    applied_at: '2026-05-11T12:30:37.714375'
+    result: success
+    notes: '001-audit-primitive-decision-checkpoint: normalised status.json; 002-decision-authority-kernel:
+      normalised status.json; 003-raci-inference-override: normalised status.json;
+      004-runtime-significance-threshold-timeout-policy: normalised status.json'
+  - id: 3.1.2_globalize_commands
+    applied_at: '2026-05-11T12:30:37.722445'
+    result: skipped
+    notes: Not applicable
+  - id: 3.2.0a4_normalize_mission_lifecycle
+    applied_at: '2026-05-11T12:30:37.741566'
+    result: success
+    notes: '001-audit-primitive-decision-checkpoint: Regenerated canonical status/progress/lifecycle
+      views; 002-decision-authority-kernel: Regenerated canonical status/progress/lifecycle
+      views; 003-raci-inference-override: Regenerated canonical status/progress/lifecycle
+      views; 004-runtime-significance-threshold-timeout-policy: Regenerated canonical
+      status/progress/lifecycle views'
+  - id: 3.2.0a4_safe_globalize_commands
+    applied_at: '2026-05-11T12:30:37.750015'
+    result: skipped
+    notes: Not applicable
