@@ -25,12 +25,12 @@
 **Dependencies**: none  
 **Execution mode**: planning_artifact (operational verification steps)
 
-- [ ] T001 Run test suite (WP01)
-- [ ] T002 Run ruff + mypy (WP01)
-- [ ] T003 Verify fixture coverage (WP01)
-- [ ] T004 Verify status_authority/direct_teamspace_import (WP01)
-- [ ] T005 Verify CLI dry-run boundary (WP01)
-- [ ] T006 Write wp01-verification-results.md (WP01)
+- [x] T001 Run test suite (WP01)
+- [x] T002 Run ruff + mypy (WP01)
+- [x] T003 Verify fixture coverage (WP01)
+- [x] T004 Verify status_authority/direct_teamspace_import (WP01)
+- [x] T005 Verify CLI dry-run boundary (WP01)
+- [x] T006 Write wp01-verification-results.md (WP01)
 
 **Definition of Done**: All 6 FRs (FR-001 through FR-007) verified; evidence written to `checklists/wp01-verification-results.md`.
 
