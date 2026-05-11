@@ -1,0 +1,20 @@
+# Auto-generated from charter.md — do not edit directly.
+# Run 'spec-kitty charter sync' to regenerate.
+
+directives:
+- id: DIR-001
+  title: Do not add new public API surface intended for lon
+  description: Do not add new public API surface intended for long-term consumption by CLI or SaaS.
+  severity: warn
+- id: DIR-002
+  title: Keep changes focused on migration support, compati
+  description: Keep changes focused on migration support, compatibility preservation, or archival cleanup.
+  severity: warn
+- id: DIR-003
+  title: Do not introduce dependencies from events or track
+  description: Do not introduce dependencies from events or tracker back into runtime.
+  severity: warn
+- id: DIR-004
+  title: Do not require CLI or SaaS to install this package
+  description: Do not require CLI or SaaS to install this package for production execution after the migration is complete.
+  severity: warn
