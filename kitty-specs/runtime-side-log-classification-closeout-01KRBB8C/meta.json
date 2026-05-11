@@ -1,0 +1,12 @@
+{
+  "created_at": "2026-05-11T11:02:48.467216+00:00",
+  "friendly_name": "Runtime Side-Log Classification Closeout",
+  "mission_id": "01KRBB8CCJKT3ZEJZ8B3QP2BFS",
+  "mission_number": null,
+  "mission_slug": "runtime-side-log-classification-closeout-01KRBB8C",
+  "mission_type": "software-dev",
+  "purpose_context": "PR #19 (feat: classify runtime logs for TeamSpace migration) is already merged on main. This mission verifies all acceptance criteria from issue #17 are met: runtime logs classified as local_only_side_log, no status transitions synthesized from runtime rows, CLI dry-run boundary confirmed, and closes the issue with evidence.",
+  "purpose_tldr": "Close spec-kitty-runtime#17: verify PR #19 satisfies runtime side-log classification acceptance criteria, confirm CLI boundary, close the issue with evidence.",
+  "slug": "runtime-side-log-classification-closeout-01KRBB8C",
+  "target_branch": "main"
+}
