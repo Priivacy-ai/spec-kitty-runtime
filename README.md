@@ -1,6 +1,14 @@
 # spec-kitty-runtime
 
-Canonical mission runtime for Spec Kitty.
+> [!IMPORTANT]
+> `spec-kitty-runtime` is retiring. Mission-runtime ownership now lives in the
+> `spec-kitty` CLI's `_internal_runtime` package. Version 0.4.6 is a final
+> compatibility release that removes a dependency-resolution hazard; it does
+> not resume feature development. Publish and archive remain explicit operator
+> decisions tracked in
+> [Priivacy-ai/spec-kitty-runtime#16](https://github.com/Priivacy-ai/spec-kitty-runtime/issues/16).
+
+Legacy mission runtime for Spec Kitty.
 
 ## Scope (V1)
 

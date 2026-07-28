@@ -41,3 +41,9 @@ notes = "Bugfix: update dependency pin to spec-kitty-events 3.2.0 to align with 
 
 [runtime."0.4.5"]
 notes = "Release-train alignment release pinned to spec-kitty-events 3.3.0 for mission analytics telemetry."
+
+[runtime."0.4.6".dependencies]
+"spec-kitty-events" = "<7.0,>=3.0"
+
+[runtime."0.4.6"]
+notes = "Retirement release. Replaces the exact spec-kitty-events pin with a bounded range so the package stops forcing a resolver downgrade on co-install with spec-kitty-cli (see #21). Value is str(SpecifierSet), which packaging renders sorted. No API change."

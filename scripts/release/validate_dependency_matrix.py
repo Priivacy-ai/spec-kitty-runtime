@@ -31,12 +31,22 @@ def load_toml(path: Path) -> Dict[str, object]:
 
 
 def normalize_requirement(raw: str) -> str:
+    """Reduce a requirement to the form recorded in the compatibility matrix.
+
+    An exact pin normalizes to the bare version (``"3.3.0"``) — the historical
+    form, preserved so existing matrix entries keep validating. A range
+    normalizes to ``str(SpecifierSet)`` (``"<7.0,>=3.0"``), which ``packaging``
+    renders in a stable sorted order regardless of how it was written in
+    ``pyproject.toml``.
+    """
     req = Requirement(raw)
     if req.url:
         return f"url:{req.url}"
     specs = list(req.specifier)
     if len(specs) == 1 and specs[0].operator == "==" and not specs[0].version.endswith(".*"):
         return specs[0].version
+    if specs:
+        return str(req.specifier)
     return raw
 
 

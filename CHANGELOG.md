@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.4.6 - unreleased
+
+**Retirement release** — stops the package from forcing a resolver downgrade on
+consumers, so it can be retired without leaving a permanent trap on PyPI.
+
+### Fixed
+
+- Dependency changed from `spec-kitty-events==3.3.0` to
+  `spec-kitty-events>=3.0,<7.0`. The exact pin was unsatisfiable against the
+  CLI's `>=6.0.0,<7.0.0` and the SaaS's `==6.1.0`. Rather than erroring,
+  resolvers backtracked: `pip install spec-kitty-cli spec-kitty-runtime`
+  silently installed **spec-kitty-cli 0.14.2** — three majors old, and it runs,
+  so nothing warned the operator. With the widened range the same command
+  resolves to spec-kitty-cli 3.2.5 / spec-kitty-events 6.1.0 and `pip check` is
+  clean. (Advances #21; publishing and post-publish verification remain.)
+
+  No code change was required: the runtime imports only from
+  `spec_kitty_events.mission_next`, which is byte-identical between 3.3.0 and
+  6.1.0, and the full suite passes against both.
+
+### Changed
+
+- `scripts/release/validate_dependency_policy.py` now accepts a **bounded
+  range** (both a lower and an upper bound) in addition to an exact pin.
+  Unbounded specifiers such as `>=6.0.0` are still rejected. Licence assurance
+  is strengthened rather than relaxed: for a range, *every* installable,
+  non-yanked release the range admits must carry clear MIT metadata, and a
+  range matching no installable release is rejected. A range with an explicit
+  prerelease bound still requires the existing explicit prerelease approval.
+- `scripts/release/validate_dependency_matrix.py` normalizes a range to
+  `str(SpecifierSet)` so matrix entries stay byte-comparable. Exact pins keep
+  normalizing to the bare version, so existing entries are unaffected.
+
+### Added
+
+- `tests/test_dependency_policy.py` — pin-shape and release-verification
+  regression cover, including the package's own CLI-compatible range, empty or
+  non-installable ranges, prerelease approval, and per-release licence
+  validation.
+
 ## 0.4.5 - 2026-04-22
 
 **Release-train alignment** — repins the runtime to the analytics-enabled events
